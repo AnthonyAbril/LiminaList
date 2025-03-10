@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ListasModule } from './listas/listas.module';
+import { TareasModule } from './tareas/tareas.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { ListasModule } from './listas/listas.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ListasModule
+    ListasModule,
+    TareasModule
   ],
   providers: [],
   bootstrap: [AppComponent]

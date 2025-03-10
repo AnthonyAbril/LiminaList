@@ -1,0 +1,35 @@
+#placa {
+    width: 559px;
+    height: 161px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    background: #FFBA5A;
+    border-bottom-right-radius: 52px
+}
+
+.contenedor {
+    display: flex;
+    height: 100vh; /* Ocupa toda la pantalla */
+    background: #FFBA5A;
+  }
+  
+  .reloj-container {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FF9E16;
+  }
+  
+  .lista-container {
+    width: 50%; /* Por defecto, ocupa la mitad */
+    max-width: 80%; /* Máximo de la pantalla */
+    min-width: 20%; /* Mínimo tamaño */
+    overflow: auto;
+    resize: horizontal; /* Permite cambiar el tamaño */
+    background-color: #FFBA5A;
+    border-left: 2px solid #ccc;
+    padding: 20px;
+  }
+  

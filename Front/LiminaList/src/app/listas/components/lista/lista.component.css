@@ -1,0 +1,18 @@
+#tareas {
+    background: #FFBA5A;
+    border-top-left-radius: 52px;
+    border-top-right-radius: 52px;
+}
+
+.lista ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .lista li {
+    background: #e3e3e3;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
