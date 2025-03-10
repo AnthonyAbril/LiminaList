@@ -1,18 +1,42 @@
 #tareas {
-    background: #FFBA5A;
-    border-top-left-radius: 52px;
-    border-top-right-radius: 52px;
+  background: #ffba5a;
+  border-top-left-radius: 52px;
+  border-top-right-radius: 52px;
+}
+
+.lista{
+    font-size: larger;
+}
+
+li{
+  padding: 15px;
+  padding-right: 0;
+  margin: 5px 0 0 0;
 }
 
 .lista ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .lista li {
-    background: #e3e3e3;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 5px;
-  }
-  
+  list-style: none;
+  padding: 0;
+}
+
+.lista li {
+  background: #ffca81;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+}
+
+.subtareas li {
+  background: #FF9E16;
+}
+
+ul > li{
+ border-top-left-radius: 25px;
+ border-bottom-left-radius: 25px;
+}
+
+li > div:first-child{
+  padding-right: 15px;
+}
