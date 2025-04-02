@@ -1,0 +1,37 @@
+li{
+    list-style: none;
+}
+
+ul{
+    padding: 0;
+}
+
+.tarea li {
+    padding: 15px;
+    padding-right: 0;
+    margin: 5px 0 0 0;
+    background: #FFCA81; /* Fondo general para tareas */
+}
+
+.cabecera {
+    display: flex;
+    justify-content: space-between;
+}
+
+.subtareas li {
+    background: #FF9E16; /* Fondo específico para subtareas */
+}
+
+ul > li {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
+li > div:first-child {
+    padding-right: 15px;
+}
+
+/* Botón (vacío por ahora, para futuros estilos) */
+.boton {
+    /* Puedes añadir estilos aquí si se requiere funcionalidad o diseño específico */
+}

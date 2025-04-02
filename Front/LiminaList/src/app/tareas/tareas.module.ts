@@ -1,21 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TareasComponent } from './components/tareas/tareas.component';
 import { RelojComponent } from './components/reloj/reloj.component';
+import { TareaComponent } from './components/tarea/tarea.component';
 
 
 
 @NgModule({
   declarations: [
-    TareasComponent,
-    RelojComponent
+    RelojComponent,
+    TareaComponent
   ],
   imports: [
     CommonModule
   ],
   exports: [
     RelojComponent,
-    TareasComponent
+    TareaComponent
   ]
 })
 export class TareasModule { }

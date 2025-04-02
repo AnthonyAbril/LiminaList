@@ -1,0 +1,25 @@
+
+<!--
+se supone que este componente debe ser el que se use para listar tareas, siendo una tarea en si misma
+de forma que se pueda gestionar el estado y la edicion de la tarea por separado
+-->
+
+<div class="tarea">
+    <div class="cabecera">
+      <div class="boton"></div>
+      <div>{{ nombre }}</div>
+      <div>{{ progreso }}</div>
+    </div>
+    <div *ngIf="subtareas.length > 0" class="subtareas">
+      <ul>
+        <li *ngFor="let subtarea of subtareas">
+          <app-tarea 
+            [nombre]="subtarea.nombre" 
+            [progreso]="subtarea.progreso" 
+            [subtareas]="subtarea.subtareas">
+          </app-tarea>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

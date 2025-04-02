@@ -1,11 +1,11 @@
 #placa {
-    min-width: 372px;
     max-width: fit-content;
-    padding: 0 20px;
+    padding: 0 4vh;
     left: 0px;
     top: 0px;
     position: absolute;
     background: #FFBA5A;
+    /*5abdff*/
     border-bottom-right-radius: 52px;
     font-size:larger;
 }
@@ -22,12 +22,13 @@
     align-items: center;
     justify-content: center;
     background-color: #FF9E16;
+    margin-right: 5vh;
   }
   
   .lista-container {
-    width: 50%; /* Por defecto, ocupa la mitad */
+    width: 70%; /* Por defecto, ocupa la mitad */
     max-width: 80%; /* Máximo de la pantalla */
-    min-width: 30%; /* Mínimo tamaño */
+    min-width: 40%; /* Mínimo tamaño */
     overflow: auto;
     resize: horizontal; /* Permite cambiar el tamaño */
     background-color: #FFBA5A;

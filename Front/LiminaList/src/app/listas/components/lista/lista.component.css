@@ -8,12 +8,6 @@
     font-size: larger;
 }
 
-li {
-    padding: 15px;
-    padding-right: 0;
-    margin: 5px 0 0 0;
-}
-
 .lista ul {
     list-style: none;
     padding: 0;
@@ -21,6 +15,15 @@ li {
 
 .lista li {
     background: #ffca81;
+}
+
+
+
+
+li {
+    padding: 15px;
+    padding-right: 0;
+    margin: 5px 0 0 0;
 }
 
 .cabecera {
@@ -39,8 +42,4 @@ ul>li {
 
 li>div:first-child {
     padding-right: 15px;
-}
-
-.boton {
-    
 }
