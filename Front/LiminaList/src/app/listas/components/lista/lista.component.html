@@ -3,14 +3,16 @@
 <div class="lista">
     <ul>
         <li *ngFor="let tarea of tareas">
-        <app-tarea 
+            <app-tarea 
             [nombre]="tarea.nombre" 
             [progreso]="tarea.progreso" 
-            [subtareas]="tarea.subtareas">
-        </app-tarea>
+            [subtareas]="tarea.subtareas" 
+            [nivel]="0">
+            </app-tarea>
         </li>
     </ul>
 </div>
+  
 
 <div class="lista">
     <ul>
