@@ -28,7 +28,25 @@ export class ListaComponent {
         {
           nombre: 'Subtarea 3',
           progreso: '2/2',
-          subtareas: []
+          subtareas: [
+            {
+              nombre: 'Subtarea 3',
+              progreso: '2/2',
+              subtareas: [
+                {
+                  nombre: 'Subtarea 3',
+                  progreso: '2/2',
+                  subtareas: [
+                    {
+                      nombre: 'Subtarea 3',
+                      progreso: '2/2',
+                      subtareas: []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
