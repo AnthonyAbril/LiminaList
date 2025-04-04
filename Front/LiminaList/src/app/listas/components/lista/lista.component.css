@@ -20,12 +20,6 @@
 
 
 
-li {
-    padding: 15px;
-    padding-right: 0;
-    margin: 5px 0 0 0;
-}
-
 .cabecera {
     display: flex;
     justify-content: space-between;

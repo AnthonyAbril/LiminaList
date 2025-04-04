@@ -18,7 +18,24 @@ export class ListaComponent {
         {
           nombre: 'Subtarea 1',
           progreso: '2/2',
-          subtareas: []
+          subtareas: [
+            {
+              nombre: 'sexo 1',
+              progreso: '2/2',
+              subtareas: []
+            },
+            {
+              nombre: 'sexo gay',
+              progreso: '2/2',
+              subtareas: [
+                {
+                  nombre: 'sexo anal',
+                  progreso: '2/2',
+                  subtareas: []
+                }
+              ]
+            }
+          ]
         },
         {
           nombre: 'Subtarea 2',
@@ -41,8 +58,18 @@ export class ListaComponent {
                       nombre: 'Subtarea 3',
                       progreso: '2/2',
                       subtareas: []
+                    },
+                    {
+                      nombre: 'Subtarea 3',
+                      progreso: '2/2',
+                      subtareas: []
                     }
                   ]
+                },
+                {
+                  nombre: 'Subtarea 3',
+                  progreso: '2/2',
+                  subtareas: []
                 }
               ]
             }

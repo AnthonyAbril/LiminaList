@@ -7,7 +7,7 @@ ul{
 }
 
 .tarea li {
-    padding: 15px;
+    padding: 5px;
     padding-right: 0;
     margin: 5px 0 0 0;
 }
@@ -18,13 +18,10 @@ ul{
 }
 
 
-ul > li {
+li {
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
-}
-
-li > div:first-child {
-    padding-right: 15px;
+    margin: 5px 0 0 0;
 }
 
 /* Botón (vacío por ahora, para futuros estilos) */
@@ -33,14 +30,22 @@ li > div:first-child {
 }
 
 .color-0 {
-    background-color: #FF9E16; /* Color 0 */
+    background-color: #ffca81; /* Color 0 */
+    /*background-color: #81e2ff; /* Color 0 */
   }
   
   .color-1 {
-    background-color: #ffba5a; /* Color 1 */
+    background-color: #FF9E16; /* Color 1 */
+    /*background-color: #16b5ff; /* Color 1 */
   }
   
   .color-2 {
-    background-color: #ffca81; /* Color 2 */
+    background-color: #ffba5a; /* Color 2 */
+    /*background-color: #5abdff; /* Color 2 */
   }
   
+  /* Anchura de tareas */
+  div {
+    padding: 8px;
+    padding-right: 0;
+  }

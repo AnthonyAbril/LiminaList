@@ -2,18 +2,18 @@
 
 <div class="lista">
     <ul>
-        <li *ngFor="let tarea of tareas">
-            <app-tarea 
-            [nombre]="tarea.nombre" 
-            [progreso]="tarea.progreso" 
-            [subtareas]="tarea.subtareas" 
+        <app-tarea *ngFor="let tarea of tareas"
+            [nombre]="tarea.nombre"
+            [progreso]="tarea.progreso"
+            [subtareas]="tarea.subtareas"
             [nivel]="0">
-            </app-tarea>
-        </li>
+        </app-tarea>
     </ul>
 </div>
   
+<!-- <app-tareas id='2435B' ruta='Lista/Tarea/Subtarea'></app-tareas> -->
 
+<!--
 <div class="lista">
     <ul>
       <li>
@@ -25,7 +25,6 @@
         <div class="subtareas">
             <ul>
                 <li>
-                    <!-- <app-tareas id='2435B' ruta='Lista/Tarea/Subtarea'></app-tareas> -->
                     <div class="cabecera">
                         <div class="boton"></div>
                         <div>Subtarea 1</div>
@@ -72,3 +71,4 @@
     </ul>
   </div>
   
+-->

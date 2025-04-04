@@ -1,20 +1,21 @@
-<div class="tarea">
+<li [class]="getClasePorNivel()">
+  <div class="tarea">
     <div class="cabecera">
-      <div class="boton"></div>
+      <div class="boton" (click)="checkTerminada()"></div> <!-- Opcional, para probar -->
       <div>{{ nombre }}</div>
-      <div>{{ progreso }}</div>
+      <div>{{ getProgreso() }}</div>
     </div>
     <div *ngIf="subtareas.length > 0" class="subtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
-          <app-tarea 
-            [nombre]="subtarea.nombre" 
-            [progreso]="subtarea.progreso" 
-            [subtareas]="subtarea.subtareas" 
-            [nivel]="nivel + 1">
+          <app-tarea
+            [nombre]="subtarea.nombre"
+            [subtareas]="subtarea.subtareas"
+            [nivel]="nivel + 1"
+            [progreso]="subtarea.progreso">
           </app-tarea>
         </li>
       </ul>
     </div>
   </div>
-  
+</li>
