@@ -1,3 +1,7 @@
+*{
+    font-size: 1em;
+}
+
 li{
     list-style: none;
 }
@@ -15,6 +19,7 @@ ul{
 .cabecera {
     display: flex;
     justify-content: space-between;
+    padding-right: 10px;
 }
 
 
