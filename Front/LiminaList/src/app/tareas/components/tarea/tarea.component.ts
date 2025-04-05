@@ -10,6 +10,7 @@ export class TareaComponent {
   @Input() nombre!: string;
   @Input() subtareas: any[] = [];
   @Input() nivel: number = 0;
+  //@Input() progreso: number = 0;
 
   // Estados posibles
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
