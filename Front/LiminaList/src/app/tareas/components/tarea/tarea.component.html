@@ -7,12 +7,9 @@
        class="estado-boton"
        [class]="getClasePorEstado()"></button>
         <div class="nombre">{{ nombre }}</div>
-        <div class="progreso">{{ getProgreso() }} - {{ estados[estadoActual] }}
-          <div class="boton-agregar">
-            <button
-            (click)="agregarSubtarea()">+</button>
-          </div>
-        </div>
+        <div class="progreso">{{ getProgreso() }} - {{ estados[estadoActual] }}<button
+          class="boton-agregar"
+          (click)="agregarSubtarea()">+</button></div>
     </div>
     <div *ngIf="subtareas.length > 0" class="subtareas">
       <ul>

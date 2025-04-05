@@ -82,37 +82,32 @@ li {
   /* Botón + para añadir subtareas */
 .boton-agregar {
   position: absolute;
-  right: 0;
+  right: -80px;
   top: 0%;
   width: 80px;
   height: 80px;
 
-  padding: 0;
-}
-
-.boton-agregar > button {
-  border-radius: 50%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  font-size: 1.2em;
-  cursor: pointer;
-  
-  position: absolute;
-  right: -80px;
   border: none;
-  width: 80px;
-  height: 80px;
   border-radius: 50%;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   background-color: #ffffff;
   color: rgb(0, 0, 0);
-  transition: right 0.3s ease-in-out; /* Animación suave */
+  font-size: 1.2em;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  transition: right 0.2s ease-in-out; /* Animación suave */
+
 }
 
 /* Mostrar el botón al hacer hover */
-.boton-agregar:hover > button  {
+.progreso:hover .boton-agregar {
   right: 0; /* Se desplaza a la derecha cuando se detecta hover */
+}
+
+.boton-agregar:hover {
+  background-color: grey;
+  color: white;
 }
 
 /* Contenedor de la tarea para detectar hover */
