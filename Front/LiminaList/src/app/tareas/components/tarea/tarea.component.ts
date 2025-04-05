@@ -8,17 +8,17 @@ import { Component, Input } from '@angular/core';
 })
 export class TareaComponent {
   @Input() nombre!: string;
-  @Input() progreso!: string;
   @Input() subtareas: any[] = [];
   @Input() nivel: number = 0;
-  terminado: boolean = false; // Estado de la tarea actual
 
-  // Método para calcular la clase del color
-  getClasePorNivel(): string {
-    const colorIndex = this.nivel % 3; // Ciclar entre 0, 1 y 2
-    return `color-${colorIndex}`;
+  // Estados posibles
+  estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
+  estadoActual: number = 0; // Índice del estado actual
+
+  // Método para cambiar al siguiente estado
+  cambiarEstado(): void {
+    this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
-  
 
   // Método para calcular el progreso de las subtareas
   getProgreso(): string {
@@ -27,10 +27,14 @@ export class TareaComponent {
     return `${completadas}/${totalSubtareas}`;
   }
 
-  // Método para verificar si la tarea está completamente terminada
-  checkTerminada(): void {
-    this.terminado = this.subtareas.length > 0 && this.subtareas.every(sub => sub.terminado);
+  // Método para obtener la clase CSS según el estado
+  getClasePorEstado(): string {
+    return `estado-${this.estadoActual}`;
   }
 
+  // Método para calcular la clase del color según el nivel
+  getClasePorNivel(): string {
+    const colorIndex = this.nivel % 3;
+    return `color-${colorIndex}`;
+  }
 }
-

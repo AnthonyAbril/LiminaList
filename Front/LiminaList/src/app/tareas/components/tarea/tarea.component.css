@@ -54,3 +54,22 @@ li {
     padding: 8px;
     padding-right: 0;
   }
+
+  
+  
+/* Botón de estado */
+.estado-boton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  /* Estilos dinámicos según estado */
+  .estado-0 { background-color: white; }       /* No hecha: vacío */
+  .estado-1 { background-color: orange; }     /* En proceso */
+  .estado-2 { background-color: lightblue; }  /* Casi terminada */
+  .estado-3 { background-color: green; }      /* Hecha */
+  
