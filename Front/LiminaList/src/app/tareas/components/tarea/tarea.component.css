@@ -1,5 +1,8 @@
 *{
     font-size: 1em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 li{
@@ -11,15 +14,16 @@ ul{
 }
 
 .tarea li {
-    padding: 5px;
     padding-right: 0;
-    margin: 5px 0 0 0;
+    margin: 2vw 0 0 0;
+    margin-top: 1vh;
 }
 
 .cabecera {
     display: flex;
     justify-content: space-between;
     padding-right: 10px;
+    height: 40px;
 }
 
 
@@ -51,7 +55,7 @@ li {
   
   /* Anchura de tareas */
   div {
-    padding: 8px;
+    padding: 10px;
     padding-right: 0;
   }
 
@@ -73,3 +77,49 @@ li {
   .estado-2 { background-color: lightblue; }  /* Casi terminada */
   .estado-3 { background-color: green; }      /* Hecha */
   
+
+
+  /* Botón + para añadir subtareas */
+.boton-agregar {
+  position: absolute;
+  right: 0;
+  top: 0%;
+  width: 80px;
+  height: 80px;
+
+  padding: 0;
+}
+
+.boton-agregar > button {
+  border-radius: 50%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-size: 1.2em;
+  cursor: pointer;
+  
+  position: absolute;
+  right: -80px;
+  border: none;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  transition: right 0.3s ease-in-out; /* Animación suave */
+}
+
+/* Mostrar el botón al hacer hover */
+.boton-agregar:hover > button  {
+  right: 0; /* Se desplaza a la derecha cuando se detecta hover */
+}
+
+/* Contenedor de la tarea para detectar hover */
+.tarea {
+  position: relative;
+}
+
+.cabecera{
+
+}

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 
 @Component({
   selector: 'app-tarea',
@@ -15,6 +15,18 @@ export class TareaComponent {
   // Estados posibles
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
   estadoActual: number = 0; // Índice del estado actual
+  mostrarBoton: boolean = false;
+
+  // Mostrar el botón al pasar el ratón por encima de la tarea
+  @HostListener('mouseenter') onMouseEnter() {
+    this.mostrarBoton = true;
+  }
+
+  // Ocultar el botón al retirar el ratón de la tarea
+  @HostListener('mouseleave') onMouseLeave() {
+    this.mostrarBoton = false;
+  }
+
 
   // Método para cambiar al siguiente estado
   cambiarEstado(): void {
@@ -38,4 +50,15 @@ export class TareaComponent {
     const colorIndex = this.nivel % 3;
     return `color-${colorIndex}`;
   }
+
+  // Método para añadir una subtarea
+  agregarSubtarea(): void {
+    const nuevaSubtarea = {
+      nombre: `Nueva subtarea ${this.subtareas.length + 1}`,
+      subtareas: [],
+      terminado: false
+    };
+    this.subtareas.push(nuevaSubtarea);
+  }
+
 }
