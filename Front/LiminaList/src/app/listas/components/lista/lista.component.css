@@ -17,7 +17,19 @@
     background: #ffca81;
 }
 
+*{
+    list-style: none;
+}
 
+.boton-agregar{
+    width: 40px;
+    height: 40px;
+    background-color: red;
+    
+    border-top-left-radius: 52px;
+    border-top-right-radius: 52px;
+    margin: 5px 0 0 0;
+}
 
 
 .cabecera {
