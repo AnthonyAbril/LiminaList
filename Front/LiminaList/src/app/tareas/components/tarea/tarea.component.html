@@ -1,23 +1,31 @@
 <li [class]="getClasePorNivel()">
   <div class="tarea">
     <div class="cabecera">
-      <!-- Botón personalizado para cambiar de estado -->
-       <button
-       (click)="cambiarEstado()"
-       class="estado-boton"
-       [class]="getClasePorEstado()"></button>
-        <div class="nombre">{{ nombre }}</div>
-        <div class="progreso">{{ getProgreso() }} - {{ estados[estadoActual] }}<button
-          class="boton-agregar"
-          (click)="agregarSubtarea()">+</button></div>
+      <!-- Botón personalizado para cambiar el estado -->
+      <button 
+        (click)="cambiarEstado()" 
+        class="estado-boton" 
+        [class]="getClasePorEstado()">
+      </button>
+      <div class="nombre">{{ nombre }}</div>
+      <div class="progreso">
+        {{ getProgreso() }} - {{ estados[estadoActual] }}
+        <!-- Botón para añadir subtareas o eliminar tarea -->
+        <button 
+          class="boton-agregar" 
+          (click)="agregarSubtarea()" 
+          (contextmenu)="eliminarTarea(); $event.preventDefault()">+</button>
+      </div>
     </div>
     <div *ngIf="subtareas.length > 0" class="subtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
           <app-tarea
-          [nombre]="subtarea.nombre"
-          [subtareas]="subtarea.subtareas"
-          [nivel]="nivel + 1"></app-tarea>
+            [nombre]="subtarea.nombre"
+            [subtareas]="subtarea.subtareas"
+            [nivel]="nivel + 1"
+            (eliminar)="subtareas.splice(subtareas.indexOf(subtarea), 1)">
+          </app-tarea>
         </li>
       </ul>
     </div>

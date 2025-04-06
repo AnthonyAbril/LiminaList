@@ -1,14 +1,15 @@
 <!--<div id="tareas"></div>-->
 
-<div class="lista">
-    <ul>
-        <app-tarea *ngFor="let tarea of tareas"
-            [nombre]="tarea.nombre"
-            [subtareas]="tarea.subtareas"
-            [nivel]="0">
-        </app-tarea>
-    </ul>
-</div>
+<ul>
+    <li *ngFor="let tarea of tareas">
+      <app-tarea 
+        [nombre]="tarea.nombre" 
+        [subtareas]="tarea.subtareas" 
+        (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)">
+      </app-tarea>
+    </li>
+  </ul>
+  
   
 <!-- <app-tareas id='2435B' ruta='Lista/Tarea/Subtarea'></app-tareas> -->
 

@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-tarea',
@@ -10,23 +10,12 @@ export class TareaComponent {
   @Input() nombre!: string;
   @Input() subtareas: any[] = [];
   @Input() nivel: number = 0;
+  @Output() eliminar = new EventEmitter<void>(); // Evento para notificar la eliminación
   //@Input() progreso: number = 0;
 
   // Estados posibles
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
   estadoActual: number = 0; // Índice del estado actual
-  mostrarBoton: boolean = false;
-
-  // Mostrar el botón al pasar el ratón por encima de la tarea
-  @HostListener('mouseenter') onMouseEnter() {
-    this.mostrarBoton = true;
-  }
-
-  // Ocultar el botón al retirar el ratón de la tarea
-  @HostListener('mouseleave') onMouseLeave() {
-    this.mostrarBoton = false;
-  }
-
 
   // Método para cambiar al siguiente estado
   cambiarEstado(): void {
@@ -51,14 +40,19 @@ export class TareaComponent {
     return `color-${colorIndex}`;
   }
 
-  // Método para añadir una subtarea
+  // Método para añadir una nueva subtarea
   agregarSubtarea(): void {
     const nuevaSubtarea = {
-      nombre: `Nueva subtarea ${this.subtareas.length + 1}`,
-      subtareas: [],
-      terminado: false
+      nombre: `Subtarea ${this.subtareas.length + 1}`, // Nombre dinámico
+      subtareas: [], // Las subtareas empiezan vacías
+      terminado: false // Estado inicial
     };
-    this.subtareas.push(nuevaSubtarea);
+    this.subtareas.push(nuevaSubtarea); // Añade la nueva subtarea al array
   }
 
+  // Método para eliminar la tarea
+  eliminarTarea(): void {
+    this.eliminar.emit(); // Emite un evento para notificar al componente padre
+  }
+  
 }
