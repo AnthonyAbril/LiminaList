@@ -115,3 +115,14 @@ li {
 .cabecera{
 
 }
+
+.subtareas {
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.subtareas.ng-hide {
+  max-height: 0;
+  opacity: 0;
+}
+

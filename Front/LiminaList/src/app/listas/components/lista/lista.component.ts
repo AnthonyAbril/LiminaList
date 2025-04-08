@@ -14,11 +14,6 @@ export class ListaComponent {
     {
       nombre: 'Estudiar PAU',
       progreso: '',
-      subtareas: []
-    },
-    {
-      nombre: 'Estudiar PAU',
-      progreso: '',
       subtareas: [
         {
           nombre: 'Estudiar Matematicas',

@@ -1,6 +1,6 @@
 <li [class]="getClasePorNivel()">
   <div class="tarea">
-    <div class="cabecera">
+    <div class="cabecera" (click)="toggleSubtareas()">
       <!-- Botón personalizado para cambiar el estado -->
       <button 
         (click)="cambiarEstado()" 
@@ -17,7 +17,8 @@
           (contextmenu)="eliminarTarea(); $event.preventDefault()">+</button>
       </div>
     </div>
-    <div *ngIf="subtareas.length > 0" class="subtareas">
+    <!-- Subtareas visibles solo si mostrarSubtareas es verdadero -->
+    <div *ngIf="(subtareas.length > 0) && mostrarSubtareas" class="subtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
           <app-tarea

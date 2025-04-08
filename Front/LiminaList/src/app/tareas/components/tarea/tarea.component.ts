@@ -16,7 +16,13 @@ export class TareaComponent {
   // Estados posibles
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
   estadoActual: number = 0; // Índice del estado actual
+  mostrarSubtareas: boolean = true; // Controla la visibilidad de las subtareas
 
+  // Alternar visibilidad de las subtareas
+  toggleSubtareas(): void {
+    this.mostrarSubtareas = !this.mostrarSubtareas;
+  }
+  
   // Método para cambiar al siguiente estado
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
@@ -54,5 +60,6 @@ export class TareaComponent {
   eliminarTarea(): void {
     this.eliminar.emit(); // Emite un evento para notificar al componente padre
   }
+  
   
 }
