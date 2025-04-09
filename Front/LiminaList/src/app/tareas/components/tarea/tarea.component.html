@@ -9,17 +9,15 @@
       ></button>
       
       <div class="contenedor-nombre">
-        <!-- Elemento para mostrar el nombre y abrir el modo de edición -->
         <div 
           *ngIf="!editandoNombre" 
           class="nombre" 
           (click)="toggleSubtareas()" 
-          (contextmenu)="comenzarEdicion($event)">
+          (contextmenu)="comenzarEdicion($event); $event.stopPropagation()"> <!-- Añade stopPropagation aquí -->
           {{ nombre }}
           <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
         </div>
-      
-        <!-- Mantén el input en el DOM pero ocúltalo con [hidden] -->
+        
         <input
           #nombreInput
           type="text"

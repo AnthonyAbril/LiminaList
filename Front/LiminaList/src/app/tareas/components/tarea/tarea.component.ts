@@ -45,14 +45,12 @@ export class TareaComponent {
   comenzarEdicion(event: MouseEvent): void {
     if (event.button === 2) { // Solo clic derecho
       event.preventDefault();
+      event.stopPropagation(); // Esto evita que el evento se propague
       this.nombreTemporal = this.nombre;
       this.editandoNombre = true;
   
       setTimeout(() => {
         this.nombreInput.nativeElement.focus();
-        // Coloca el cursor al final del texto
-        const length = this.nombreInput.nativeElement.value.length;
-        this.nombreInput.nativeElement.setSelectionRange(length, length);
       }, 0);
     }
   }
