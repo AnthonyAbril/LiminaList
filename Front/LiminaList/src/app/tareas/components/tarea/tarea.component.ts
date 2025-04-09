@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-tarea',
@@ -16,23 +16,11 @@ export class TareaComponent {
   // Estados posibles
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
   estadoActual: number = 0; // Índice del estado actual
+  altura: number = 0; // Guardamos la altura de la tarea
   mostrarSubtareas: boolean = true; // Controla la visibilidad de las subtareas
 
-  // Alternar visibilidad de las subtareas
-  toggleSubtareas(): void {
-    this.mostrarSubtareas = !this.mostrarSubtareas;
-  
-    // Plegar todas las subtareas al plegar esta tarea
-    if (!this.mostrarSubtareas) {
-      this.subtareas.forEach((sub: any) => {
-        if (sub instanceof TareaComponent) {
-          sub.mostrarSubtareas = false; // Plegar en cascada
-        }
-      });
-    }
-  }
-  
-  
+  @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
+  constructor(private cdr: ChangeDetectorRef) {}
   
   // Método para cambiar al siguiente estado
   cambiarEstado(): void {
@@ -56,21 +44,63 @@ export class TareaComponent {
     const colorIndex = this.nivel % 3;
     return `color-${colorIndex}`;
   }
-
-  // Método para añadir una nueva subtarea
-  agregarSubtarea(): void {
-    const nuevaSubtarea = {
-      nombre: `Subtarea ${this.subtareas.length + 1}`, // Nombre dinámico
-      subtareas: [], // Las subtareas empiezan vacías
-      terminado: false // Estado inicial
-    };
-    this.subtareas.push(nuevaSubtarea); // Añade la nueva subtarea al array
+  
+  incrementarTamanoPadre(): void {
+    const subtareasElement = this.subtareasContainer.nativeElement;
+    let nuevoMax = subtareasElement.scrollHeight + 50; // Añadir espacio para nuevas subtareas
+    subtareasElement.style.maxHeight = nuevoMax + 'px';
+    this.cdr.detectChanges();
   }
 
-  // Método para eliminar la tarea
-  eliminarTarea(): void {
-    this.eliminar.emit(); // Emite un evento para notificar al componente padre
+
+  eliminarTarea(){
+    this.eliminar.emit();
+  }
+
+
+  // Método para alternar visibilidad
+  toggleSubtareas(): void {
+    const subtareasElement = this.subtareasContainer.nativeElement;
+  
+    if (!this.mostrarSubtareas) {
+      // Desplegar: Animar altura al tamaño del contenido
+      subtareasElement.style.height = subtareasElement.scrollHeight + 'px';
+      this.mostrarSubtareas = true;
+  
+      setTimeout(() => {
+        subtareasElement.style.height = 'auto'; // Evitar que quede fijo
+      }, 300); // Después de la animación
+    } else {
+      // Plegar: Cambiar altura a 0
+      subtareasElement.style.height = subtareasElement.scrollHeight + 'px'; // Altura actual
+      this.mostrarSubtareas = false;
+  
+      setTimeout(() => {
+        subtareasElement.style.height = '0';
+      }, 50); // Iniciar animación
+    }
   }
   
+  
+
+  // Agregar subtarea
+  agregarSubtarea(): void {
+    const nuevaSubtarea = {
+      nombre: `Subtarea ${this.subtareas.length + 1}`,
+      subtareas: [],
+      terminado: false,
+      mostrarSubtareas: true
+    };
+    this.subtareas.push(nuevaSubtarea);
+  
+    setTimeout(() => {
+      // Asegurar que la clase desplegado se aplique después de agregar la subtarea
+      if (this.mostrarSubtareas) {
+        this.subtareasContainer.nativeElement.classList.add('desplegado');
+      }
+      this.cdr.detectChanges();
+    }, 50);
+  }
+
   
 }

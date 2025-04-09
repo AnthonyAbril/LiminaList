@@ -18,7 +18,7 @@
       </div>
     </div>
     <!-- Subtareas visibles solo si mostrarSubtareas es verdadero -->
-    <div *ngIf="subtareas.length > 0" class="subtareas" [class.desplegado]="mostrarSubtareas">
+    <div *ngIf="subtareas.length > 0" class="subtareas" #subtareasContainer>
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
           <app-tarea
@@ -29,6 +29,6 @@
           </app-tarea>
         </li>
       </ul>
-    </div>
+    </div>    
   </div>
 </li>
