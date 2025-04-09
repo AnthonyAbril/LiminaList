@@ -85,45 +85,6 @@ li {
   align-items: center;
 }
 
-.boton-agregar, .boton-eliminar {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: black;
-  font-size: 1.2em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-}
-
-.cabecera:hover .boton-agregar {
-  opacity: 1;
-}
-
-
-.boton-agregar:hover {
-  background-color: #555;
-  color: white;
-}
-
-.subtareas {
-  overflow: hidden;
-  height: 0;
-  transition: height 0.3s ease;
-  padding-left: 20px;
-}
-
-.subtareas > ul {
-  padding-left: 20px;
-}
-
-
-
 .boton-agregar {
   width: 32px;
   height: 32px;
@@ -154,4 +115,15 @@ li {
   transform: rotate(45deg);
   background-color: #f44336;
   color: white;
+}
+
+.subtareas {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+  padding-left: 20px;
+}
+
+.subtareas > ul {
+  padding-left: 20px;
 }

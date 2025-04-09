@@ -21,6 +21,7 @@ export class TareaComponent {
   @Input() nivel = 0;
   @Output() eliminar = new EventEmitter<void>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
+  @ViewChild('botonAgregar') botonAgregar!: ElementRef;
 
   estadoActual = 0;
   mostrarSubtareas = false;
@@ -77,13 +78,11 @@ export class TareaComponent {
     event.preventDefault();
     this.girarBoton = true;
     
-    // Esperar un momento para que se complete la animación
     setTimeout(() => {
       this.eliminar.emit();
       this.girarBoton = false;
     }, 300);
   }
-
 
   eliminarSubtarea(index: number): void {
     this.subtareas.splice(index, 1);
@@ -94,6 +93,14 @@ export class TareaComponent {
     if (!this.subtareasContainer || this.subtareas.length === 0) return;
     
     const element = this.subtareasContainer.nativeElement;
+    
+    // Para la animación de plegado
+    if (!expandir) {
+      element.style.height = `${element.scrollHeight}px`;
+      // Forzar recálculo del layout
+      element.offsetHeight; // eslint-disable-line no-unused-expressions
+    }
+    
     element.style.height = expandir ? `${element.scrollHeight}px` : '0';
     
     if (expandir) {
