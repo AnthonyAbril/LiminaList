@@ -21,28 +21,25 @@ export class TareaComponent {
   @Input() nivel = 0;
   @Output() eliminar = new EventEmitter<void>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
-  @ViewChild('botonAgregar') botonAgregar!: ElementRef;
 
   estadoActual = 0;
   mostrarSubtareas = false;
-  girarBoton = false;
+  girando = false;
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
-
-  constructor(private cdr: ChangeDetectorRef) {}
 
   @HostListener('contextmenu', ['$event'])
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
   }
+
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
 
   get progreso(): string {
-    if (this.subtareas.length === 0) return '';
-    const completadas = this.subtareas.filter(sub => sub.terminado).length;
-    return `${completadas}/${this.subtareas.length}`;
+    return this.subtareas.length === 0 ? '' : 
+      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
   }
 
   get claseEstado(): string {
@@ -56,7 +53,7 @@ export class TareaComponent {
   toggleSubtareas(): void {
     if (this.subtareas.length > 0) {
       this.mostrarSubtareas = !this.mostrarSubtareas;
-      this.ajustarAltura();
+      this.ajustarAltura(this.mostrarSubtareas);
     }
   }
 
@@ -68,77 +65,98 @@ export class TareaComponent {
     };
     
     const eraVacia = this.subtareas.length === 0;
-    this.subtareas.push(nuevaSubtarea);
+    this.subtareas = [...this.subtareas, nuevaSubtarea];
     
     if (eraVacia) {
+      // Cambio clave: Abrir inmediatamente sin esperar el siguiente ciclo
       this.mostrarSubtareas = true;
-      // Esperar un tick para que Angular actualice la vista
-      setTimeout(() => this.ajustarAltura(true), 0);
+      this.ajustarAltura(true, true); // Sin delay para el primer ajuste
     } else if (!this.mostrarSubtareas) {
       this.mostrarSubtareas = true;
       this.ajustarAltura(true);
+    } else {
+      this.animarCambioAltura();
     }
-    
-    this.cdr.detectChanges();
   }
 
-  girandoParaEliminar = false;
-  girando = false;
-
-  onRightMouseDown(): void {
-    this.girando = true;
+  onRightMouseDown(event: MouseEvent): void {
+    if (event.button === 2) {
+      event.preventDefault();
+      this.girando = true;
+    }
   }
 
-  onRightMouseUp(): void {
-    if (this.girando) {
+  onRightMouseUp(event: MouseEvent): void {
+    if (event.button === 2 && this.girando) {
+      event.preventDefault();
       this.eliminar.emit();
-    }
-    this.girando = false;
-  }
-
-  @HostListener('document:mouseup')
-  onMouseUp() {
-    if (this.girandoParaEliminar) {
-      this.girandoParaEliminar = false;
-      this.girarBoton = false;
-    }
-  }
-
-  eliminarTarea(event: MouseEvent): void {
-    event.preventDefault();
-    this.girandoParaEliminar = true;
-    this.girarBoton = true;
-  }
-
-  confirmarEliminar(): void {
-    if (this.girandoParaEliminar) {
-      this.eliminar.emit();
-      this.girandoParaEliminar = false;
-      this.girarBoton = false;
+      this.girando = false;
     }
   }
 
   eliminarSubtarea(index: number): void {
-    this.subtareas.splice(index, 1);
-    this.ajustarAltura();
+    this.subtareas = this.subtareas.filter((_, i) => i !== index);
+    
+    if (this.subtareas.length === 0) {
+      this.mostrarSubtareas = false;
+      this.ajustarAltura(true);
+    } else {
+      this.animarCambioAltura();
+    }
   }
 
-  private ajustarAltura(expandir = this.mostrarSubtareas): void {
-    if (!this.subtareasContainer || this.subtareas.length === 0) return;
+  private animarCambioAltura(): void {
+    const element = this.subtareasContainer?.nativeElement;
+    if (!element || !this.mostrarSubtareas) return;
+
+    element.style.transition = 'none';
+    const startHeight = element.scrollHeight;
+    element.style.height = `${startHeight}px`;
     
-    const element = this.subtareasContainer.nativeElement;
-    
-    // Para la animación de plegado
-    if (!expandir) {
+    setTimeout(() => {
+      element.style.transition = 'height 0.3s ease';
       element.style.height = `${element.scrollHeight}px`;
-      // Forzar recálculo del layout
-      element.offsetHeight; // eslint-disable-line no-unused-expressions
-    }
-    
-    element.style.height = expandir ? `${element.scrollHeight}px` : '0';
-    
+      
+      setTimeout(() => {
+        element.style.transition = '';
+        element.style.height = 'auto';
+      }, 300);
+    }, 10);
+  }
+
+  private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
+    const element = this.subtareasContainer?.nativeElement;
+    if (!element) return;
+
     if (expandir) {
-      setTimeout(() => element.style.height = 'auto', 300);
+      element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
+      element.style.height = 'auto';
+      const height = element.scrollHeight;
+      element.style.height = '0';
+      
+      const delay = sinDelay ? 0 : 10;
+      
+      setTimeout(() => {
+        element.style.height = `${height}px`;
+        
+        if (!sinDelay) {
+          setTimeout(() => {
+            element.style.transition = '';
+            element.style.height = 'auto';
+          }, 300);
+        } else {
+          element.style.transition = '';
+          element.style.height = 'auto';
+        }
+      }, delay);
+    } else {
+      element.style.transition = 'none';
+      element.style.height = `${element.scrollHeight}px`;
+      
+      setTimeout(() => {
+        element.style.transition = 'height 0.3s ease';
+        element.style.height = '0';
+      }, 10);
     }
   }
 

@@ -94,13 +94,12 @@ li {
   color: black;
   font-size: 1.2em;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transform: rotate(0deg);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: all 0.3s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
 .cabecera:hover .boton-agregar {
@@ -120,9 +119,15 @@ li {
 
 .subtareas {
   overflow: hidden;
-  height: 0;
+  height: auto;
   transition: height 0.3s ease;
   padding-left: 20px;
+}
+
+.subtareas.cerrado {
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .subtareas > ul {

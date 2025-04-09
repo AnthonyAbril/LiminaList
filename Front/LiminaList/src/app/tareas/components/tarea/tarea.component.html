@@ -15,20 +15,18 @@
       
       <div class="acciones-tarea">
         <button 
-        #botonAgregar
-        class="boton-agregar" 
-        [class.girando]="girando"
-        (click)="agregarSubtarea()" 
-        (mousedown)="$event.button === 2 && onRightMouseDown()"
-        (mouseup)="$event.button === 2 && onRightMouseUp()"
-        (mouseleave)="girando = false"
-        (contextmenu)="$event.preventDefault()"
-        aria-label="Añadir subtarea"
+          class="boton-agregar" 
+          [class.girando]="girando"
+          (click)="agregarSubtarea()" 
+          (mousedown)="onRightMouseDown($event)"
+          (mouseup)="onRightMouseUp($event)"
+          (mouseleave)="girando = false"
+          aria-label="Añadir subtarea"
         >+</button>
       </div>
     </div>
     
-    <div *ngIf="subtareas.length > 0" class="subtareas" #subtareasContainer>
+    <div *ngIf="subtareas.length > 0" class="subtareas" #subtareasContainer [class.cerrado]="!mostrarSubtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas; trackBy: trackByTarea; let i = index">
           <app-tarea
