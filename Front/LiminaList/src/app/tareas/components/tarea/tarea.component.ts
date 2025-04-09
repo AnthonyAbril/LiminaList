@@ -63,10 +63,14 @@ export class TareaComponent {
       terminado: false
     };
     
+    const eraVacia = this.subtareas.length === 0;
     this.subtareas.push(nuevaSubtarea);
     
-    // Abrir la tarea si está cerrada
-    if (!this.mostrarSubtareas) {
+    if (eraVacia) {
+      this.mostrarSubtareas = true;
+      // Esperar un tick para que Angular actualice la vista
+      setTimeout(() => this.ajustarAltura(true), 0);
+    } else if (!this.mostrarSubtareas) {
       this.mostrarSubtareas = true;
       this.ajustarAltura(true);
     }
