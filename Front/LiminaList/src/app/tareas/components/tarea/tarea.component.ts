@@ -21,7 +21,17 @@ export class TareaComponent {
   // Alternar visibilidad de las subtareas
   toggleSubtareas(): void {
     this.mostrarSubtareas = !this.mostrarSubtareas;
+  
+    // Plegar todas las subtareas si se pliega la tarea actual
+    if (!this.mostrarSubtareas) {
+      this.subtareas.forEach((sub) => {
+        if (sub instanceof TareaComponent) {
+          sub.mostrarSubtareas = false; // Cascada para subtareas
+        }
+      });
+    }
   }
+  
   
   // Método para cambiar al siguiente estado
   cambiarEstado(): void {

@@ -1,13 +1,13 @@
 <li [class]="getClasePorNivel()">
   <div class="tarea">
-    <div class="cabecera" (click)="toggleSubtareas()">
+    <div class="cabecera">
       <!-- Botón personalizado para cambiar el estado -->
       <button 
         (click)="cambiarEstado()" 
         class="estado-boton" 
         [class]="getClasePorEstado()">
       </button>
-      <div class="nombre">{{ nombre }}</div>
+      <div class="nombre" (click)="toggleSubtareas()">{{ nombre }}</div>
       <div class="progreso">
         {{ getProgreso() }} - {{ estados[estadoActual] }}
         <!-- Botón para añadir subtareas o eliminar tarea -->
@@ -18,7 +18,7 @@
       </div>
     </div>
     <!-- Subtareas visibles solo si mostrarSubtareas es verdadero -->
-    <div *ngIf="(subtareas.length > 0) && mostrarSubtareas" class="subtareas">
+    <div *ngIf="subtareas.length > 0" class="subtareas" [ngStyle]="{ 'max-height': mostrarSubtareas ? 'none' : '0', 'opacity': mostrarSubtareas ? '1' : '0' }">
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
           <app-tarea
