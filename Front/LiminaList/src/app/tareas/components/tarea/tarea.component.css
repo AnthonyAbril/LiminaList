@@ -116,8 +116,25 @@ li {
 
 }
 
+
 .subtareas {
   overflow: hidden;
-  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Animación suave */
+  max-height: 0; /* Por defecto, plegado */
+  opacity: 0; /* dudoso, tal vez lo ponga como opcional */
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: 
+    padding-top 0.3s ease-in-out, 
+    padding-bottom 03s ease-in-out,
+    max-height 0.3s ease-in-out, 
+    opacity 0.3s ease-in-out; /* Animación */
 }
+
+.subtareas.desplegado {
+  max-height: 1000px; /* Un valor grande para cubrir todas las subtareas */
+  opacity: 1;
+  padding-top: 10px; /* posiblemente quitar */
+  padding-bottom: 10px;
+}
+
 

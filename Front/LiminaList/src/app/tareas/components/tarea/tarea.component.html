@@ -18,7 +18,7 @@
       </div>
     </div>
     <!-- Subtareas visibles solo si mostrarSubtareas es verdadero -->
-    <div *ngIf="subtareas.length > 0" class="subtareas" [ngStyle]="{ 'max-height': mostrarSubtareas ? 'none' : '0', 'opacity': mostrarSubtareas ? '1' : '0' }">
+    <div *ngIf="subtareas.length > 0" class="subtareas" [class.desplegado]="mostrarSubtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas" [class]="getClasePorNivel()">
           <app-tarea

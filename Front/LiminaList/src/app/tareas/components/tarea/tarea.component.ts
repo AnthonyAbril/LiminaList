@@ -22,15 +22,16 @@ export class TareaComponent {
   toggleSubtareas(): void {
     this.mostrarSubtareas = !this.mostrarSubtareas;
   
-    // Plegar todas las subtareas si se pliega la tarea actual
+    // Plegar todas las subtareas al plegar esta tarea
     if (!this.mostrarSubtareas) {
-      this.subtareas.forEach((sub) => {
+      this.subtareas.forEach((sub: any) => {
         if (sub instanceof TareaComponent) {
-          sub.mostrarSubtareas = false; // Cascada para subtareas
+          sub.mostrarSubtareas = false; // Plegar en cascada
         }
       });
     }
   }
+  
   
   
   // Método para cambiar al siguiente estado
