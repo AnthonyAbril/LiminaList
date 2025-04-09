@@ -20,17 +20,70 @@ export class TareaComponent {
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
   @Output() eliminar = new EventEmitter<void>();
+  @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
+  @ViewChild('nombreInput') nombreInput!: ElementRef;
 
   estadoActual = 0;
   mostrarSubtareas = false;
   girando = false;
+  editandoNombre = false;
+  nombreTemporal = '';
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
+
+  guardarNombre(): void {
+    if (this.nombreTemporal.trim() !== '') { // Validar que el nombre no sea vacío
+      this.actualizarNombre.emit(this.nombreTemporal);
+      this.nombre = this.nombreTemporal; // Actualizar el nombre actual
+    } else {
+      alert('El nombre no puede estar vacío'); // Mostrar un mensaje al usuario
+    }
+    this.editandoNombre = false;
+  }
+
+  comenzarEdicion(event: MouseEvent): void {
+    if (event.button === 2) { // Solo clic derecho
+      event.preventDefault();
+      this.nombreTemporal = this.nombre;
+      this.editandoNombre = true;
+  
+      setTimeout(() => {
+        this.nombreInput.nativeElement.focus();
+        // Coloca el cursor al final del texto
+        const length = this.nombreInput.nativeElement.value.length;
+        this.nombreInput.nativeElement.setSelectionRange(length, length);
+      }, 0);
+    }
+  }
+  
+  cancelarEdicion(): void {
+    this.editandoNombre = false;
+  }
+
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnter(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.guardarNombre();
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.cancelarEdicion();
+    }
+  }
+
+
+
 
   @HostListener('contextmenu', ['$event'])
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
+    this.comenzarEdicion(event); // Llama al método de edición
   }
 
   cambiarEstado(): void {

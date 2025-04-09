@@ -8,10 +8,29 @@
         [attr.aria-label]="'Estado actual: ' + estados[estadoActual]"
       ></button>
       
-      <div class="nombre" (click)="toggleSubtareas()">
-        {{ nombre }}
-        <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
+      <div class="contenedor-nombre">
+        <!-- Elemento para mostrar el nombre y abrir el modo de edición -->
+        <div 
+          *ngIf="!editandoNombre" 
+          class="nombre" 
+          (click)="toggleSubtareas()" 
+          (contextmenu)="comenzarEdicion($event)">
+          {{ nombre }}
+          <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
+        </div>
+      
+        <!-- Mantén el input en el DOM pero ocúltalo con [hidden] -->
+        <input
+          #nombreInput
+          type="text"
+          class="nombre-input"
+          [(ngModel)]="nombreTemporal"
+          [hidden]="!editandoNombre" 
+          (blur)="guardarNombre()"
+          (keydown.enter)="guardarNombre()"
+          (keydown.escape)="cancelarEdicion()" />
       </div>
+      
       
       <div class="acciones-tarea">
         <button 
