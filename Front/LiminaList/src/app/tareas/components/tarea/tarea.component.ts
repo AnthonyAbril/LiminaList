@@ -17,7 +17,7 @@ export class TareaComponent {
   estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
   estadoActual: number = 0; // Índice del estado actual
   altura: number = 0; // Guardamos la altura de la tarea
-  mostrarSubtareas: boolean = true; // Controla la visibilidad de las subtareas
+  mostrarSubtareas: boolean = false; // Controla la visibilidad de las subtareas
 
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   constructor(private cdr: ChangeDetectorRef) {}
@@ -57,30 +57,33 @@ export class TareaComponent {
     this.eliminar.emit();
   }
 
+  private ajustarAltura(element: HTMLElement, expandir: boolean): void {
+    element.style.height = expandir ? element.scrollHeight + 'px' : '0';
+  }
+  
 
   // Método para alternar visibilidad
   toggleSubtareas(): void {
     const subtareasElement = this.subtareasContainer.nativeElement;
   
     if (!this.mostrarSubtareas) {
-      // Desplegar: Animar altura al tamaño del contenido
+      // Desplegar subtareas con animación
       subtareasElement.style.height = subtareasElement.scrollHeight + 'px';
       this.mostrarSubtareas = true;
   
       setTimeout(() => {
-        subtareasElement.style.height = 'auto'; // Evitar que quede fijo
-      }, 300); // Después de la animación
+        subtareasElement.style.height = 'auto'; // Ajustar al contenido después de la animación
+      }, 300); // Duración de la transición
     } else {
-      // Plegar: Cambiar altura a 0
-      subtareasElement.style.height = subtareasElement.scrollHeight + 'px'; // Altura actual
+      // Plegar subtareas con animación
+      subtareasElement.style.height = subtareasElement.scrollHeight + 'px'; // Altura actual antes de plegar
       this.mostrarSubtareas = false;
   
       setTimeout(() => {
-        subtareasElement.style.height = '0';
-      }, 50); // Iniciar animación
+        subtareasElement.style.height = '0'; // Reducir completamente después de la animación
+      }, 50); // Inicia la transición
     }
   }
-  
   
 
   // Agregar subtarea

@@ -140,10 +140,17 @@ li {
 .subtareas {
   overflow: hidden;
   height: 0; /* Inicio oculto */
-  transition: height 0.3s ease-in-out; /* Animación suave */
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: 
+  padding-top 0.3s ease-in-out, 
+  padding-bottom 0.3s ease-in-out,
+  height 0.3s ease-in-out; /* Animación suave */
 }
 
 .subtareas.desplegado {
   height: auto; /* Se ajusta automáticamente al contenido */
+  padding-top: 10px; /* posiblemente quitar */
+  padding-bottom: 10px;
 }
 
