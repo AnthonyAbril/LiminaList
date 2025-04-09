@@ -35,7 +35,6 @@ export class TareaComponent {
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
   }
-  
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
