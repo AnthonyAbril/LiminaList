@@ -1,34 +1,39 @@
-<li [class]="getClasePorNivel()">
+<li [class]="claseNivel">
   <div class="tarea">
     <div class="cabecera">
-      <!-- Botón para cambiar el estado -->
       <button 
         (click)="cambiarEstado()" 
         class="estado-boton" 
-        [class]="getClasePorEstado()">
-      </button>
-      <!-- Nombre de la tarea, con toggle de subtareas -->
-      <div class="nombre" (click)="toggleSubtareas()">{{ nombre }}</div>
-      <!-- Progreso de subtareas -->
-      <div class="progreso">
-        {{ getProgreso() }} - {{ estados[estadoActual] }}
-        <!-- Botón para añadir subtareas -->
+        [class]="claseEstado"
+        [attr.aria-label]="'Estado actual: ' + estados[estadoActual]"
+      ></button>
+      
+      <div class="nombre" (click)="toggleSubtareas()">
+        {{ nombre }}
+        <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
+      </div>
+      
+      <div class="acciones-tarea">
         <button 
+          #botonAgregar
           class="boton-agregar" 
+          [class.girando]="girarBoton"
           (click)="agregarSubtarea()" 
-          (contextmenu)="eliminarTarea(); $event.preventDefault()">+</button>
+          (contextmenu)="eliminarTarea($event)"
+          aria-label="Añadir subtarea"
+        >+</button>
       </div>
     </div>
-    <!-- Subtareas -->
+    
     <div *ngIf="subtareas.length > 0" class="subtareas" #subtareasContainer>
       <ul>
-        <li *ngFor="let subtarea of subtareas; let i = index" [class]="getClasePorNivel()">
+        <li *ngFor="let subtarea of subtareas; trackBy: trackByTarea; let i = index">
           <app-tarea
             [nombre]="subtarea.nombre"
             [subtareas]="subtarea.subtareas"
             [nivel]="nivel + 1"
-            (eliminar)="eliminarSubtarea(i)">
-          </app-tarea>
+            (eliminar)="eliminarSubtarea(i)"
+          ></app-tarea>
         </li>
       </ul>
     </div>

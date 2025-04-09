@@ -1,156 +1,157 @@
-*{
-    font-size: 1em;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    list-style: none;
+:host {
+  display: block;
+  margin-bottom: 8px;
 }
 
-ul{
-    padding: 0;
+* {
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
 }
 
-.tarea li {
-    padding-right: 0;
-    margin: 2vw 0 0 0;
-    margin-top: 1vh;
+ul {
+  padding: 0;
 }
 
-.cabecera {
-    display: flex;
-    justify-content: space-between;
-    padding-right: 10px;
-    height: 40px;
-}
-
-
-li {
-    border-top-left-radius: 25px;
-    border-bottom-left-radius: 25px;
-    margin: 5px 0 0 0;
-}
-
-/* Botón (vacío por ahora, para futuros estilos) */
-.boton {
-    /* Puedes añadir estilos aquí si se requiere funcionalidad o diseño específico */
-}
-
-.color-0 {
-    background-color: #ffca81; /* Color 0 */
-    /*background-color: #81e2ff; /* Color 0 */
-  }
-  
-  .color-1 {
-    background-color: #FF9E16; /* Color 1 */
-    /*background-color: #16b5ff; /* Color 1 */
-  }
-  
-  .color-2 {
-    background-color: #ffba5a; /* Color 2 */
-    /*background-color: #5abdff; /* Color 2 */
-  }
-  
-  /* Anchura de tareas */
-  div {
-    padding: 10px;
-    padding-right: 0;
-  }
-
-  
-  
-/* Botón de estado */
-.estado-boton {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: inline-block;
-  }
-  
-  /* Estilos dinámicos según estado */
-  .estado-0 { background-color: white; }       /* No hecha: vacío */
-  .estado-1 { background-color: orange; }     /* En proceso */
-  .estado-2 { background-color: lightblue; }  /* Casi terminada */
-  .estado-3 { background-color: green; }      /* Hecha */
-  
-
-
-  /* Botón + para añadir subtareas */
-.boton-agregar {
-  position: absolute;
-  right: -80px;
-  top: 0%;
-  width: 80px;
-  height: 80px;
-
-  border: none;
-  border-radius: 50%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  font-size: 1.2em;
-  cursor: pointer;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-  transition: right 0.2s ease-in-out; /* Animación suave */
-
-}
-
-/* Mostrar el botón al hacer hover */
-.progreso:hover .boton-agregar {
-  right: 0; /* Se desplaza a la derecha cuando se detecta hover */
-}
-
-.boton-agregar:hover {
-  background-color: grey;
-  color: white;
-}
-
-/* Contenedor de la tarea para detectar hover */
 .tarea {
   position: relative;
 }
 
-.cabecera{
-
+.tarea li {
+  padding-right: 0;
+  margin: 10px 0 0 0;
 }
 
-
-.subtareass {
-  overflow: hidden;
-  max-height: 0; /* Por defecto, plegado */
-  opacity: 0; /* dudoso, tal vez lo ponga como opcional */
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: 
-    padding-top 0.3s ease-in-out, 
-    padding-bottom 0.3s ease-in-out,
-    max-height 0.3s ease-in-out, 
-    opacity 0.3s ease-in-out; /* Animación */
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  height: 48px;
+  gap: 12px;
 }
 
-.subtareass.desplegado {
-  max-height: 1000px; /* Un valor grande para cubrir todas las subtareas */
+li {
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  margin: 6px 0;
+  transition: background-color 0.2s ease;
+}
+
+.color-0 { background-color: #ffca81; }
+.color-1 { background-color: #FF9E16; }
+.color-2 { background-color: #ffba5a; }
+
+.estado-boton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.estado-0 { background-color: white; border: 1px solid #ccc; }
+.estado-1 { background-color: orange; }
+.estado-2 { background-color: lightblue; }
+.estado-3 { background-color: green; }
+
+.nombre {
+  flex-grow: 1;
+  cursor: pointer;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.badge-progreso {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.acciones-tarea {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.boton-agregar, .boton-eliminar {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+.cabecera:hover .boton-agregar {
   opacity: 1;
-  padding-top: 10px; /* posiblemente quitar */
-  padding-bottom: 10px;
+}
+
+
+.boton-agregar:hover {
+  background-color: #555;
+  color: white;
 }
 
 .subtareas {
   overflow: hidden;
-  height: 0; /* Inicio oculto */
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: 
-  padding-top 0.3s ease-in-out, 
-  padding-bottom 0.3s ease-in-out,
-  height 0.3s ease-in-out; /* Animación suave */
+  height: 0;
+  transition: height 0.3s ease;
+  padding-left: 20px;
 }
 
-.subtareas.desplegado {
-  height: auto; /* Se ajusta automáticamente al contenido */
-  padding-top: 10px; /* posiblemente quitar */
-  padding-bottom: 10px;
+.subtareas > ul {
+  padding-left: 20px;
 }
 
+
+
+.boton-agregar {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: rotate(0deg);
+}
+
+.cabecera:hover .boton-agregar {
+  opacity: 1;
+}
+
+.boton-agregar:hover {
+  background-color: #555;
+  color: white;
+}
+
+.boton-agregar.girando {
+  transform: rotate(45deg);
+  background-color: #f44336;
+  color: white;
+}

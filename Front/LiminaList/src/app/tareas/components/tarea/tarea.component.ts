@@ -1,104 +1,107 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 
 interface Tarea {
   nombre: string;
   subtareas: Tarea[];
-  terminado: boolean;
-  mostrarSubtareas: boolean;
+  terminado?: boolean;
 }
+
+const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
+const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
+
 @Component({
   selector: 'app-tarea',
-  standalone: false,
   templateUrl: './tarea.component.html',
-  styleUrl: './tarea.component.css'
+  standalone: false,
+  styleUrls: ['./tarea.component.css']
 })
 export class TareaComponent {
   @Input() nombre!: string;
-  @Input() subtareas: any[] = [];
-  @Input() nivel: number = 0;
-  @Output() eliminar = new EventEmitter<void>(); // Evento para notificar la eliminación
-  //@Input() progreso: number = 0;
-
-  // Estados posibles
-  estados: string[] = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'];
-  estadoActual: number = 0; // Índice del estado actual
-  mostrarSubtareas: boolean = false; // Controla la visibilidad de las subtareas
-
+  @Input() subtareas: Tarea[] = [];
+  @Input() nivel = 0;
+  @Output() eliminar = new EventEmitter<void>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
+
+  estadoActual = 0;
+  mostrarSubtareas = false;
+  girarBoton = false;
+  readonly estados = ESTADOS;
+  readonly coloresNivel = COLORES_NIVEL;
+
   constructor(private cdr: ChangeDetectorRef) {}
-  
-  // Método para cambiar al siguiente estado
+
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
 
-  // Método para calcular el progreso de las subtareas
-  getProgreso(): string {
-    const totalSubtareas = this.subtareas.length;
+  get progreso(): string {
+    if (this.subtareas.length === 0) return '';
     const completadas = this.subtareas.filter(sub => sub.terminado).length;
-    return `${completadas}/${totalSubtareas}`;
+    return `${completadas}/${this.subtareas.length}`;
   }
 
-  // Método para obtener la clase CSS según el estado
-  getClasePorEstado(): string {
+  get claseEstado(): string {
     return `estado-${this.estadoActual}`;
   }
 
-  // Método para calcular la clase del color según el nivel
-  getClasePorNivel(): string {
-    const colorIndex = this.nivel % 3;
-    return `color-${colorIndex}`;
+  get claseNivel(): string {
+    return `color-${this.nivel % this.coloresNivel.length}`;
   }
-  
-  incrementarTamanoPadre(): void {
-    const subtareasElement = this.subtareasContainer.nativeElement;
-    let nuevoMax = subtareasElement.scrollHeight + 50; // Añadir espacio para nuevas subtareas
-    subtareasElement.style.maxHeight = nuevoMax + 'px';
+
+  toggleSubtareas(): void {
+    if (this.subtareas.length > 0) {
+      this.mostrarSubtareas = !this.mostrarSubtareas;
+      this.ajustarAltura();
+    }
+  }
+
+  agregarSubtarea(): void {
+    const nuevaSubtarea = {
+      nombre: `Subtarea ${this.subtareas.length + 1}`,
+      subtareas: [],
+      terminado: false
+    };
+    
+    this.subtareas.push(nuevaSubtarea);
+    
+    // Abrir la tarea si está cerrada
+    if (!this.mostrarSubtareas) {
+      this.mostrarSubtareas = true;
+      this.ajustarAltura(true);
+    }
+    
     this.cdr.detectChanges();
   }
 
-
-  eliminarTarea(){
-    this.eliminar.emit();
+  eliminarTarea(event: MouseEvent): void {
+    event.preventDefault();
+    this.girarBoton = true;
+    
+    // Esperar un momento para que se complete la animación
+    setTimeout(() => {
+      this.eliminar.emit();
+      this.girarBoton = false;
+    }, 300);
   }
-  
+
+
   eliminarSubtarea(index: number): void {
     this.subtareas.splice(index, 1);
+    this.ajustarAltura();
   }
 
-  private ajustarAltura(element: HTMLElement, expandir: boolean): void {
-    element.style.height = expandir ? element.scrollHeight + 'px' : '0';
-  }
-  
-
-  // Método para alternar visibilidad
-  
-  toggleSubtareas(): void {
-    this.mostrarSubtareas = !this.mostrarSubtareas;
-    this.calcularAltura(this.mostrarSubtareas);
-  }
-  
-
-  // Agregar subtarea
-  
-  agregarSubtarea(): void {
-    const nuevaSubtarea: Tarea = {
-      nombre: `Subtarea ${this.subtareas.length + 1}`,
-      subtareas: [],
-      terminado: false,
-      mostrarSubtareas: true
-    };
-    this.subtareas.push(nuevaSubtarea);
-  }
-
-  private calcularAltura(expandir: boolean): void {
+  private ajustarAltura(expandir = this.mostrarSubtareas): void {
+    if (!this.subtareasContainer || this.subtareas.length === 0) return;
+    
     const element = this.subtareasContainer.nativeElement;
+    element.style.height = expandir ? `${element.scrollHeight}px` : '0';
+    
     if (expandir) {
-      element.style.height = element.scrollHeight + 'px';
       setTimeout(() => element.style.height = 'auto', 300);
-    } else {
-      element.style.height = element.scrollHeight + 'px';
-      setTimeout(() => element.style.height = '0', 50);
     }
+  }
+
+  trackByTarea(index: number, tarea: Tarea): string {
+    return `${index}-${tarea.nombre}`;
   }
 }
