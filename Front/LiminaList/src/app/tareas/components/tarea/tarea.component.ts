@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
 
 interface Tarea {
   nombre: string;
@@ -31,6 +31,11 @@ export class TareaComponent {
 
   constructor(private cdr: ChangeDetectorRef) {}
 
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+  }
+  
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
@@ -78,14 +83,40 @@ export class TareaComponent {
     this.cdr.detectChanges();
   }
 
+  girandoParaEliminar = false;
+  girando = false;
+
+  onRightMouseDown(): void {
+    this.girando = true;
+  }
+
+  onRightMouseUp(): void {
+    if (this.girando) {
+      this.eliminar.emit();
+    }
+    this.girando = false;
+  }
+
+  @HostListener('document:mouseup')
+  onMouseUp() {
+    if (this.girandoParaEliminar) {
+      this.girandoParaEliminar = false;
+      this.girarBoton = false;
+    }
+  }
+
   eliminarTarea(event: MouseEvent): void {
     event.preventDefault();
+    this.girandoParaEliminar = true;
     this.girarBoton = true;
-    
-    setTimeout(() => {
+  }
+
+  confirmarEliminar(): void {
+    if (this.girandoParaEliminar) {
       this.eliminar.emit();
+      this.girandoParaEliminar = false;
       this.girarBoton = false;
-    }, 300);
+    }
   }
 
   eliminarSubtarea(index: number): void {

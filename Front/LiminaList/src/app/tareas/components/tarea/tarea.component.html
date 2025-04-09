@@ -15,12 +15,15 @@
       
       <div class="acciones-tarea">
         <button 
-          #botonAgregar
-          class="boton-agregar" 
-          [class.girando]="girarBoton"
-          (click)="agregarSubtarea()" 
-          (contextmenu)="eliminarTarea($event)"
-          aria-label="Añadir subtarea"
+        #botonAgregar
+        class="boton-agregar" 
+        [class.girando]="girando"
+        (click)="agregarSubtarea()" 
+        (mousedown)="$event.button === 2 && onRightMouseDown()"
+        (mouseup)="$event.button === 2 && onRightMouseUp()"
+        (mouseleave)="girando = false"
+        (contextmenu)="$event.preventDefault()"
+        aria-label="Añadir subtarea"
         >+</button>
       </div>
     </div>
