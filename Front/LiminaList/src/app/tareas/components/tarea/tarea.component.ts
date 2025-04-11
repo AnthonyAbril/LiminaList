@@ -16,6 +16,7 @@ const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
   styleUrls: ['./tarea.component.css']
 })
 export class TareaComponent {
+  // Inputs y Outputs
   @Input() nombre!: string;
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
@@ -24,28 +25,33 @@ export class TareaComponent {
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
 
+  // Estado del componente
   estadoActual = 0;
   mostrarSubtareas = false;
   girando = false;
   editandoNombre = false;
   nombreTemporal = '';
+  animacionEnCurso = false;
+
+  // Constantes
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
+  // Métodos de edición
   guardarNombre(): void {
-    if (this.nombreTemporal.trim() !== '') { // Validar que el nombre no sea vacío
+    if (this.nombreTemporal.trim() !== '') {
       this.actualizarNombre.emit(this.nombreTemporal);
-      this.nombre = this.nombreTemporal; // Actualizar el nombre actual
+      this.nombre = this.nombreTemporal;
     } else {
-      alert('El nombre no puede estar vacío'); // Mostrar un mensaje al usuario
+      alert('El nombre no puede estar vacío');
     }
     this.editandoNombre = false;
   }
 
   comenzarEdicion(event: MouseEvent): void {
-    if (event.button === 2) { // Solo clic derecho
+    if (event.button === 2) {
       event.preventDefault();
-      event.stopPropagation(); // Esto evita que el evento se propague
+      event.stopPropagation();
       this.nombreTemporal = this.nombre;
       this.editandoNombre = true;
   
@@ -59,50 +65,13 @@ export class TareaComponent {
     this.editandoNombre = false;
   }
 
-  @HostListener('document:keydown.enter', ['$event'])
-  onEnter(event: KeyboardEvent): void {
-    if (this.editandoNombre) {
-      event.preventDefault();
-      this.guardarNombre();
-    }
-  }
-
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscape(event: KeyboardEvent): void {
-    if (this.editandoNombre) {
-      event.preventDefault();
-      this.cancelarEdicion();
-    }
-  }
-
-
-
-
-  @HostListener('contextmenu', ['$event'])
-  onContextMenu(event: MouseEvent): void {
-    event.preventDefault();
-    this.comenzarEdicion(event); // Llama al método de edición
-  }
-
+  // Métodos de gestión de tareas
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
 
-  get progreso(): string {
-    return this.subtareas.length === 0 ? '' : 
-      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
-  }
-
-  get claseEstado(): string {
-    return `estado-${this.estadoActual}`;
-  }
-
-  get claseNivel(): string {
-    return `color-${this.nivel % this.coloresNivel.length}`;
-  }
-
   toggleSubtareas(): void {
-    if (this.subtareas.length > 0) {
+    if (this.subtareas.length > 0 && !this.animacionEnCurso) {
       this.mostrarSubtareas = !this.mostrarSubtareas;
       this.ajustarAltura(this.mostrarSubtareas);
     }
@@ -116,14 +85,25 @@ export class TareaComponent {
     };
     
     const eraVacia = this.subtareas.length === 0;
-    this.subtareas = [...this.subtareas, nuevaSubtarea];
+    this.subtareas = [...this.subtareas, nuevaSubtarea]; // Corregido aquí
     
     if (eraVacia) {
-      // Cambio clave: Abrir inmediatamente sin esperar el siguiente ciclo
       this.mostrarSubtareas = true;
-      this.ajustarAltura(true, true); // Sin delay para el primer ajuste
+      this.ajustarAltura(true, true);
     } else if (!this.mostrarSubtareas) {
       this.mostrarSubtareas = true;
+      this.ajustarAltura(true);
+    } else {
+      this.animarCambioAltura();
+    }
+  }
+
+  // Métodos de eliminación
+  eliminarSubtarea(index: number): void {
+    this.subtareas = this.subtareas.filter((_, i) => i !== index);
+    
+    if (this.subtareas.length === 0) {
+      this.mostrarSubtareas = false;
       this.ajustarAltura(true);
     } else {
       this.animarCambioAltura();
@@ -145,20 +125,39 @@ export class TareaComponent {
     }
   }
 
-  eliminarSubtarea(index: number): void {
-    this.subtareas = this.subtareas.filter((_, i) => i !== index);
-    
-    if (this.subtareas.length === 0) {
-      this.mostrarSubtareas = false;
-      this.ajustarAltura(true);
-    } else {
-      this.animarCambioAltura();
+  // Host listeners
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnter(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.guardarNombre();
     }
   }
 
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.cancelarEdicion();
+    }
+  }
+
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    this.comenzarEdicion(event);
+  }
+
+  // Métodos de animación
   private animarCambioAltura(): void {
+    if (this.animacionEnCurso) return;
+    this.animacionEnCurso = true;
+    
     const element = this.subtareasContainer?.nativeElement;
-    if (!element || !this.mostrarSubtareas) return;
+    if (!element || !this.mostrarSubtareas) {
+      this.animacionEnCurso = false;
+      return;
+    }
 
     element.style.transition = 'none';
     const startHeight = element.scrollHeight;
@@ -171,13 +170,20 @@ export class TareaComponent {
       setTimeout(() => {
         element.style.transition = '';
         element.style.height = 'auto';
+        this.animacionEnCurso = false;
       }, 300);
     }, 10);
   }
 
   private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
+    if (this.animacionEnCurso && !sinDelay) return;
+    this.animacionEnCurso = true;
+    
     const element = this.subtareasContainer?.nativeElement;
-    if (!element) return;
+    if (!element) {
+      this.animacionEnCurso = false;
+      return;
+    }
 
     if (expandir) {
       element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
@@ -194,10 +200,12 @@ export class TareaComponent {
           setTimeout(() => {
             element.style.transition = '';
             element.style.height = 'auto';
+            this.animacionEnCurso = false;
           }, 300);
         } else {
           element.style.transition = '';
           element.style.height = 'auto';
+          this.animacionEnCurso = false;
         }
       }, delay);
     } else {
@@ -207,11 +215,29 @@ export class TareaComponent {
       setTimeout(() => {
         element.style.transition = 'height 0.3s ease';
         element.style.height = '0';
+        
+        setTimeout(() => {
+          this.animacionEnCurso = false;
+        }, 300);
       }, 10);
     }
   }
 
+  // Helpers y propiedades computadas
   trackByTarea(index: number, tarea: Tarea): string {
     return `${index}-${tarea.nombre}`;
+  }
+
+  get progreso(): string {
+    return this.subtareas.length === 0 ? '' : 
+      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
+  }
+
+  get claseEstado(): string {
+    return `estado-${this.estadoActual}`;
+  }
+
+  get claseNivel(): string {
+    return `color-${this.nivel % this.coloresNivel.length}`;
   }
 }
