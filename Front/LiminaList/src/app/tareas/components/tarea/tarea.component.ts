@@ -82,24 +82,29 @@ export class TareaComponent {
   // Método para agregar subtareas con animaciones completas
   agregarSubtarea(): void {
     if (this.animacionEnCurso) return;
-
+  
     const nuevaSubtarea = {
       nombre: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
       terminado: false
     };
-
-    const eraVacia = this.subtareas.length === 0;
+  
+    const habiaSubtareas = this.subtareas.length > 0;
     this.subtareas = [...this.subtareas, nuevaSubtarea];
     this.cdRef.detectChanges();
-
-    // Siempre mostrar al agregar nueva subtarea
-    if (!this.mostrarSubtareas) {
+  
+    // Forzar cálculo de altura antes de animar
+    setTimeout(() => {
       this.mostrarSubtareas = true;
-      this.ajustarAltura(true, eraVacia);
-    } else {
-      this.animarCambioAltura();
-    }
+      
+      if (habiaSubtareas) {
+        // Si ya había subtareas, animar el cambio de altura
+        this.animarCambioAltura();
+      } else {
+        // Si es la primera subtarea, usar apertura animada
+        this.ajustarAltura(true);
+      }
+    }, 0);
   }
   
 
@@ -181,36 +186,39 @@ export class TareaComponent {
   }
 
   // Animación de apertura/cierre mejorada
-  private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
+  private ajustarAltura(expandir: boolean): void {
     this.animacionEnCurso = true;
     const element = this.subtareasContainer?.nativeElement;
     if (!element) {
       this.animacionEnCurso = false;
       return;
     }
-
+  
     if (expandir) {
-      element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
+      // Configurar animación de apertura
+      element.style.transition = 'none';
       element.style.height = 'auto';
       const height = element.scrollHeight;
+      element.style.height = '0px';
       
-      if (sinDelay) {
-        element.style.height = `${height}px`;
+      // Forzar reflow antes de la animación
+      void element.offsetHeight;
+      
+      element.style.transition = 'height 0.3s ease';
+      element.style.height = `${height}px`;
+      
+      setTimeout(() => {
+        element.style.transition = '';
+        element.style.height = 'auto';
         this.animacionEnCurso = false;
-      } else {
-        element.style.height = '0px';
-        setTimeout(() => {
-          element.style.height = `${height}px`;
-          setTimeout(() => {
-            element.style.transition = '';
-            element.style.height = 'auto';
-            this.animacionEnCurso = false;
-          }, 300);
-        }, 10);
-      }
+      }, 300);
     } else {
+      // Animación de cierre (mantener tu versión original)
       element.style.transition = 'none';
       element.style.height = `${element.scrollHeight}px`;
+      
+      // Forzar reflow antes de la animación
+      void element.offsetHeight;
       
       setTimeout(() => {
         element.style.transition = 'height 0.3s ease';
