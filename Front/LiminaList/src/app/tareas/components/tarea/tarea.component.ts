@@ -99,7 +99,8 @@ export class TareaComponent {
       
       if (habiaSubtareas) {
         // Si ya había subtareas, animar el cambio de altura
-        this.animarCambioAltura();
+        //this.animarCambioAltura();
+        this.ajustarAltura(true);
       } else {
         // Si es la primera subtarea, usar apertura animada
         this.ajustarAltura(true);
