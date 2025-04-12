@@ -24,7 +24,7 @@ export class TareaComponent {
   @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
-
+  constructor(private cdRef: ChangeDetectorRef) {}
   // Estado del componente
   estadoActual = 0;
   mostrarSubtareas = false;
@@ -70,33 +70,38 @@ export class TareaComponent {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
 
+  // Método para alternar visibilidad con protección
   toggleSubtareas(): void {
-    if (this.subtareas.length > 0 && !this.animacionEnCurso) {
-      this.mostrarSubtareas = !this.mostrarSubtareas;
-      this.ajustarAltura(this.mostrarSubtareas);
-    }
+    if (this.animacionEnCurso || this.subtareas.length === 0) return;
+    
+    this.mostrarSubtareas = !this.mostrarSubtareas;
+    this.ajustarAltura(this.mostrarSubtareas);
   }
 
+
+  // Método para agregar subtareas con animaciones completas
   agregarSubtarea(): void {
+    if (this.animacionEnCurso) return;
+
     const nuevaSubtarea = {
       nombre: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
       terminado: false
     };
-    
+
     const eraVacia = this.subtareas.length === 0;
-    this.subtareas = [...this.subtareas, nuevaSubtarea]; // Corregido aquí
-    
-    if (eraVacia) {
+    this.subtareas = [...this.subtareas, nuevaSubtarea];
+    this.cdRef.detectChanges();
+
+    // Siempre mostrar al agregar nueva subtarea
+    if (!this.mostrarSubtareas) {
       this.mostrarSubtareas = true;
-      this.ajustarAltura(true, true);
-    } else if (!this.mostrarSubtareas) {
-      this.mostrarSubtareas = true;
-      this.ajustarAltura(true);
+      this.ajustarAltura(true, eraVacia);
     } else {
       this.animarCambioAltura();
     }
   }
+  
 
   // Métodos de eliminación
   eliminarSubtarea(index: number): void {
@@ -148,7 +153,7 @@ export class TareaComponent {
     this.comenzarEdicion(event);
   }
 
-  // Métodos de animación
+    // Animación para cambios de altura
   private animarCambioAltura(): void {
     if (this.animacionEnCurso) return;
     this.animacionEnCurso = true;
@@ -175,10 +180,9 @@ export class TareaComponent {
     }, 10);
   }
 
+  // Animación de apertura/cierre mejorada
   private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
-    if (this.animacionEnCurso && !sinDelay) return;
     this.animacionEnCurso = true;
-    
     const element = this.subtareasContainer?.nativeElement;
     if (!element) {
       this.animacionEnCurso = false;
@@ -189,36 +193,29 @@ export class TareaComponent {
       element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
       element.style.height = 'auto';
       const height = element.scrollHeight;
-      element.style.height = '0';
       
-      const delay = sinDelay ? 0 : 10;
-      
-      setTimeout(() => {
+      if (sinDelay) {
         element.style.height = `${height}px`;
-        
-        if (!sinDelay) {
+        this.animacionEnCurso = false;
+      } else {
+        element.style.height = '0px';
+        setTimeout(() => {
+          element.style.height = `${height}px`;
           setTimeout(() => {
             element.style.transition = '';
             element.style.height = 'auto';
             this.animacionEnCurso = false;
           }, 300);
-        } else {
-          element.style.transition = '';
-          element.style.height = 'auto';
-          this.animacionEnCurso = false;
-        }
-      }, delay);
+        }, 10);
+      }
     } else {
       element.style.transition = 'none';
       element.style.height = `${element.scrollHeight}px`;
       
       setTimeout(() => {
         element.style.transition = 'height 0.3s ease';
-        element.style.height = '0';
-        
-        setTimeout(() => {
-          this.animacionEnCurso = false;
-        }, 300);
+        element.style.height = '0px';
+        setTimeout(() => this.animacionEnCurso = false, 300);
       }, 10);
     }
   }
