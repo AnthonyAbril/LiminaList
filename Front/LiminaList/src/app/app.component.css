@@ -1,13 +1,25 @@
 #placa {
     max-width: fit-content;
     padding: 0 4vh;
+    position: absolute;
     left: 0px;
     top: 0px;
-    position: absolute;
     background: #FFBA5A;
     /*5abdff*/
     border-bottom-right-radius: 52px;
     font-size:larger;
+}
+
+#barra-tareas{
+  max-width: fit-content;
+  padding: 0 4vh;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  background: #FFBA5A;
+  /*5abdff o ff5a89*/
+  border-top-right-radius: 52px;
+  font-size:larger;
 }
 
 .contenedor {
@@ -39,3 +51,25 @@
     border-bottom-left-radius: 52px;
   }
   
+
+
+
+  #barra-tareas {
+    display: flex;
+    justify-content: space-around; /* Espaciado uniforme entre iconos */
+    align-items: center;
+    background-color: #FFBA5A;
+    padding: 15px;
+  }
+  
+  .icono {
+    width: 80px; /* Ajusta el tamaño del icono */
+    height: 80px;
+    cursor: pointer; /* Indica que el icono es interactivo */
+    transition: transform 0.2s ease-in-out; /* Animación al pasar el cursor */
+    padding-right: 10px;
+  }
+  
+  .icono:hover {
+    transform: translate(2px,-2px); /* Aumenta ligeramente el tamaño al hacer hover */
+  }
