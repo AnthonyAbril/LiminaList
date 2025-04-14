@@ -260,69 +260,6 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
     }, 0);
   }
 
-  private animarCambioAltura(): void {
-    const element = this.subtareasContainer?.nativeElement;
-    if (!element || !this.mostrarSubtareas) return;
-  
-    const prevHeight = element.scrollHeight;
-  
-    // Esperar al siguiente ciclo para que el DOM se actualice
-    setTimeout(() => {
-      const newHeight = element.scrollHeight;
-  
-      element.style.transition = 'none';
-      element.style.height = `${prevHeight}px`;
-  
-      void element.offsetHeight;
-  
-      element.style.transition = 'height 0.3s ease';
-      element.style.height = `${newHeight}px`;
-  
-      setTimeout(() => {
-        element.style.transition = '';
-        element.style.height = 'auto';
-      }, 300);
-    }, 0);
-  }
-
-  private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
-    const element = this.subtareasContainer?.nativeElement;
-    if (!element) return;
-  
-    const fullHeight = element.scrollHeight;
-  
-    if (expandir) {
-      element.style.transition = 'none';
-      element.style.height = '0px';
-  
-      // Forzar reflow
-      void element.offsetHeight;
-  
-      element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
-      element.style.height = `${fullHeight}px`;
-  
-      const finalAction = () => {
-        element.style.transition = '';
-        element.style.height = 'auto';
-      };
-  
-      if (sinDelay) {
-        finalAction();
-      } else {
-        setTimeout(finalAction, 300);
-      }
-    } else {
-      // Contraer
-      element.style.transition = 'none';
-      element.style.height = `${element.scrollHeight}px`;
-  
-      void element.offsetHeight;
-  
-      element.style.transition = 'height 0.3s ease';
-      element.style.height = '0px';
-    }
-  }
-
   trackByTarea(index: number, tarea: Tarea): string {
     return `${index}-${tarea.nombre}`;
   }
