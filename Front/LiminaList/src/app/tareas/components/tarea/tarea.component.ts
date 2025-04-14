@@ -29,6 +29,8 @@ export class TareaComponent {
   girando = false;
   editandoNombre = false;
   nombreTemporal = '';
+  animacionEnCurso = false;
+
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
@@ -109,6 +111,8 @@ export class TareaComponent {
   }
 
   agregarSubtarea(): void {
+    if (this.animacionEnCurso) return;
+  
     const nuevaSubtarea = {
       nombre: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
@@ -118,7 +122,6 @@ export class TareaComponent {
     const estabaCerrado = !this.mostrarSubtareas;
     const eraVacia = this.subtareas.length === 0;
   
-    // Si no era vacía ni cerrada, capturamos altura inicial
     if (!estabaCerrado && !eraVacia) {
       this.preAnimarAltura();
     }
@@ -126,22 +129,22 @@ export class TareaComponent {
     this.subtareas = [...this.subtareas, nuevaSubtarea];
   
     if (eraVacia) {
-      // Mostramos el contenedor visualmente
       this.mostrarSubtareas = true;
+      const element = this.subtareasContainer?.nativeElement;
+      if (!element) return;
   
+      this.animacionEnCurso = true;
       setTimeout(() => {
-        const element = this.subtareasContainer?.nativeElement;
-        if (!element) return;
-  
         element.style.transition = 'none';
         element.style.height = '0px';
-        void element.offsetHeight; // forzar reflow
+        void element.offsetHeight;
         element.style.transition = 'height 0.3s ease';
         element.style.height = `${element.scrollHeight}px`;
   
         setTimeout(() => {
           element.style.transition = '';
           element.style.height = 'auto';
+          this.animacionEnCurso = false;
         }, 300);
       }, 0);
     } else if (estabaCerrado) {
@@ -151,6 +154,7 @@ export class TareaComponent {
       this.postAnimarAltura(true);
     }
   }
+  
 
   private alturaInicial = 0;
 
@@ -164,13 +168,14 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
   const element = this.subtareasContainer?.nativeElement;
   if (!element) return;
 
+  this.animacionEnCurso = true;
+
   setTimeout(() => {
     const nuevaAltura = expandir ? element.scrollHeight : 0;
 
     element.style.transition = 'none';
     element.style.height = `${this.alturaInicial}px`;
-
-    void element.offsetHeight; // forzar reflow
+    void element.offsetHeight;
 
     if (!instantaneo) {
       element.style.transition = 'height 0.3s ease';
@@ -178,16 +183,18 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
 
     element.style.height = `${nuevaAltura}px`;
 
-    if (!instantaneo) {
-      setTimeout(() => {
-        element.style.transition = '';
-        if (expandir) {
-          element.style.height = 'auto';
-        }
-      }, 300);
-    } else {
+    const finish = () => {
       element.style.transition = '';
-      element.style.height = expandir ? 'auto' : '0px';
+      if (expandir) {
+        element.style.height = 'auto';
+      }
+      this.animacionEnCurso = false;
+    };
+
+    if (!instantaneo) {
+      setTimeout(finish, 300);
+    } else {
+      finish();
     }
   }, 0);
 }
@@ -208,13 +215,16 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
   }
 
   eliminarSubtarea(index: number): void {
-    this.preAnimarAltura();
+    if (this.animacionEnCurso) return;
   
+    this.preAnimarAltura();
     this.subtareas = this.subtareas.filter((_, i) => i !== index);
   
     if (this.subtareas.length === 0) {
       this.postAnimarAltura(false);
-      setTimeout(() => this.mostrarSubtareas = false, 300);
+      setTimeout(() => {
+        this.mostrarSubtareas = false;
+      }, 300);
     } else {
       this.postAnimarAltura(true);
     }
