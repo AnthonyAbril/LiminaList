@@ -16,7 +16,6 @@ const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
   styleUrls: ['./tarea.component.css']
 })
 export class TareaComponent {
-  // Inputs y Outputs
   @Input() nombre!: string;
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
@@ -24,34 +23,29 @@ export class TareaComponent {
   @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
-  constructor(private cdRef: ChangeDetectorRef) {}
-  // Estado del componente
+
   estadoActual = 0;
   mostrarSubtareas = false;
   girando = false;
   editandoNombre = false;
   nombreTemporal = '';
-  animacionEnCurso = false;
-
-  // Constantes
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
-  // Métodos de edición
   guardarNombre(): void {
-    if (this.nombreTemporal.trim() !== '') {
+    if (this.nombreTemporal.trim() !== '') { // Validar que el nombre no sea vacío
       this.actualizarNombre.emit(this.nombreTemporal);
-      this.nombre = this.nombreTemporal;
+      this.nombre = this.nombreTemporal; // Actualizar el nombre actual
     } else {
-      alert('El nombre no puede estar vacío');
+      alert('El nombre no puede estar vacío'); // Mostrar un mensaje al usuario
     }
     this.editandoNombre = false;
   }
 
   comenzarEdicion(event: MouseEvent): void {
-    if (event.button === 2) {
+    if (event.button === 2) { // Solo clic derecho
       event.preventDefault();
-      event.stopPropagation();
+      event.stopPropagation(); // Esto evita que el evento se propague
       this.nombreTemporal = this.nombre;
       this.editandoNombre = true;
   
@@ -65,59 +59,78 @@ export class TareaComponent {
     this.editandoNombre = false;
   }
 
-  // Métodos de gestión de tareas
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnter(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.guardarNombre();
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent): void {
+    if (this.editandoNombre) {
+      event.preventDefault();
+      this.cancelarEdicion();
+    }
+  }
+
+
+
+
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    this.comenzarEdicion(event); // Llama al método de edición
+  }
+
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
   }
 
-  // Método para alternar visibilidad con protección
-  toggleSubtareas(): void {
-    if (this.animacionEnCurso || this.subtareas.length === 0) return;
-    
-    this.mostrarSubtareas = !this.mostrarSubtareas;
-    this.ajustarAltura(this.mostrarSubtareas);
+  get progreso(): string {
+    return this.subtareas.length === 0 ? '' : 
+      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
   }
 
+  get claseEstado(): string {
+    return `estado-${this.estadoActual}`;
+  }
 
-  // Método para agregar subtareas con animaciones completas
+  get claseNivel(): string {
+    return `color-${this.nivel % this.coloresNivel.length}`;
+  }
+
+  toggleSubtareas(): void {
+    if (this.subtareas.length > 0) {
+      this.mostrarSubtareas = !this.mostrarSubtareas;
+      this.ajustarAltura(this.mostrarSubtareas);
+    }
+  }
+
   agregarSubtarea(): void {
-    if (this.animacionEnCurso) return;
-  
     const nuevaSubtarea = {
       nombre: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
       terminado: false
     };
-  
-    const habiaSubtareas = this.subtareas.length > 0;
-    this.subtareas = [...this.subtareas, nuevaSubtarea];
-    this.cdRef.detectChanges();
-  
-    // Forzar cálculo de altura antes de animar
-    setTimeout(() => {
-      this.mostrarSubtareas = true;
-      
-      if (habiaSubtareas) {
-        // Si ya había subtareas, animar el cambio de altura
-        //this.animarCambioAltura();
-        this.ajustarAltura(true);
-      } else {
-        // Si es la primera subtarea, usar apertura animada
-        this.ajustarAltura(true);
-      }
-    }, 0);
-  }
-  
-
-  // Métodos de eliminación
-  eliminarSubtarea(index: number): void {
-    this.subtareas = this.subtareas.filter((_, i) => i !== index);
     
-    if (this.subtareas.length === 0) {
-      this.mostrarSubtareas = false;
+    const eraVacia = this.subtareas.length === 0;
+    this.subtareas = [...this.subtareas, nuevaSubtarea];
+    
+    if (eraVacia) {
+      // Cambio clave: Abrir inmediatamente sin esperar el siguiente ciclo
+      this.mostrarSubtareas = true;
+      this.ajustarAltura(true, true); // Sin delay para el primer ajuste
+      this.animarCambioAltura();
+      console.log("a1");
+    } else if (!this.mostrarSubtareas) {
+      this.mostrarSubtareas = true;
       this.ajustarAltura(true);
+      console.log("a2");
     } else {
       this.animarCambioAltura();
+      console.log("a3");
     }
   }
 
@@ -136,43 +149,26 @@ export class TareaComponent {
     }
   }
 
-  // Host listeners
-  @HostListener('document:keydown.enter', ['$event'])
-  onEnter(event: KeyboardEvent): void {
-    if (this.editandoNombre) {
-      event.preventDefault();
-      this.guardarNombre();
-    }
-  }
-
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscape(event: KeyboardEvent): void {
-    if (this.editandoNombre) {
-      event.preventDefault();
-      this.cancelarEdicion();
-    }
-  }
-
-  @HostListener('contextmenu', ['$event'])
-  onContextMenu(event: MouseEvent): void {
-    event.preventDefault();
-    this.comenzarEdicion(event);
-  }
-
-    // Animación para cambios de altura
-  private animarCambioAltura(): void {
-    if (this.animacionEnCurso) return;
-    this.animacionEnCurso = true;
+  eliminarSubtarea(index: number): void {
+    this.subtareas = this.subtareas.filter((_, i) => i !== index);
     
-    const element = this.subtareasContainer?.nativeElement;
-    if (!element || !this.mostrarSubtareas) {
-      this.animacionEnCurso = false;
-      return;
+    if (this.subtareas.length === 0) {
+      this.mostrarSubtareas = false;
+      this.ajustarAltura(true);
+    } else {
+      this.animarCambioAltura();
     }
+  }
 
+  private animarCambioAltura(): void {
+    const element = this.subtareasContainer?.nativeElement;
+    if (!element || !this.mostrarSubtareas) return;
+
+    console.log("b1");
     element.style.transition = 'none';
-    const startHeight = element.scrollHeight;
+    const startHeight = (this.mostrarSubtareas) ? element.scrollHeight : '0';
     element.style.height = `${startHeight}px`;
+    console.log(element.style.height);
     
     setTimeout(() => {
       element.style.transition = 'height 0.3s ease';
@@ -181,69 +177,47 @@ export class TareaComponent {
       setTimeout(() => {
         element.style.transition = '';
         element.style.height = 'auto';
-        this.animacionEnCurso = false;
       }, 300);
     }, 10);
   }
 
-  // Animación de apertura/cierre mejorada
-  private ajustarAltura(expandir: boolean): void {
-    this.animacionEnCurso = true;
+  private ajustarAltura(expandir: boolean, sinDelay: boolean = false): void {
     const element = this.subtareasContainer?.nativeElement;
-    if (!element) {
-      this.animacionEnCurso = false;
-      return;
-    }
-  
+    if (!element) return;
+
     if (expandir) {
-      // Configurar animación de apertura
-      element.style.transition = 'none';
+      element.style.transition = sinDelay ? 'none' : 'height 0.3s ease';
       element.style.height = 'auto';
       const height = element.scrollHeight;
-      element.style.height = '0px';
+      element.style.height = '0';
       
-      // Forzar reflow antes de la animación
-      void element.offsetHeight;
-      
-      element.style.transition = 'height 0.3s ease';
-      element.style.height = `${height}px`;
+      const delay = sinDelay ? 0 : 10;
       
       setTimeout(() => {
-        element.style.transition = '';
-        element.style.height = 'auto';
-        this.animacionEnCurso = false;
-      }, 300);
+        element.style.height = `${height}px`;
+        
+        if (!sinDelay) {
+          setTimeout(() => {
+            element.style.transition = '';
+            element.style.height = 'auto';
+          }, 300);
+        } else {
+          element.style.transition = '';
+          element.style.height = 'auto';
+        }
+      }, delay);
     } else {
-      // Animación de cierre (mantener tu versión original)
       element.style.transition = 'none';
       element.style.height = `${element.scrollHeight}px`;
       
-      // Forzar reflow antes de la animación
-      void element.offsetHeight;
-      
       setTimeout(() => {
         element.style.transition = 'height 0.3s ease';
-        element.style.height = '0px';
-        setTimeout(() => this.animacionEnCurso = false, 300);
+        element.style.height = '0';
       }, 10);
     }
   }
 
-  // Helpers y propiedades computadas
   trackByTarea(index: number, tarea: Tarea): string {
     return `${index}-${tarea.nombre}`;
-  }
-
-  get progreso(): string {
-    return this.subtareas.length === 0 ? '' : 
-      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
-  }
-
-  get claseEstado(): string {
-    return `estado-${this.estadoActual}`;
-  }
-
-  get claseNivel(): string {
-    return `color-${this.nivel % this.coloresNivel.length}`;
   }
 }

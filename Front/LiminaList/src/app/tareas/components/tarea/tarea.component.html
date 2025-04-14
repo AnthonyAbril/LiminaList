@@ -43,7 +43,7 @@
       </div>
     </div>
     
-    <div *ngIf="subtareas.length > 0" class="subtareas" #subtareasContainer [class.cerrado]="!mostrarSubtareas">
+    <div [style.height]="(subtareas.length > 0) ? '' : '0'" class="subtareas" #subtareasContainer [class.cerrado]="!mostrarSubtareas">
       <ul>
         <li *ngFor="let subtarea of subtareas; trackBy: trackByTarea; let i = index">
           <app-tarea

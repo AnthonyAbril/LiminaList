@@ -129,12 +129,12 @@ li {
 .subtareas.cerrado {
   height: 0;
   padding-top: 0;
-  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .subtareas > ul {
   padding-left: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 
