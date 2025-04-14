@@ -104,7 +104,7 @@ export class TareaComponent {
   toggleSubtareas(): void {
     if (this.subtareas.length > 0) {
       this.mostrarSubtareas = !this.mostrarSubtareas;
-      this.ajustarAltura(this.mostrarSubtareas);
+      this.animarAltura(this.mostrarSubtareas);
     }
   }
 
@@ -115,27 +115,82 @@ export class TareaComponent {
       terminado: false
     };
   
-    const eraVacia = this.subtareas.length === 0;
     const estabaCerrado = !this.mostrarSubtareas;
+    const eraVacia = this.subtareas.length === 0;
+  
+    // Si no era vacía ni cerrada, capturamos altura inicial
+    if (!estabaCerrado && !eraVacia) {
+      this.preAnimarAltura();
+    }
+  
     this.subtareas = [...this.subtareas, nuevaSubtarea];
   
     if (eraVacia) {
-      // No había subtareas antes: mostrar + esperar a que Angular pinte
+      // Mostramos el contenedor visualmente
       this.mostrarSubtareas = true;
+  
       setTimeout(() => {
-        this.ajustarAltura(true);
+        const element = this.subtareasContainer?.nativeElement;
+        if (!element) return;
+  
+        element.style.transition = 'none';
+        element.style.height = '0px';
+        void element.offsetHeight; // forzar reflow
+        element.style.transition = 'height 0.3s ease';
+        element.style.height = `${element.scrollHeight}px`;
+  
+        setTimeout(() => {
+          element.style.transition = '';
+          element.style.height = 'auto';
+        }, 300);
       }, 0);
     } else if (estabaCerrado) {
-      // Ya había subtareas pero estaban ocultas → expandir ahora
       this.mostrarSubtareas = true;
-      setTimeout(() => {
-        this.ajustarAltura(true);
-      }, 0);
+      setTimeout(() => this.postAnimarAltura(true), 0);
     } else {
-      // Ya estaba abierto → ajustar altura animadamente
-      this.animarCambioAltura();
+      this.postAnimarAltura(true);
     }
   }
+
+  private alturaInicial = 0;
+
+private preAnimarAltura(): void {
+  const element = this.subtareasContainer?.nativeElement;
+  if (!element) return;
+  this.alturaInicial = element.scrollHeight;
+}
+
+private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void {
+  const element = this.subtareasContainer?.nativeElement;
+  if (!element) return;
+
+  setTimeout(() => {
+    const nuevaAltura = expandir ? element.scrollHeight : 0;
+
+    element.style.transition = 'none';
+    element.style.height = `${this.alturaInicial}px`;
+
+    void element.offsetHeight; // forzar reflow
+
+    if (!instantaneo) {
+      element.style.transition = 'height 0.3s ease';
+    }
+
+    element.style.height = `${nuevaAltura}px`;
+
+    if (!instantaneo) {
+      setTimeout(() => {
+        element.style.transition = '';
+        if (expandir) {
+          element.style.height = 'auto';
+        }
+      }, 300);
+    } else {
+      element.style.transition = '';
+      element.style.height = expandir ? 'auto' : '0px';
+    }
+  }, 0);
+}
 
   onRightMouseDown(event: MouseEvent): void {
     if (event.button === 2) {
@@ -153,16 +208,56 @@ export class TareaComponent {
   }
 
   eliminarSubtarea(index: number): void {
-    const nuevaLista = this.subtareas.filter((_, i) => i !== index);
-    const estabaVisible = this.mostrarSubtareas;
-    this.subtareas = nuevaLista;
+    this.preAnimarAltura();
   
-    if (nuevaLista.length === 0) {
-      this.ajustarAltura(false); // contraer
-      setTimeout(() => this.mostrarSubtareas = false, 300); // ocultar después de la animación
-    } else if (estabaVisible) {
-      this.animarCambioAltura(); // ajustar tamaño
+    this.subtareas = this.subtareas.filter((_, i) => i !== index);
+  
+    if (this.subtareas.length === 0) {
+      this.postAnimarAltura(false);
+      setTimeout(() => this.mostrarSubtareas = false, 300);
+    } else {
+      this.postAnimarAltura(true);
     }
+  }
+
+  private animarAltura(expandir: boolean, instantaneo: boolean = false): void {
+    const element = this.subtareasContainer?.nativeElement;
+    if (!element) return;
+  
+    // Paso 1: Si expandir, preparar la altura desde cero
+    if (expandir) {
+      element.style.transition = 'none';
+      element.style.height = '0px';
+    }
+  
+    setTimeout(() => {
+      const startHeight = element.offsetHeight;
+      const endHeight = expandir ? element.scrollHeight : 0;
+  
+      element.style.transition = 'none';
+      element.style.height = `${startHeight}px`;
+  
+      // Forzar reflow
+      void element.offsetHeight;
+  
+      if (!instantaneo) {
+        element.style.transition = 'height 0.3s ease';
+      }
+  
+      element.style.height = `${endHeight}px`;
+  
+      if (!instantaneo) {
+        setTimeout(() => {
+          element.style.transition = '';
+          if (expandir) {
+            element.style.height = 'auto';
+          }
+        }, 300);
+      } else {
+        element.style.transition = '';
+        element.style.height = expandir ? 'auto' : '0px';
+      }
+    }, 0);
   }
 
   private animarCambioAltura(): void {
