@@ -63,8 +63,8 @@
   }
   
   .icono {
-    width: 70px; /* Ajusta el tamaño del icono */
-    height: 70px;
+    width: 60px; /* Ajusta el tamaño del icono */
+    height: 60px;
     cursor: pointer; /* Indica que el icono es interactivo */
     transition: transform 0.2s ease-in-out; /* Animación al pasar el cursor */
     padding-right: 10px;

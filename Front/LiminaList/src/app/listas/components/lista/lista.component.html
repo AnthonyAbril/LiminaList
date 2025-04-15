@@ -2,15 +2,17 @@
 
 <ul>
   <li class="boton-agregar">
+    <h2>Lista Puntual - </h2>
     <button (click)="agregarTarea()">+</button>
   </li>
-  <li *ngFor="let tarea of tareas">
-    <app-tarea
-      [nombre]="tarea.nombre"
-      [subtareas]="tarea.subtareas"
-      (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
-    >
-    </app-tarea>
+  <li>
+    <li *ngFor="let tarea of tareas">
+      <app-tarea
+        [nombre]="tarea.nombre"
+        [subtareas]="tarea.subtareas"
+        (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
+      >
+      </app-tarea>
   </li>
 </ul>
 
