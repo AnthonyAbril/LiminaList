@@ -2,19 +2,20 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
+
 import { AppComponent } from './app.component';
 import { ListasModule } from './listas/listas.module';
 import { TareasModule } from './tareas/tareas.module';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ListasModule,
-    TareasModule
+    TareasModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
