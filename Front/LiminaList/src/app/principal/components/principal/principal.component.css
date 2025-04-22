@@ -60,3 +60,20 @@
     justify-content: center;
     align-items: center;
 }
+
+.lista-lateral {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lista-lateral > h2{
+    height: 10vh;
+    background-color: purple;
+}
+
+.lista-lateral > div {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+}
