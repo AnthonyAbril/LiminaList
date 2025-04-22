@@ -1,5 +1,7 @@
+
 #placa {
-    max-width: fit-content;
+    max-width: 25%;
+    min-width: 20%;
     padding: 0 4vh;
     position: absolute;
     left: 0px;
