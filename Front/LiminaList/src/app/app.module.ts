@@ -9,12 +9,14 @@ import { ListasModule } from './listas/listas.module';
 import { TareasModule } from './tareas/tareas.module';
 import { PrincipalModule } from './principal/principal.module';
 import { AuthModule } from './auth/auth.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
+    HttpClientModule,
     AuthModule, // ✅ Importa el módulo de autenticación
     BrowserModule,
     FormsModule, // ✅ Agregar aquí para habilitar [(ngModel)]
