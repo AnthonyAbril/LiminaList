@@ -61,6 +61,91 @@
     align-items: center;
 }
 
+.main-content > div {
+    background-color: green;
+    width: 90%;
+    height: 90%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.header-resum {
+    background-color: red;
+    height: 15%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 2vw;
+    padding-right: 2vw;
+}
+
+.main-resum { 
+    background-color: coral;
+    height: 75%;
+}
+
+.main-resum > ul{
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    align-items:center;
+    width: 90%;
+    padding: 0 5%;
+
+    overflow-y:auto;
+    scrollbar-width: none;
+}
+
+.main-resum > ul > li {
+    margin-top: 3vh;
+    width: 100%;
+    
+    display: flex;
+    font-size: larger;
+}
+
+.main-resum > ul > li:last-child {
+    margin-bottom: 3vh;
+}
+
+.main-resum > ul > li > div {
+    background-color: blueviolet;
+    display: inline;
+    padding: 5%;
+    width: 100%;
+
+    height: 4vh;
+}
+
+.main-resum > ul > li > .main-resum-lupa{
+    display: none;
+}
+
+.main-resum > ul > li:hover > .main-resum-lupa{
+    display:block;
+    width: 4vh;
+    height: 4vh;
+
+    margin-right: 5%;
+}
+
+.main-resum > ul > li:hover > .main-resum-lupa:hover{
+    background-color: rgb(8, 70, 70);
+}
+
+.footer-resum {
+    background-color: darkgoldenrod;
+    height: 10%;
+}
+
+
+
+
+
 .lista-lateral {
     display: flex;
     flex-direction: column;
@@ -81,6 +166,7 @@
 .lista-lateral > div > ul{
     height: 90vh;
     overflow-y:auto;
+    list-style: none;
 }
 
 

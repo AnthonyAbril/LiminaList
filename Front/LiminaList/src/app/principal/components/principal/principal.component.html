@@ -27,8 +27,24 @@
         </div>
 
         <div class="main-content">
-            <div class="calendar">
+            <div *ngIf="resumen=='calendar'" class="calendar-mini">
                 <p>a</p>
+            </div>
+            <div *ngIf="resumen=='listas'" class="listas-mini">
+                <div class="header-resum">
+                    <h2>Listas</h2><a>Filtros: A-Z</a>
+                </div>
+                <div class="main-resum">
+
+                    <ul class="">
+                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero uno</div></li>
+                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero dos</div></li>
+                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero tres</div></li>
+                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero cuatro</div></li>
+                    </ul>
+
+                </div>
+                <div class="footer-resum"></div>
             </div>
         </div>
     </div>

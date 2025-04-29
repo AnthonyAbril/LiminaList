@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './principal.component.css'
 })
 export class PrincipalComponent {
+  resumen:string="listas";
+
   tareas = [
     {
       nombre: 'Estudiar PAU',
