@@ -12,8 +12,8 @@
         <div 
           *ngIf="!editandoNombre" 
           class="nombre" 
-          (click)="toggleSubtareas()" 
-          (contextmenu)="comenzarEdicion($event); $event.stopPropagation()"> <!-- Añade stopPropagation aquí -->
+          (click)="((!editar)?(toggleSubtareas()):(comenzarEdicion($event)))" 
+          > <!-- Añade stopPropagation aquí -->
           {{ nombre }}
           <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
         </div>

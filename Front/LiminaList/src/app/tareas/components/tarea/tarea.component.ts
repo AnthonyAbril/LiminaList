@@ -47,8 +47,7 @@ export class TareaComponent {
   }
 
   comenzarEdicion(event: MouseEvent): void {
-    if (event.button === 2) { // Solo clic derecho
-      event.preventDefault();
+    event.preventDefault();
       event.stopPropagation(); // Esto evita que el evento se propague
       this.nombreTemporal = this.nombre;
       this.editandoNombre = true;
@@ -56,7 +55,6 @@ export class TareaComponent {
       setTimeout(() => {
         this.nombreInput.nativeElement.focus();
       }, 0);
-    }
   }
   
   cancelarEdicion(): void {
@@ -85,7 +83,7 @@ export class TareaComponent {
   @HostListener('contextmenu', ['$event'])
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
-    this.comenzarEdicion(event); // Llama al método de edición
+    //this.comenzarEdicion(event); // Llama al método de edición
   }
 
   cambiarEstado(): void {
