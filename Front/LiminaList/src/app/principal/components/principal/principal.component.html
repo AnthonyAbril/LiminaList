@@ -4,6 +4,13 @@
         <div>
             <ul>
                 <li>a</li>
+                <li *ngFor="let tarea of tareas">
+                    <app-tarea
+                      [nombre]="tarea.nombre"
+                      [subtareas]="tarea.subtareas"
+                      (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
+                    >
+                  </app-tarea>
             </ul>
         </div>
     </div>
@@ -13,6 +20,7 @@
         <div class="header">
             <div class="nav">
                 <a href="#">A</a>
+                <img src="assets\icons\exit.svg" [routerLink]="'/'" alt="Icono de Pluma" class="icono">
                 <a href="#">A</a>
                 <a href="#">A</a>
             </div>

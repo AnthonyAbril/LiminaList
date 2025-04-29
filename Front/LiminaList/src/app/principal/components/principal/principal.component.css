@@ -77,3 +77,18 @@
     flex-direction: column;
     align-self: flex-start;
 }
+
+
+
+
+.icono {
+    width: 60px; /* Ajusta el tamaño del icono */
+    height: 60px;
+    cursor: pointer; /* Indica que el icono es interactivo */
+    transition: transform 0.2s ease-in-out; /* Animación al pasar el cursor */
+    padding-right: 10px;
+  }
+  
+  .icono:hover {
+    transform: translate(2px,-2px); /* Aumenta ligeramente el tamaño al hacer hover */
+  }
