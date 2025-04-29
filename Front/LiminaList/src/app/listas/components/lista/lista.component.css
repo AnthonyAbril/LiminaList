@@ -11,6 +11,7 @@
 .lista ul {
     list-style: none;
     padding: 0;
+    overflow-y: auto; /* solo scroll vertical */
 }
 
 .lista li {

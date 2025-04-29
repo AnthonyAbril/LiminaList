@@ -75,3 +75,15 @@
   .icono:hover {
     transform: translate(2px,-2px); /* Aumenta ligeramente el tamaño al hacer hover */
   }
+
+
+  .lista-container{
+    overflow-y: auto; /* solo scroll vertical */
+    /* Ocultar scrollbar en navegadores basados en WebKit (Chrome, Safari) */
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE 10+ */
+  }
+  
+  .contenedor::-webkit-scrollbar {
+    display: none;               /* Chrome, Safari y Edge */
+  }
