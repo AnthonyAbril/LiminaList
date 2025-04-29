@@ -33,6 +33,7 @@
       <div class="acciones-tarea">
         <button 
           class="boton-agregar" 
+          *ngIf="editar"
           [class.girando]="girando"
           (click)="agregarSubtarea()" 
           (mousedown)="onRightMouseDown($event)"
@@ -40,6 +41,9 @@
           (mouseleave)="girando = false"
           aria-label="Añadir subtarea"
         >+</button>
+        <button
+        [hidden]="!editandoNombre"
+        ><img src="assets/icons/pen-solid.svg" alt=""></button>
       </div>
     </div>
     
@@ -51,6 +55,7 @@
             [subtareas]="subtarea.subtareas"
             [nivel]="nivel + 1"
             (eliminar)="eliminarSubtarea(i)"
+            [editar]="editar"
           ></app-tarea>
         </li>
       </ul>

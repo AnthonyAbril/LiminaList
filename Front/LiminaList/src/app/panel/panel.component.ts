@@ -7,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './panel.component.css'
 })
 export class PanelComponent {
+  editar = false; // 🔹 Estado global del modo edición
+
+  toggleEdicion(): void {
+    this.editar = !this.editar;
+    console.log(this.editar);
+  }
 
 }

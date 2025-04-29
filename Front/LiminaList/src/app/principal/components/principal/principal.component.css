@@ -78,6 +78,10 @@
     align-self: flex-start;
 }
 
+.lista-lateral > div > ul{
+    height: 90vh;
+    overflow-y:auto;
+}
 
 
 

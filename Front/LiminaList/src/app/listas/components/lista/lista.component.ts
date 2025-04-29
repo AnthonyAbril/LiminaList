@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-lista',
@@ -7,6 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './lista.component.css'
 })
 export class ListaComponent {
+  @Input() editar = false; // 🔹 Recibe la variable desde PanelComponent
+
   estados = ['Opción 1', 'Opción 2', 'Opción 3'];
   estadoActual = 0;
   

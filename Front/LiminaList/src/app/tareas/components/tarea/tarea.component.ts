@@ -19,6 +19,8 @@ export class TareaComponent {
   @Input() nombre!: string;
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
+  @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
+
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
