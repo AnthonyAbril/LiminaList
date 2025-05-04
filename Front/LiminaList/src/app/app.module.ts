@@ -10,10 +10,12 @@ import { TareasModule } from './tareas/tareas.module';
 import { PrincipalModule } from './principal/principal.module';
 import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http';
+import { LoadingComponent } from './loading/components/loading/loading.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoadingComponent
   ],
   imports: [
     HttpClientModule,
