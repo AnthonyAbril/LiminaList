@@ -30,8 +30,7 @@ export class LoginComponent {
           if (response.access_token) {
             this.authService.saveToken(response.access_token);
             console.log('Autenticación exitosa, token recibido:', response.access_token);
-            //this.router.navigate(['/home']); // 🔹 Redirige a Home después del login
-            this.router.navigate(['/panel']); // 🔹 Redirige a Home después del login
+            this.router.navigate(['/home']); // 🔹 Redirige a Home después del login
           } else {
             alert('Credenciales incorrectas');
           }

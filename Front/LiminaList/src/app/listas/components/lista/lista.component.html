@@ -8,7 +8,7 @@
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
   </li>
-  <li>
+  <li *ngIf="this.tareas.length>0">
     <li *ngFor="let tarea of tareas">
       <app-tarea
         [id]="tarea.id"
@@ -18,6 +18,11 @@
         [editar]="editar"
       >
     </app-tarea>
+  </li>
+  <li class="sinTareas" *ngIf="this.tareas.length==0">
+    <h2>No hay tareas en esta lista</h2>
+    <p *ngIf="!editar"><img src="assets/icons/dedo.png" style="transform: scaleX(-1);" alt="->"> Pulsa <img src="assets/icons/square-pen-solid.svg"> para entrar en modo edicion y usa + para añadir tareas</p>
+    <p *ngIf="editar"><img src="assets/icons/dedo.png" style="transform: scaleX(-1);" alt="->"> Pulsa + para añadir tareas</p>
   </li>
 </ul>
 

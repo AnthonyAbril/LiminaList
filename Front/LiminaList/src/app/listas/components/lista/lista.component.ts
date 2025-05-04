@@ -14,7 +14,7 @@ export class ListaComponent {
   estadoActual = 0;
   
   @Input() tareas: Tarea[] = [
-
+    /*
     {
       id: 1,
       title: "Leer sobre álgebra lineal",
@@ -49,6 +49,7 @@ export class ListaComponent {
       updated_at: null,
       subtareas: []
   }
+      */
   
   /*,
     {

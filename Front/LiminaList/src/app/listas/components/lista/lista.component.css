@@ -38,7 +38,7 @@
     align-items: center;
 }
 
-.boton-agregar img{
+img{
     height:3vh;
 }
 
@@ -63,4 +63,18 @@ ul>li {
 
 li>div:first-child {
     padding-right: 15px;
+}
+
+
+
+.sinTareas p{
+    font-size: larger;
+}
+
+.sinTareas{
+    align-self: center;
+}
+
+.sinTareas img{
+    vertical-align: middle;
 }
