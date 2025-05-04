@@ -14,7 +14,7 @@
           class="nombre" 
           (click)="((!editar)?(toggleSubtareas()):(comenzarEdicion($event)))" 
           > <!-- Añade stopPropagation aquí -->
-          {{ nombre }}
+          {{ title }}
           <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
         </div>
         
@@ -51,7 +51,8 @@
       <ul>
         <li *ngFor="let subtarea of subtareas; trackBy: trackByTarea; let i = index">
           <app-tarea
-            [nombre]="subtarea.nombre"
+            [id]="subtarea.id"
+            [title]="subtarea.title"
             [subtareas]="subtarea.subtareas"
             [nivel]="nivel + 1"
             (eliminar)="eliminarSubtarea(i)"

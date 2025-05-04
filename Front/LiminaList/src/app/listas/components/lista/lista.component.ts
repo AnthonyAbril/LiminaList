@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Tarea } from '../../../tareas/components/tarea/tarea.component'; // 🔹 Ajusta la ruta según sea necesario
 
 @Component({
   selector: 'app-lista',
@@ -12,44 +13,81 @@ export class ListaComponent {
   estados = ['Opción 1', 'Opción 2', 'Opción 3'];
   estadoActual = 0;
   
-  tareas = [
+  @Input() tareas: Tarea[] = [
+
     {
-      nombre: 'Estudiar PAU',
+      id: 1,
+      title: "Leer sobre álgebra lineal",
+      description: "Revisar el capítulo de matrices y determinantes.",
+      progreso: '',
+      list_id: 4,
+      padre: null,
+      created_at: "2025-04-26T22:25:36.000000Z",
+      updated_at: "2025-04-26T22:25:36.000000Z",
+      subtareas: [
+          {
+              id: 2,
+              title: "Ejercicios de algebra",
+              description: null,
+              progreso: '',
+              list_id: 4,
+              padre: 1,
+              subtareas: [],
+              created_at: null,
+              updated_at: null
+          }
+      ]
+  },
+  {
+      id: 3,
+      title: "Estudiar Fisica",
+      description: null,
+      progreso: '',
+      list_id: 4,
+      padre: null,
+      created_at: null,
+      updated_at: null,
+      subtareas: []
+  }
+  
+  /*,
+    {
+      title: 'Estudiar PAU',
       progreso: '',
       subtareas: [
         {
-          nombre: 'Estudiar Matematicas',
+          title: 'Estudiar Matematicas',
           progreso: '',
           subtareas: [
             {
-              nombre: 'Estudiar Matrices',
+              title: 'Estudiar Matrices',
               progreso: '',
               subtareas: [
                 {
-                  nombre: 'Estudiar Ecuaciones Matriciales',
+                  title: 'Estudiar Ecuaciones Matriciales',
                   progreso: '',
                   subtareas: []
                 },
                 {
-                  nombre: 'Estudiar Rango de Matrices',
+                  title: 'Estudiar Rango de Matrices',
                   progreso: '',
                   subtareas: []
                 }
               ]
             },
             {
-              nombre: 'Estudiar Geometria Analítica',
+              title: 'Estudiar Geometria Analítica',
               progreso: '',
               subtareas: []
             }
           ]
         },
         {
-          nombre: 'Estudiar Fisica',
+          title: 'Estudiar Fisica',
           progreso: '',
           subtareas: [
             {
-              nombre: 'Estudiar Campo Gravitatorio',
+              title: 'Estudiar Campo Gravitatorio',
               progreso: '',
               subtareas: []
             }
@@ -58,68 +96,68 @@ export class ListaComponent {
       ]
     },
     {
-      nombre: 'TFG Proyecto Liminalist',
+      title: 'TFG Proyecto Liminalist',
       progreso: '',
       subtareas: [
         {
-          nombre: '1ra Entrega',
+          title: '1ra Entrega',
           progreso: '',
           subtareas: [
             {
-              nombre: 'Idea de funcionalidad y logica',
+              title: 'Idea de funcionalidad y logica',
               progreso: '',
               subtareas: []
             },
             {
-              nombre: 'Diseño de interfaz',
+              title: 'Diseño de interfaz',
               progreso: '',
               subtareas: []
             },
             {
-              nombre: 'Programacion Base',
+              title: 'Programacion Base',
               progreso: '',
               subtareas: [
                 {
-                  nombre: 'Front boceto hecho',
+                  title: 'Front boceto hecho',
                   progreso: '',
                   subtareas: [
                     {
-                      nombre: 'Front boceto ordenador',
+                      title: 'Front boceto ordenador',
                       progreso: '',
                       subtareas: []
                     },
                     {
-                      nombre: 'Front boceto movil',
+                      title: 'Front boceto movil',
                       progreso: '',
                       subtareas: []
                     }
                   ]
                 },
                 {
-                  nombre: 'Logica Programada',
+                  title: 'Logica Programada',
                   progreso: '',
                   subtareas: [
                     {
-                      nombre: 'CRUD de tareas',
+                      title: 'CRUD de tareas',
                       progreso: '',
                       subtareas: [
                         {
-                          nombre: 'Crear tareas',
+                          title: 'Crear tareas',
                           progreso: '',
                           subtareas: []
                         },
                         {
-                          nombre: 'Eliminar tareas',
+                          title: 'Eliminar tareas',
                           progreso: '',
                           subtareas: []
                         },
                         {
-                          nombre: 'Modificar tareas',
+                          title: 'Modificar tareas',
                           progreso: '',
                           subtareas: []
                         },
                         {
-                          nombre: 'Mover tareas',
+                          title: 'Mover tareas',
                           progreso: '',
                           subtareas: []
                         }
@@ -132,32 +170,40 @@ export class ListaComponent {
           ]
         },
         {
-          nombre: '2ra Entrega',
+          title: '2ra Entrega',
           progreso: '',
           subtareas: []
         },
         {
-          nombre: '3ra Entrega',
+          title: '3ra Entrega',
           progreso: '',
           subtareas: []
         }
       ]
     },
     {
-      nombre: 'Practicas Empresa',
+      title: 'Practicas Empresa',
       progreso: '',
       subtareas: []
     }
+      */
   ];
 
   // Método para añadir una nueva subtarea
   agregarTarea(): void {
     const nuevaTarea = {
-      nombre: `Tarea ${this.tareas.length + 1}`, // Nombre dinámico
+      id: Date.now(),
+      title: `Tarea ${this.tareas.length + 1}`, // title dinámico
+      description: null,
       progreso: '',
-      subtareas: [], // Las subtareas empiezan vacías
+      list_id: 4,
+      padre: null,
+      created_at: null,
+      updated_at: null,
+      subtareas: [] 
     };
     this.tareas.push(nuevaTarea); // Añade la nueva subtarea al array
+    console.log(this.tareas)
   }
 
   toggleState() {

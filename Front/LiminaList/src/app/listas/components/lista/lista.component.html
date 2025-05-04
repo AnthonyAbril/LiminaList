@@ -11,7 +11,8 @@
   <li>
     <li *ngFor="let tarea of tareas">
       <app-tarea
-        [nombre]="tarea.nombre"
+        [id]="tarea.id"
+        [title]="tarea.title"
         [subtareas]="tarea.subtareas"
         (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
         [editar]="editar"

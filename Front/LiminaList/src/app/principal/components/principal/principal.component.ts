@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { ListasService } from '../../../services/listas.service';
+import { Tarea } from '../../../tareas/components/tarea/tarea.component';
 
 @Component({
   selector: 'app-principal',
@@ -7,144 +10,48 @@ import { Component } from '@angular/core';
   styleUrl: './principal.component.css'
 })
 export class PrincipalComponent {
-  resumen:string="listas";
 
-  tareas = [
+  constructor(private listasService: ListasService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.listasService.getListas().subscribe(response => {
+      this.listas = response;
+      console.log(this.listas);
+    });
+  }
+
+
+  resumen: string = "listas";
+
+  //datos de prueba
+  listas: any[] = [
+    /*
     {
-      nombre: 'Estudiar PAU',
-      progreso: '',
-      subtareas: [
-        {
-          nombre: 'Estudiar Matematicas',
-          progreso: '',
-          subtareas: [
-            {
-              nombre: 'Estudiar Matrices',
-              progreso: '',
-              subtareas: [
-                {
-                  nombre: 'Estudiar Ecuaciones Matriciales',
-                  progreso: '',
-                  subtareas: []
-                },
-                {
-                  nombre: 'Estudiar Rango de Matrices',
-                  progreso: '',
-                  subtareas: []
-                }
-              ]
-            },
-            {
-              nombre: 'Estudiar Geometria Analítica',
-              progreso: '',
-              subtareas: []
-            }
-          ]
-        },
-        {
-          nombre: 'Estudiar Fisica',
-          progreso: '',
-          subtareas: [
-            {
-              nombre: 'Estudiar Campo Gravitatorio',
-              progreso: '',
-              subtareas: []
-            }
-          ]
+      created_at: "2025-04-26T22:23:00.000000Z",
+      id : 4,
+      name : "Mi anteprimera lista",
+      tareas : [
+        { 
+          id: 1, 
+          title: 'Leer sobre álgebra lineal', 
+          description: 'Revisar el capítulo de matrices y determinantes.', 
+          progreso: 30, 
+          list_id: 4,
+          padre: null,
+          created_at : "2025-04-26T22:25:36.000000Z",
+          updated_at : "2025-04-26T22:25:36.000000Z"
         }
-      ]
-    },
-    {
-      nombre: 'TFG Proyecto Liminalist',
-      progreso: '',
-      subtareas: [
-        {
-          nombre: '1ra Entrega',
-          progreso: '',
-          subtareas: [
-            {
-              nombre: 'Idea de funcionalidad y logica',
-              progreso: '',
-              subtareas: []
-            },
-            {
-              nombre: 'Diseño de interfaz',
-              progreso: '',
-              subtareas: []
-            },
-            {
-              nombre: 'Programacion Base',
-              progreso: '',
-              subtareas: [
-                {
-                  nombre: 'Front boceto hecho',
-                  progreso: '',
-                  subtareas: [
-                    {
-                      nombre: 'Front boceto ordenador',
-                      progreso: '',
-                      subtareas: []
-                    },
-                    {
-                      nombre: 'Front boceto movil',
-                      progreso: '',
-                      subtareas: []
-                    }
-                  ]
-                },
-                {
-                  nombre: 'Logica Programada',
-                  progreso: '',
-                  subtareas: [
-                    {
-                      nombre: 'CRUD de tareas',
-                      progreso: '',
-                      subtareas: [
-                        {
-                          nombre: 'Crear tareas',
-                          progreso: '',
-                          subtareas: []
-                        },
-                        {
-                          nombre: 'Eliminar tareas',
-                          progreso: '',
-                          subtareas: []
-                        },
-                        {
-                          nombre: 'Modificar tareas',
-                          progreso: '',
-                          subtareas: []
-                        },
-                        {
-                          nombre: 'Mover tareas',
-                          progreso: '',
-                          subtareas: []
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          nombre: '2ra Entrega',
-          progreso: '',
-          subtareas: []
-        },
-        {
-          nombre: '3ra Entrega',
-          progreso: '',
-          subtareas: []
-        }
-      ]
-    },
-    {
-      nombre: 'Practicas Empresa',
-      progreso: '',
-      subtareas: []
+      ],
+      updated_at : "2025-04-26T22:23:00.000000Z",
+      user_id : 3
     }
+      */
   ];
+
+  tareas: Tarea[] = []; // 🔹 Asegura que Angular reconozca `tareas`
+
+  seleccionarLista(listaId: number): void {
+    this.router.navigate(['/panel', listaId]); // 🔹 Redirige al usuario con el ID de la lista
+  }
 
 }

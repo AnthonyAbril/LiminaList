@@ -1,9 +1,17 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
 
-interface Tarea {
-  nombre: string;
+
+export interface Tarea {
+  id: number;
+  title: string;
+  description?: string | null; // 🔹 Permitir `null`
+  progreso: string | null;
+  list_id?: number;
+  padre?: number | null;
+  created_at?: string | null;
+  updated_at?: string | null;
   subtareas: Tarea[];
-  terminado?: boolean;
+  terminado?: boolean; // 🔹 Agregado si está presente en la API
 }
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
@@ -16,7 +24,8 @@ const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
   styleUrls: ['./tarea.component.css']
 })
 export class TareaComponent {
-  @Input() nombre!: string;
+  @Input() id!: number;
+  @Input() title!: string;
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
@@ -39,7 +48,7 @@ export class TareaComponent {
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') { // Validar que el nombre no sea vacío
       this.actualizarNombre.emit(this.nombreTemporal);
-      this.nombre = this.nombreTemporal; // Actualizar el nombre actual
+      this.title = this.nombreTemporal; // Actualizar el nombre actual
     } else {
       alert('El nombre no puede estar vacío'); // Mostrar un mensaje al usuario
     }
@@ -49,7 +58,7 @@ export class TareaComponent {
   comenzarEdicion(event: MouseEvent): void {
     event.preventDefault();
       event.stopPropagation(); // Esto evita que el evento se propague
-      this.nombreTemporal = this.nombre;
+      this.nombreTemporal = this.title;
       this.editandoNombre = true;
   
       setTimeout(() => {
@@ -112,12 +121,20 @@ export class TareaComponent {
 
   agregarSubtarea(): void {
     if (this.animacionEnCurso) return;
-  
-    const nuevaSubtarea = {
-      nombre: `Subtarea ${this.subtareas.length + 1}`,
+
+    const nuevaSubtarea: Tarea = {
+      id: Date.now(), // Genera un ID único temporal
+      title: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
+      progreso: '',
+      list_id: 4,
+      padre: this.id,
+      created_at: null,
+      updated_at: null,
       terminado: false
     };
+
+
   
     const estabaCerrado = !this.mostrarSubtareas;
     const eraVacia = this.subtareas.length === 0;
@@ -271,6 +288,6 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
   }
 
   trackByTarea(index: number, tarea: Tarea): string {
-    return `${index}-${tarea.nombre}`;
+    return `${index}-${tarea.title}`;
   }
 }

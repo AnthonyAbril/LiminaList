@@ -5,7 +5,7 @@
             <ul>
                 <li *ngFor="let tarea of tareas">
                     <app-tarea
-                      [nombre]="tarea.nombre"
+                      [title]="tarea.title"
                       [subtareas]="tarea.subtareas"
                       (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
                     >
@@ -36,10 +36,12 @@
                 <div class="main-resum">
 
                     <ul class="">
-                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero uno</div></li>
-                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero dos</div></li>
-                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero tres</div></li>
-                        <li><div class="main-resum-lupa"><img src="assets/icons/lupa.svg" alt=""></div><div>Lista numero cuatro</div></li>
+                        <li *ngFor="let lista of listas">
+                            <div class="main-resum-lupa"  (click)="seleccionarLista(lista.id)">
+                                <img src="assets/icons/lupa.svg" alt="">
+                            </div>
+                            <div>{{lista.name}}</div>
+                        </li>
                     </ul>
 
                 </div>
