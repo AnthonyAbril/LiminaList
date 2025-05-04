@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Lista;
+use Illuminate\Support\Facades\Auth;
+
+class ListaController extends Controller
+{
+    public function index()
+    {
+        return Auth::user()->listas()->with('tareas')->get();
+    }
+
+    public function show($id)
+    {
+        $lista = auth()->user()->listas()->where('id', $id)
+            ->with(['tareas' => function ($query) {
+                $query->whereNull('padre')->with(['subtareas']);
+            }])
+            ->first();
+
+        if (!$lista) {
+            return response()->json(['message' => 'Lista no encontrada'], 404);
+        }
+
+        // 🔹 Recorre todas las tareas y subtareas para garantizar que `subtareas` exista como un array vacío si no tiene hijos
+        $lista->tareas->each(function ($tarea) {
+            $tarea->subtareas->each(function ($subtarea) {
+                if (!isset($subtarea->subtareas)) {
+                    $subtarea->subtareas = [];
+                }
+            });
+
+            if (!isset($tarea->subtareas)) {
+                $tarea->subtareas = [];
+            }
+        });
+
+        return response()->json($lista);
+    }
+}
