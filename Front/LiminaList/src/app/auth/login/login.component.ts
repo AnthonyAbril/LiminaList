@@ -41,11 +41,14 @@ export class LoginComponent {
     this.isActive = false; // Activa la vista de inicio de sesión
   }
 
-  
+
   intentandoLogin = false;
 
+  errorBackend: string = ''; // 🔹 Variable para guardar errores desde la API
+
   iniciarSesion(): void {
-    this.intentandoLogin = true; // 🔹 Activamos la validación cuando el usuario intenta iniciar sesión
+    this.intentandoLogin = true;
+    this.errorBackend = ''; // 🔹 Resetear errores antes de la petición
 
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
@@ -55,12 +58,11 @@ export class LoginComponent {
             this.authService.saveToken(response.access_token);
             this.router.navigate(['/home']);
           } else {
-            alert('Credenciales incorrectas');
+            this.errorBackend = '❌ Credenciales incorrectas';
           }
         },
         error: (error) => {
-          console.error('Error de autenticación:', error);
-          alert('Credenciales incorrectas o problema con el servidor');
+          this.errorBackend = '❌ Credenciales incorrectas o problema con el servidor'; // 🔹 Captura errores del backend
         }
       });
     }
@@ -70,21 +72,40 @@ export class LoginComponent {
   intentandoRegistrar = false;
 
   registrarse(): void {
-
-    this.intentandoRegistrar = true; // 🔹 Activamos el estado de validación al presionar el botón
+    this.intentandoRegistrar = true;
+    this.errorBackend = ''; // 🔹 Resetear errores antes de enviar
   
     if (this.registroForm.valid) {
       const { nombre, email, password } = this.registroForm.value;
       this.authService.register(nombre, email, password).subscribe({
-        next: (response) => {
-          console.log('Usuario registrado con éxito:', response);
+        next: () => {
+          console.log('Usuario registrado con éxito');
+  
+          // 🔹 Iniciar sesión automáticamente después del registro
+          this.authService.login(email, password).subscribe({
+            next: (response) => {
+              if (response.access_token) {
+                this.authService.saveToken(response.access_token);
+                this.router.navigate(['/home']); // 🔹 Redirige a la página principal
+              } else {
+                this.errorBackend = '❌ Error al autenticar después del registro';
+              }
+            },
+            error: () => {
+              this.errorBackend = '❌ Hubo un problema al iniciar sesión después del registro';
+            }
+          });
         },
         error: (error) => {
-          console.error('Error en el registro:', error);
-          alert('Hubo un problema al registrar el usuario. Inténtalo de nuevo.');
+          if (error.status === 409) {
+            this.errorBackend = '❌ Este correo ya está en uso';
+          } else {
+            this.errorBackend = '❌ Error al registrar';
+          }
         }
       });
     }
   }
+  
 
 }

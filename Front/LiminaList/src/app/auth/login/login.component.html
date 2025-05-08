@@ -13,12 +13,13 @@
       <span>O usa tu correo electrónico para registrarte</span>
 
       <!-- Contenedor de errores -->
-      <div *ngIf="intentandoRegistrar && registroForm.invalid" class="error-container">
+      <div *ngIf="intentandoRegistrar && (registroForm.invalid || errorBackend)" class="error-container">
         <p *ngIf="registroForm.controls['nombre'].invalid">❌ El nombre debe tener al menos 3 caracteres</p>
         <p *ngIf="registroForm.controls['email'].invalid">❌ Introduce un correo válido</p>
         <p *ngIf="registroForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
-      </div>      
-    
+        <p *ngIf="errorBackend">{{ errorBackend }}</p> <!-- 🔹 Mensaje de error del backend -->
+      </div>
+      
       <input type="text" placeholder="Nombre"  formControlName="nombre">
       <input type="email" placeholder="Correo electrónico" formControlName="email">
       <input type="password" placeholder="Contraseña" formControlName="password">
@@ -43,11 +44,12 @@
       <span>O usa tu correo y contraseña</span>
 
       <!-- Contenedor de errores -->
-      <div *ngIf="intentandoLogin && loginForm.invalid" class="error-container">
+      <div *ngIf="intentandoLogin && (loginForm.invalid || errorBackend)" class="error-container">
         <p *ngIf="loginForm.controls['email'].invalid">❌ Introduce un correo válido</p>
         <p *ngIf="loginForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
+        <p *ngIf="errorBackend">{{ errorBackend }}</p> <!-- 🔹 Muestra errores del backend -->
       </div>
-
+      
       <input type="email" placeholder="Correo electrónico" formControlName="email">
       <input type="password" placeholder="Contraseña" formControlName="password">
       

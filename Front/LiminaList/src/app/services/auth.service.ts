@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -30,8 +30,18 @@ export class AuthService {
   }
     */
 
-  register(name: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { name, email, password });
+  register(nombre: string, email: string, password: string) {
+    return this.http.post(`${this.apiUrl}/register`, { 
+      name: nombre,  // 🔹 Cambiado 'nombre' a 'name' para que Laravel lo reciba correctamente
+      email: email, 
+      password: password 
+    }).pipe(
+      catchError((error) => {
+        console.error('Código de error recibido:', error.status);
+        console.error('Mensaje de error:', error.error.message);
+        return throwError(() => error);
+      })
+    );
   }
 
   
