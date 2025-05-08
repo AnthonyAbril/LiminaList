@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Tarea } from '../../../tareas/components/tarea/tarea.component'; // 🔹 Ajusta la ruta según sea necesario
+import { Tarea } from '../../../tareas/components/tarea/tarea';
 
 @Component({
   selector: 'app-lista',

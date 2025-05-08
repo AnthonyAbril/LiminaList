@@ -1,18 +1,5 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
-
-
-export interface Tarea {
-  id: number;
-  title: string;
-  description?: string | null; // 🔹 Permitir `null`
-  progreso: string | null;
-  list_id?: number;
-  padre?: number | null;
-  created_at?: string | null;
-  updated_at?: string | null;
-  subtareas: Tarea[];
-  terminado?: boolean; // 🔹 Agregado si está presente en la API
-}
+import { Tarea } from './tarea';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];

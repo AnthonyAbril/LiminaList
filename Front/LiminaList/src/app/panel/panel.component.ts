@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ListasService } from '../services/listas.service';
 
+import { HttpClient } from '@angular/common/http';
+import { Lista } from '../listas/lista';
+
 @Component({
   selector: 'app-panel',
   standalone: false,
@@ -14,7 +17,14 @@ export class PanelComponent {
   listaSeleccionada: any;
   tareas: any[] = [];
 
-  constructor(private route: ActivatedRoute, private listasService: ListasService) {}
+  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient) {}
+
+  guardarCambiosLista(lista: Lista) {
+    this.http.put(`http://localhost:8000/api/lists/${lista.id}`, lista).subscribe(response => {
+      console.log('Lista guardada:', response);
+    });
+  }
+  
 
   ngOnInit(): void {
     const listaId = this.route.snapshot.paramMap.get('id');

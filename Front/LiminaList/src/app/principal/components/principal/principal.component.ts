@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListasService } from '../../../services/listas.service';
-import { Tarea } from '../../../tareas/components/tarea/tarea.component';
+import { Tarea } from '../../../tareas/components/tarea/tarea';
 
 @Component({
   selector: 'app-principal',

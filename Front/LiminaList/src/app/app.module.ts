@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // ✅ Necesario para [(ngModel)]
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -15,13 +16,14 @@ import { LoadingComponent } from './loading/components/loading/loading.component
 @NgModule({
   declarations: [
     AppComponent,
-    LoadingComponent
+    LoadingComponent,
   ],
   imports: [
     HttpClientModule,
     AuthModule, // ✅ Importa el módulo de autenticación
     BrowserModule,
     FormsModule, // ✅ Agregar aquí para habilitar [(ngModel)]
+    ReactiveFormsModule,  // ✅ Esto permitirá el uso de formularios reactivos en la aplicación.
     AppRoutingModule,
 
     PrincipalModule,

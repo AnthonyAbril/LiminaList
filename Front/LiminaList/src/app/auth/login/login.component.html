@@ -1,6 +1,8 @@
 <div class="container" [ngClass]="{ 'active': isActive }" id="container">
   <div class="form-container sign-up">
-    <form (ngSubmit)="registrarse()">
+    
+    <!-- Formulario de Registro -->
+    <form [formGroup]="registroForm" (ngSubmit)="registrarse()">
       <h1>Crear cuenta</h1>
       <div class="social-icons">
         <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
@@ -9,27 +11,50 @@
         <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
       <span>O usa tu correo electrónico para registrarte</span>
-      <input type="text" placeholder="Nombre" [(ngModel)]="registro.nombre" name="name">
-      <input type="email" placeholder="Correo electrónico" [(ngModel)]="registro.email" name="email">
-      <input type="password" placeholder="Contraseña" [(ngModel)]="registro.password" name="password">
+
+      <!-- Contenedor de errores -->
+      <div *ngIf="intentandoRegistrar && registroForm.invalid" class="error-container">
+        <p *ngIf="registroForm.controls['nombre'].invalid">❌ El nombre debe tener al menos 3 caracteres</p>
+        <p *ngIf="registroForm.controls['email'].invalid">❌ Introduce un correo válido</p>
+        <p *ngIf="registroForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
+      </div>      
+    
+      <input type="text" placeholder="Nombre"  formControlName="nombre">
+      <input type="email" placeholder="Correo electrónico" formControlName="email">
+      <input type="password" placeholder="Contraseña" formControlName="password">
+    
       <button type="submit">Registrarse</button>
     </form>
+    
+
   </div>
   <div class="form-container sign-in">
-    <form (ngSubmit)="iniciarSesion()">
+    <!-- Formulario de Inicio de Sesión -->
+    <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
       <h1>Iniciar sesión</h1>
+      
       <div class="social-icons">
         <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
         <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
         <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
         <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
+      
       <span>O usa tu correo y contraseña</span>
-      <input type="email" placeholder="Correo electrónico" [(ngModel)]="login.email" name="email">
-      <input type="password" placeholder="Contraseña" [(ngModel)]="login.password" name="password">
+
+      <!-- Contenedor de errores -->
+      <div *ngIf="intentandoLogin && loginForm.invalid" class="error-container">
+        <p *ngIf="loginForm.controls['email'].invalid">❌ Introduce un correo válido</p>
+        <p *ngIf="loginForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
+      </div>
+
+      <input type="email" placeholder="Correo electrónico" formControlName="email">
+      <input type="password" placeholder="Contraseña" formControlName="password">
+      
       <a href="#">¿Olvidaste tu contraseña?</a>
       <button type="submit">Ingresar</button>
     </form>
+
   </div>
   <div class="toggle-container">
     <div class="toggle">
