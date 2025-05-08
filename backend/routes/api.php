@@ -20,4 +20,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return response()->json($request->user()); // Información del usuario autenticado
     });
+
+    Route::put('/lists/{id}', [ListaController::class, 'update']); // 🔹 Ruta para actualizar listas
 });

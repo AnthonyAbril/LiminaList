@@ -11,6 +11,12 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $existe = User::where('email', $request->email)->first();
+        if ($existe) {
+            return response()->json(['message' => 'Este correo ya está en uso'], 409); // 🔹 Código de estado correcto
+        }
+
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',

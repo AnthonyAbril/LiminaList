@@ -40,4 +40,17 @@ class ListaController extends Controller
 
         return response()->json($lista);
     }
+
+
+    public function update(Request $request, $id)
+    {
+        $lista = auth()->user()->listas()->find($id);
+
+        if (!$lista) {
+            return response()->json(['message' => 'Lista no encontrada'], 404);
+        }
+
+        $lista->update($request->all()); // 🔹 Guarda automáticamente todos los cambios
+        return response()->json(['message' => 'Lista actualizada con éxito', 'lista' => $lista]);
+    }
 }
