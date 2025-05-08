@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router'; // 🔹 Importar Router
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -11,9 +10,13 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  isActive: boolean = false; // Controla si está activa la vista de registro
-  login = { email: '', password: '' }; // Datos de inicio de sesión
-  registro = { nombre: '', email: '', password: '' }; // Datos de registro
+  isActive: boolean = false; // 🔹 Alterna entre login y registro
+  intentandoAcceder = false;
+  
+  intentandoLogin = false;
+  intentandoRegistro = false;
+  errorLogin = ''; 
+  errorRegistro = ''; 
 
 
   loginForm: FormGroup;
@@ -26,86 +29,73 @@ export class LoginComponent {
     });
 
     this.registroForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-
-  toggleRegister(): void {
-    this.isActive = true; // Activa la vista de registro
+  toggleRegister() {
+    this.isActive = true;
   }
 
-  toggleLogin(): void {
-    this.isActive = false; // Activa la vista de inicio de sesión
+  toggleLogin() {
+    this.isActive = false;
   }
-
-
-  intentandoLogin = false;
-
-  errorBackend: string = ''; // 🔹 Variable para guardar errores desde la API
 
   iniciarSesion(): void {
-    this.intentandoLogin = true;
-    this.errorBackend = ''; // 🔹 Resetear errores antes de la petición
-
+    this.intentandoLogin = true; // 🔹 Solo afecta Login
+    this.errorLogin = '';
+  
     if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      this.authService.login(email, password).subscribe({
+      this.authService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: (response) => {
           if (response.access_token) {
             this.authService.saveToken(response.access_token);
             this.router.navigate(['/home']);
           } else {
-            this.errorBackend = '❌ Credenciales incorrectas';
+            this.errorLogin = '❌ Credenciales incorrectas';
           }
         },
-        error: (error) => {
-          this.errorBackend = '❌ Credenciales incorrectas o problema con el servidor'; // 🔹 Captura errores del backend
+        error: () => {
+          this.errorLogin = '❌ Credenciales incorrectas o problema con el servidor';
         }
       });
     }
   }
 
-
-  intentandoRegistrar = false;
-
   registrarse(): void {
-    this.intentandoRegistrar = true;
-    this.errorBackend = ''; // 🔹 Resetear errores antes de enviar
+    this.intentandoRegistro = true; // 🔹 Solo afecta Registro
+    this.errorRegistro = '';
   
     if (this.registroForm.valid) {
-      const { nombre, email, password } = this.registroForm.value;
-      this.authService.register(nombre, email, password).subscribe({
+      this.authService.register(
+        this.registroForm.value.name,
+        this.registroForm.value.email,
+        this.registroForm.value.password
+      ).subscribe({
         next: () => {
-          console.log('Usuario registrado con éxito');
-  
-          // 🔹 Iniciar sesión automáticamente después del registro
-          this.authService.login(email, password).subscribe({
+          this.authService.login(
+            this.registroForm.value.email,
+            this.registroForm.value.password
+          ).subscribe({
             next: (response) => {
               if (response.access_token) {
                 this.authService.saveToken(response.access_token);
-                this.router.navigate(['/home']); // 🔹 Redirige a la página principal
+                this.router.navigate(['/home']);
               } else {
-                this.errorBackend = '❌ Error al autenticar después del registro';
+                this.errorRegistro = '❌ Error al autenticar después del registro';
               }
             },
             error: () => {
-              this.errorBackend = '❌ Hubo un problema al iniciar sesión después del registro';
+              this.errorRegistro = '❌ Hubo un problema al iniciar sesión después del registro';
             }
           });
         },
         error: (error) => {
-          if (error.status === 409) {
-            this.errorBackend = '❌ Este correo ya está en uso';
-          } else {
-            this.errorBackend = '❌ Error al registrar';
-          }
+          this.errorRegistro = error.status === 409 ? '❌ Este correo ya está en uso' : '❌ Error al registrar';
         }
       });
     }
   }
-  
-
 }

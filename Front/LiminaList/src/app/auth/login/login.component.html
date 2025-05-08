@@ -1,7 +1,5 @@
-<div class="container" [ngClass]="{ 'active': isActive }" id="container">
+<div class="container" [ngClass]="{ 'active': isActive }">
   <div class="form-container sign-up">
-    
-    <!-- Formulario de Registro -->
     <form [formGroup]="registroForm" (ngSubmit)="registrarse()">
       <h1>Crear cuenta</h1>
       <div class="social-icons">
@@ -12,25 +10,24 @@
       </div>
       <span>O usa tu correo electrónico para registrarte</span>
 
+
       <!-- Contenedor de errores -->
-      <div *ngIf="intentandoRegistrar && (registroForm.invalid || errorBackend)" class="error-container">
-        <p *ngIf="registroForm.controls['nombre'].invalid">❌ El nombre debe tener al menos 3 caracteres</p>
+      <div *ngIf="intentandoRegistro && (registroForm.invalid || errorRegistro)" class="error-container">
+        <p *ngIf="registroForm.controls['name'].invalid">❌ El nombre debe tener al menos 3 caracteres</p>
         <p *ngIf="registroForm.controls['email'].invalid">❌ Introduce un correo válido</p>
         <p *ngIf="registroForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
-        <p *ngIf="errorBackend">{{ errorBackend }}</p> <!-- 🔹 Mensaje de error del backend -->
+        <p *ngIf="errorRegistro">{{ errorRegistro }}</p>
       </div>
-      
-      <input type="text" placeholder="Nombre"  formControlName="nombre">
+
+      <input type="text" placeholder="Nombre" formControlName="name">
       <input type="email" placeholder="Correo electrónico" formControlName="email">
       <input type="password" placeholder="Contraseña" formControlName="password">
-    
+      
       <button type="submit">Registrarse</button>
     </form>
-    
-
   </div>
+
   <div class="form-container sign-in">
-    <!-- Formulario de Inicio de Sesión -->
     <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
       <h1>Iniciar sesión</h1>
       
@@ -43,32 +40,32 @@
       
       <span>O usa tu correo y contraseña</span>
 
+
       <!-- Contenedor de errores -->
-      <div *ngIf="intentandoLogin && (loginForm.invalid || errorBackend)" class="error-container">
+      <div *ngIf="intentandoLogin && (loginForm.invalid || errorLogin)" class="error-container">
         <p *ngIf="loginForm.controls['email'].invalid">❌ Introduce un correo válido</p>
         <p *ngIf="loginForm.controls['password'].invalid">❌ La contraseña debe tener al menos 6 caracteres</p>
-        <p *ngIf="errorBackend">{{ errorBackend }}</p> <!-- 🔹 Muestra errores del backend -->
+        <p *ngIf="errorLogin">{{ errorLogin }}</p>
       </div>
-      
+
       <input type="email" placeholder="Correo electrónico" formControlName="email">
       <input type="password" placeholder="Contraseña" formControlName="password">
       
-      <a href="#">¿Olvidaste tu contraseña?</a>
       <button type="submit">Ingresar</button>
     </form>
-
   </div>
+
   <div class="toggle-container">
     <div class="toggle">
       <div class="toggle-panel toggle-left">
         <h1>¡Bienvenido de nuevo!</h1>
         <p>Ingresa tus datos para acceder a todas las funciones de LiminaList</p>
-        <button (click)="toggleLogin()" id="login">Iniciar sesión</button>
+        <button (click)="toggleLogin()">Iniciar sesión</button>
       </div>
       <div class="toggle-panel toggle-right">
         <h1>¡Hola!</h1>
         <p>Regístrate para acceder a todas las funciones de LiminaList</p>
-        <button (click)="toggleRegister()" id="register">Registrarse</button>
+        <button (click)="toggleRegister()">Registrarse</button>
       </div>
     </div>
   </div>
