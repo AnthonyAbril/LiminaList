@@ -175,6 +175,62 @@
 
 
 
+/*calendario*/
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  align-items: center;
+}
+
+
+
+.calendar-mini {
+  justify-content: space-between;
+  background: #f8f9fa;
+}
+
+.fechas {
+    height: 75%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+    padding: 2%;
+
+    align-items: center;
+    justify-items: center;
+}
+
+.fechas button {
+  width: 90%;
+  height: 90%;
+  border: none;
+  background-color: #fff;
+  color: #333;
+  font-size: 2.5em;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.fechas button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.fechas button.selected {
+  background-color: #28a745;
+  color: white;
+}
+
+
+
 .icono {
     width: 60px; /* Ajusta el tamaño del icono */
     height: 60px;

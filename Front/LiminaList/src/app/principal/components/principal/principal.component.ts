@@ -11,7 +11,37 @@ import { Tarea } from '../../../tareas/components/tarea/tarea';
 })
 export class PrincipalComponent {
 
-  constructor(private listasService: ListasService, private router: Router) {}
+  constructor(private listasService: ListasService, private router: Router) {
+    this.generarCalendario();
+  }
+
+  dias: string[] = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  mesSeleccionado: number = new Date().getMonth(); // 🔹 Mes actual
+  fechas: Date[] = [];
+  
+  generarCalendario() {
+    this.fechas = []; // 🔹 Vaciar fechas anteriores
+    const fechaActual = new Date();
+    const primerDiaMes = new Date(fechaActual.getFullYear(), this.mesSeleccionado, 1);
+    const ultimoDiaMes = new Date(fechaActual.getFullYear(), this.mesSeleccionado + 1, 0);
+
+    for (let i = primerDiaMes.getDate(); i <= ultimoDiaMes.getDate(); i++) {
+      this.fechas.push(new Date(fechaActual.getFullYear(), this.mesSeleccionado, i));
+    }
+  }
+
+
+  cambiarMes() {
+    this.generarCalendario(); // 🔹 Actualizar fechas cuando el usuario elige un mes
+  }
+
+
+  abrirListaDelDia(fecha: Date) {
+    const listaId = `${fecha.getDate()}-${fecha.getMonth() + 1}-${fecha.getFullYear()}`; // 🔹 Formato: DD-MM-YYYY
+    this.router.navigate(['/panel', listaId]); // 🔹 Redirigir a la lista diaria en /panel/(listaid)
+  }
+
 
   ngOnInit(): void {
     this.listasService.getListas().subscribe(response => {
@@ -22,6 +52,11 @@ export class PrincipalComponent {
 
 
   resumen: string = "listas";
+
+  cambiarVista(vista: string) {
+    this.resumen = vista; // 🔹 Cambia entre "calendar" y "listas"
+  }
+
 
   //datos de prueba
   listas: any[] = [
