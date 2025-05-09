@@ -219,6 +219,19 @@
   transition: all 0.3s ease-in-out;
 }
 
+select, option{
+    color: black;
+    height: 80%;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.empty-cell {
+  width: 90%;
+  height: 90%;
+}
+
+
 .fechas button:hover {
   background-color: #007bff;
   color: white;

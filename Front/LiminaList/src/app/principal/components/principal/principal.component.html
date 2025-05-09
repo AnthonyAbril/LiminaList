@@ -14,55 +14,69 @@
         </div>
     </div>
 
-    <div class="main">
-        <h1 class="titulo">Liminalist</h1>
-        <div class="header">
-            <div class="nav">
-                <img src="assets\icons\exit.svg" [routerLink]="'/'" alt="Icono de Pluma" class="icono">
-                <img src="assets/icons/calendar.svg" (click)="cambiarVista('calendar')" alt="Icono de calendario" class="icono">
-                <img src="assets/icons/switch.svg" (click)="cambiarVista('listas')" alt="Icono de listas" class="icono">
-            </div>
-        </div>
-
-        <div class="main-content">
-
-            <div *ngIf="resumen=='calendar'" class="calendar-mini">
-                <div class="header-resum">
-                    <h2>Calendario</h2>
-                    <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
-                        <option *ngFor="let mes of meses; let i = index" [value]="i">{{ mes }}</option>
-                    </select>
-
-                </div>
-                <div class="fechas">
-                    <button *ngFor="let fecha of fechas" (click)="abrirListaDelDia(fecha)">
-                    {{ fecha.getDate() }}
-                    </button>
-                </div>
-                <div class="dias-semana footer-resum">
-                    <span *ngFor="let dia of dias">{{ dia }}</span>
-                </div>
-            </div>
-
-            
-            <div *ngIf="resumen=='listas'" class="listas-mini">
-                <div class="header-resum">
-                    <h2>Listas</h2><a>Filtros: A-Z</a>
-                </div>
-                <div class="main-resum">
-
-                    <ul class="">
-                        <li *ngFor="let lista of listas">
-                            <div class="main-resum-lupa"  (click)="seleccionarLista(lista.id)">
-                                <img src="assets/icons/lupa.svg" alt="">
-                            </div>
-                            <div>{{lista.name}}</div>
-                        </li>
-                    </ul>
-
-                </div>
-                <div class="footer-resum"></div>
-            </div>
+```
+<div class="main">
+    <h1 class="titulo">Liminalist</h1>
+    <div class="header">
+        <div class="nav">
+            <img src="assets/icons/exit.svg" [routerLink]="'/'" alt="Icono de Pluma" class="icono">
+            <img src="assets/icons/calendar.svg" (click)="cambiarVista('calendar')" alt="Icono de calendario" class="icono">
+            <img src="assets/icons/switch.svg" (click)="cambiarVista('listas')" alt="Icono de listas" class="icono">
         </div>
     </div>
+
+    <div class="main-content">
+
+        <div *ngIf="resumen=='calendar'" class="calendar-mini">
+            <div class="header-resum">
+                <h2>Calendario</h2>
+                <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
+                </select>
+                <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
+                </select>
+            </div>
+
+            <div class="fechas">
+                <ng-container *ngFor="let fecha of fechas">
+                    <!-- Cambia fecha.getDate() por fecha.getUTCDate() -->
+                    <button *ngIf="fecha; else emptyCell" 
+                            (click)="abrirListaDelDia(fecha)"
+                            [class.hoy]="esHoy(fecha)">
+                        {{ fecha.getUTCDate() }} <!-- Mostrar día UTC -->
+                    </button>
+                    <ng-template #emptyCell>
+                        <div class="empty-cell"></div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+            <div class="dias-semana footer-resum">
+                <span *ngFor="let dia of dias">{{ dia }}</span>
+            </div>
+        </div>
+
+        <div *ngIf="resumen=='listas'" class="listas-mini">
+            <div class="header-resum">
+                <h2>Listas</h2><a>Filtros: A-Z</a>
+            </div>
+            <div class="main-resum">
+
+                <ul>
+                    <li *ngFor="let lista of listas">
+                        <div class="main-resum-lupa"  (click)="seleccionarLista(lista.id)">
+                            <img src="assets/icons/lupa.svg" alt="">
+                        </div>
+                        <div>{{lista.name}}</div>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="footer-resum"></div>
+        </div>
+    </div>
+</div>
+```
+
 </div>

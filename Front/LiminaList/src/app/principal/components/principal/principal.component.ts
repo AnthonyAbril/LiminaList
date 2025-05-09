@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListasService } from '../../../services/listas.service';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
@@ -7,121 +7,83 @@ import { Tarea } from '../../../tareas/components/tarea/tarea';
   selector: 'app-principal',
   standalone: false,
   templateUrl: './principal.component.html',
-  styleUrl: './principal.component.css'
+  styleUrls: ['./principal.component.css']
 })
-export class PrincipalComponent {
-
-  constructor(private listasService: ListasService, private router: Router) {
-    this.generarCalendario();
-  }
+export class PrincipalComponent implements OnInit {
 
   dias: string[] = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  mesSeleccionado: number = new Date().getMonth(); // 🔹 Mes actual
-  fechas: Date[] = [];
-  
-  generarCalendario() {
-    this.fechas = []; // 🔹 Vaciar fechas anteriores
-    const fechaActual = new Date();
-    const primerDiaMes = new Date(fechaActual.getFullYear(), this.mesSeleccionado, 1);
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), this.mesSeleccionado + 1, 0);
 
-    for (let i = primerDiaMes.getDate(); i <= ultimoDiaMes.getDate(); i++) {
-      this.fechas.push(new Date(fechaActual.getFullYear(), this.mesSeleccionado, i));
-    }
-  }
+  anioSeleccionado: number = new Date().getFullYear();
+  fechas: (Date | null)[] = [];
 
+  listas: any[] = [];
+  tareas: Tarea[] = [];
+  resumen: string = 'listas';
 
-  cambiarMes() {
-    this.generarCalendario(); // 🔹 Actualizar fechas cuando el usuario elige un mes
-  }
-
-
-  abrirListaDelDia(fecha: Date) {
-    const listaId = `${fecha.getDate()}-${fecha.getMonth() + 1}-${fecha.getFullYear()}`; // 🔹 Formato: DD-MM-YYYY
-    this.router.navigate(['/panel', listaId]); // 🔹 Redirigir a la lista diaria en /panel/(listaid)
-  }
-
+  constructor(private listasService: ListasService, private router: Router) {}
 
   ngOnInit(): void {
-    this.listasService.getListas().subscribe(response => {
-      this.listas = response;
-      console.log(response);
-    });
+    // Carga inicial de datos
+    this.listasService.getListas().subscribe(response => this.listas = response);
+    this.generarCalendario();
   }
 
+  esHoy(fecha: Date): boolean {
+    const hoy = new Date();
+    return fecha.getUTCFullYear() === hoy.getUTCFullYear() &&
+           fecha.getUTCMonth() === hoy.getUTCMonth() &&
+           fecha.getUTCDate() === hoy.getUTCDate();
+}
 
-  resumen: string = "listas";
+  // En tu componente
+mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
 
-  cambiarVista(vista: string) {
-    this.resumen = vista; // 🔹 Cambia entre "calendar" y "listas"
+generarCalendario(): void {
+    const año = Number(this.anioSeleccionado); // Conversión explícita
+    const mes = Number(this.mesSeleccionado);   // Conversión explícita
+
+    this.fechas = [];
+    
+    // 1. Calcular fechas en UTC
+    const primerDia = new Date(Date.UTC(año, mes, 1));
+    const ultimoDia = new Date(Date.UTC(año, mes + 1, 0));
+    
+    // 2. Calcular offset
+    const offsetInicial = (primerDia.getUTCDay() + 6) % 7;
+    
+    // 3. Llenar nulls iniciales
+    this.fechas = Array(offsetInicial).fill(null);
+    
+    // 4. Agregar días del mes CORRECTO
+    const diasMes = ultimoDia.getUTCDate();
+    for (let dia = 1; dia <= diasMes; dia++) {
+        this.fechas.push(new Date(Date.UTC(año, mes, dia)));
+    }
+    
+    // 5. Completar con nulls
+    const totalCeldas = Math.ceil(this.fechas.length / 7) * 7;
+    while (this.fechas.length < totalCeldas) {
+        this.fechas.push(null);
+    }
+}
+
+  cambiarMes(): void {
+    this.generarCalendario();
   }
 
+  abrirListaDelDia(fecha: Date | null): void {
+    if (!fecha) return;
+    // Usar métodos UTC
+    const listaId = `${fecha.getUTCDate()}-${fecha.getUTCMonth() + 1}-${fecha.getUTCFullYear()}`;
+    this.router.navigate(['/panel', listaId]);
+  }
 
-  //datos de prueba
-  listas: any[] = [
-    /*
-    {
-      created_at: "2025-04-26T22:23:00.000000Z",
-      id : 4,
-      name : "Mi anteprimera lista",
-      tareas : [
-        { 
-          id: 1, 
-          title: 'Leer sobre álgebra lineal', 
-          description: 'Revisar el capítulo de matrices y determinantes.', 
-          progreso: 30, 
-          list_id: 4,
-          padre: null,
-          created_at : "2025-04-26T22:25:36.000000Z",
-          updated_at : "2025-04-26T22:25:36.000000Z"
-        }
-      ],
-      updated_at : "2025-04-26T22:23:00.000000Z",
-      user_id : 3
-    }
-      */
-  ];
-
-  tareas: Tarea[] = [
-    {
-      id: 1,
-      title: "Leer sobre álgebra lineal",
-      description: "Revisar el capítulo de matrices y determinantes.",
-      progreso: '',
-      list_id: 4,
-      padre: null,
-      created_at: "2025-04-26T22:25:36.000000Z",
-      updated_at: "2025-04-26T22:25:36.000000Z",
-      subtareas: [
-        {
-          id: 2,
-          title: "Ejercicios de algebra",
-          description: null,
-          progreso: '',
-          list_id: 4,
-          padre: 1,
-          subtareas: [],
-          created_at: null,
-          updated_at: null
-        }
-      ]
-    },
-    {
-        id: 3,
-        title: "Estudiar Fisica",
-        description: null,
-        progreso: '',
-        list_id: 4,
-        padre: null,
-        created_at: null,
-        updated_at: null,
-        subtareas: []
-    }
-  ]; // 🔹 Asegura que Angular reconozca `tareas`
+  cambiarVista(vista: string): void {
+    this.resumen = vista;
+  }
 
   seleccionarLista(listaId: number): void {
-    this.router.navigate(['/panel', listaId]); // 🔹 Redirige al usuario con el ID de la lista
+    this.router.navigate(['/panel', listaId]);
   }
-
 }
