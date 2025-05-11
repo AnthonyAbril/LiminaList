@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Tarea } from './tarea';
+import { TareasService } from '../../../services/tareas.service';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -16,6 +17,7 @@ export class TareaComponent {
   @Input() subtareas: Tarea[] = [];
   @Input() nivel = 0;
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
+  @Input() listaid:any = 0 ;
 
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
@@ -32,15 +34,26 @@ export class TareaComponent {
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
+  constructor(private tareasService: TareasService){};
+
   guardarNombre(): void {
-    if (this.nombreTemporal.trim() !== '') { // Validar que el nombre no sea vacío
-      this.actualizarNombre.emit(this.nombreTemporal);
-      this.title = this.nombreTemporal; // Actualizar el nombre actual
+    if (this.nombreTemporal.trim() !== '') {
+      this.tareasService.editarTarea(this.id, { title: this.nombreTemporal }).subscribe({
+        next: (response) => {
+          console.log('✅ Título actualizado:', response);
+          this.title = response.title; // 🔹 Sincronizar título actualizado
+        },
+        error: (error) => {
+          console.error('❌ Error al actualizar título:', error);
+        }
+      });
     } else {
-      alert('El nombre no puede estar vacío'); // Mostrar un mensaje al usuario
+      alert('El nombre no puede estar vacío');
     }
     this.editandoNombre = false;
   }
+
+
 
   comenzarEdicion(event: MouseEvent): void {
     event.preventDefault();
@@ -107,6 +120,7 @@ export class TareaComponent {
   }
 
   agregarSubtarea(): void {
+      console.log('➡ Ejecutando agregarSubtarea()');
     if (this.animacionEnCurso) return;
 
     const nuevaSubtarea: Tarea = {
@@ -114,14 +128,16 @@ export class TareaComponent {
       title: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
       progreso: '',
-      list_id: 4,
+      list_id: this.listaid,
       padre: this.id,
       created_at: null,
       updated_at: null,
       terminado: false
     };
 
+  console.log('➡ Subtarea a enviar:', nuevaSubtarea);
 
+  //empieza proceso de añadir tarea
   
     const estabaCerrado = !this.mostrarSubtareas;
     const eraVacia = this.subtareas.length === 0;
@@ -131,7 +147,7 @@ export class TareaComponent {
     }
   
     this.subtareas = [...this.subtareas, nuevaSubtarea];
-  
+
     if (eraVacia) {
       this.mostrarSubtareas = true;
       const element = this.subtareasContainer?.nativeElement;
@@ -157,6 +173,27 @@ export class TareaComponent {
     } else {
       this.postAnimarAltura(true);
     }
+
+    //termina proceso de añadir tarea
+
+    //se añade subtarea a backend
+    this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
+    next: (response) => {
+      console.log('✅ Subtarea guardada en el backend:', response);
+
+      // 🔹 Aquí verifica si se está duplicando
+      if (!response.title || response.title.trim() === '') {
+        console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');
+        return;
+      }
+
+    },
+    error: (error) => {
+      console.error('❌ Error al guardar subtarea:', error);
+    }
+  });
+
+
   }
   
 
@@ -219,6 +256,8 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
   }
 
   eliminarSubtarea(index: number): void {
+    const tareaEliminada = this.subtareas[index];
+
     if (this.animacionEnCurso) return;
   
     this.preAnimarAltura();
@@ -232,7 +271,18 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
     } else {
       this.postAnimarAltura(true);
     }
+
+    this.tareasService.eliminarTarea(tareaEliminada.id).subscribe({
+      next: () => {
+        console.log('✅ Tarea eliminada correctamente');
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar tarea:', error);
+      }
+    });
   }
+
+
 
   private animarAltura(expandir: boolean, instantaneo: boolean = false): void {
     const element = this.subtareasContainer?.nativeElement;

@@ -3,7 +3,7 @@
 <ul>
   <li class="boton-agregar">
     <h2>Lista Puntual</h2>
-    <button (click)="agregarTarea()">
+    <button (click)="(editar)?agregarTarea():null">
       <a *ngIf="editar">+</a>
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
@@ -16,6 +16,7 @@
         [subtareas]="tarea.subtareas"
         (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
         [editar]="editar"
+        [listaid]="tarea.list_id"
       >
     </app-tarea>
   </li>
