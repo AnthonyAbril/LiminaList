@@ -25,18 +25,20 @@ class ListaController extends Controller
             return response()->json(['message' => 'Lista no encontrada'], 404);
         }
 
-        // 🔹 Recorre todas las tareas y subtareas para garantizar que `subtareas` exista como un array vacío si no tiene hijos
+        // 🔹 Recorre todas las tareas y subtareas para garantizar que `subtareas` exista como un array vacío
         $lista->tareas->each(function ($tarea) {
+            if (!isset($tarea->subtareas)) {
+                $tarea->subtareas = collect([]);
+            }
+
             $tarea->subtareas->each(function ($subtarea) {
                 if (!isset($subtarea->subtareas)) {
-                    $subtarea->subtareas = [];
+                    $subtarea->subtareas = collect([]);
                 }
             });
-
-            if (!isset($tarea->subtareas)) {
-                $tarea->subtareas = [];
-            }
         });
+
+
 
         return response()->json($lista);
     }

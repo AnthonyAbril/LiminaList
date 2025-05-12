@@ -10,9 +10,16 @@ class Tarea extends Model
     use HasFactory;
     
     protected $table = 'tasks'; // ¡IMPORTANTE! Laravel intentará usar "listas", así que forzamos "lists"
-    protected $fillable = ['title', 'description', 'progreso', 'list_id', 'padre'];
+    
+    
+    protected $primaryKey = 'id'; // 🔹 Definir la clave primaria manualmente
+    public $incrementing = false; // 🔹 Indicar que no es autoincremental
+    protected $keyType = 'integer'; // 🔹 Asegurar que el ID es de tipo entero
 
-    protected $appends = ['title'];
+
+    protected $fillable = ['id','title', 'description', 'progreso', 'list_id', 'padre'];
+
+    //protected $appends = ['title'];
 
     public function getTitleAttribute()
     {

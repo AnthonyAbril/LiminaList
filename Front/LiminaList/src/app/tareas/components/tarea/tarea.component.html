@@ -53,10 +53,11 @@
           <app-tarea
             [id]="subtarea.id"
             [title]="subtarea.title"
-            [subtareas]="subtarea.subtareas"
+            [subtareas]="subtarea.subtareas || []"
             [nivel]="nivel + 1"
             (eliminar)="eliminarSubtarea(i)"
             [editar]="editar"
+            [listaid]="subtarea.list_id"
           ></app-tarea>
         </li>
       </ul>

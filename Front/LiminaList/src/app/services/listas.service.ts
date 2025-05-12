@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { Lista } from '../listas/lista';
+import { Tarea } from '../tareas/components/tarea/tarea';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class ListasService {
   }
 
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  return this.http.get(`http://localhost:8000/api/lists/${listaId}`, { headers });
+  return this.http.get<{ tareas: Tarea[] }>(`http://localhost:8000/api/lists/${listaId}`, { headers });
 }
 
   guardarCambiosLista(lista: Lista) {

@@ -4,6 +4,7 @@ import { ListasService } from '../services/listas.service';
 
 import { HttpClient } from '@angular/common/http';
 import { Lista } from '../listas/lista';
+import { Tarea } from '../tareas/components/tarea/tarea';
 
 @Component({
   selector: 'app-panel',
@@ -30,12 +31,17 @@ export class PanelComponent {
     const listaId = this.route.snapshot.paramMap.get('id');
     if (listaId) {
       this.listasService.getListaPorId(listaId).subscribe(response => {
-        this.listaSeleccionada = response;
+      this.listaSeleccionada = response;
+      
+      this.tareas = response.tareas.map((tarea: Tarea) => ({
+        ...tarea,
+        subtareas: tarea.subtareas || [] // 🔹 Asegurar que siempre es un array
+      }));
 
-        this.tareas = response.tareas;
 
-        console.log(this.tareas)
-      });
+
+      console.log('Tareas cargadas:', this.tareas);
+    });
     }
   }
 

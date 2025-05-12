@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary(); // 🔹 Evita autoincrement, permite IDs desde el frontend
+            //$table->id();
             $table->string('title');
             $table->text('description')->nullable();
             $table->integer('progreso')->nullable();

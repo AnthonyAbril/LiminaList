@@ -137,6 +137,23 @@ export class TareaComponent {
 
   console.log('➡ Subtarea a enviar:', nuevaSubtarea);
 
+    //se añade subtarea a backend
+    this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
+    next: (response) => {
+      console.log('✅ Subtarea guardada en el backend:', response);
+
+      // 🔹 Aquí verifica si se está duplicando
+      if (!response.title || response.title.trim() === '') {
+        console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');
+        return;
+      }
+
+    },
+    error: (error) => {
+      console.error('❌ Error al guardar subtarea:', error);
+    }
+  });
+
   //empieza proceso de añadir tarea
   
     const estabaCerrado = !this.mostrarSubtareas;
@@ -176,22 +193,7 @@ export class TareaComponent {
 
     //termina proceso de añadir tarea
 
-    //se añade subtarea a backend
-    this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
-    next: (response) => {
-      console.log('✅ Subtarea guardada en el backend:', response);
-
-      // 🔹 Aquí verifica si se está duplicando
-      if (!response.title || response.title.trim() === '') {
-        console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');
-        return;
-      }
-
-    },
-    error: (error) => {
-      console.error('❌ Error al guardar subtarea:', error);
-    }
-  });
+    
 
 
   }
