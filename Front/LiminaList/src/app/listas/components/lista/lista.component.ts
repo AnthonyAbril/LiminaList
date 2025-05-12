@@ -195,7 +195,7 @@ export class ListaComponent {
   listaId;
   
   constructor(private route: ActivatedRoute, private tareasService: TareasService) {
-    this.listaId = Number(this.route.snapshot.paramMap.get('id')); // 🔹 Convertir a número al obtenerlo
+    this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
 
   // Método para añadir una nueva subtarea
@@ -205,7 +205,7 @@ export class ListaComponent {
       title: `Tarea ${this.tareas.length + 1}`, // title dinámico
       description: null,
       progreso: '',
-      list_id: this.listaId ? Number(this.listaId) : undefined,
+      list_id: this.listaId,
       padre: null,
       created_at: null,
       updated_at: null,

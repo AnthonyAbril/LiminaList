@@ -15,7 +15,7 @@ class ListaController extends Controller
 
     public function show($id)
     {
-        $lista = auth()->user()->listas()->where('id', $id)
+        $lista = Auth::user()->listas()->where('id', $id)
             ->with(['tareas' => function ($query) {
                 $query->whereNull('padre')->with(['subtareas']);
             }])

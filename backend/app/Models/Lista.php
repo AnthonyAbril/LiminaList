@@ -11,8 +11,14 @@ class Lista extends Model
 {
     use HasFactory;
     
-    protected $table = 'lists'; 
-    protected $fillable = ['name', 'user_id'];
+    protected $table = 'lists';     
+    protected $primaryKey = 'id';
+    public $incrementing = false; // 🔹 No es autoincremental
+    protected $keyType = 'string'; // 🔹 Ahora es un string
+
+
+    
+    protected $fillable = ['id', 'name', 'user_id'];
 
     public function tareas(): HasMany
     {

@@ -25,7 +25,11 @@ export class PrincipalComponent implements OnInit {
 
   ngOnInit(): void {
     // Carga inicial de datos
-    this.listasService.getListas().subscribe(response => this.listas = response);
+    this.listasService.getListas().subscribe({
+      next: response => this.listas = response,
+      error: err => console.error('Error cargando listas', err)
+    });
+
     this.generarCalendario();
   }
 
@@ -74,16 +78,26 @@ generarCalendario(): void {
 
   abrirListaDelDia(fecha: Date | null): void {
     if (!fecha) return;
-    // Usar métodos UTC
-    const listaId = `${fecha.getUTCDate()}-${fecha.getUTCMonth() + 1}-${fecha.getUTCFullYear()}`;
-    this.router.navigate(['/panel', listaId]);
+    const listaId = `${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
+    this.router.navigate(['/panel', listaId]); // Ahora listaId es un string
+}
+
+  crearListaIndividual(nombre: string) {
+    const listaId = `${new Date().getUTCFullYear()}${(new Date().getUTCMonth() + 1).toString().padStart(2, '0')}${new Date().getUTCDate().toString().padStart(2, '0')}`;
+    
+    this.listasService.crearLista({ id: listaId, name: nombre, user_id: 1, tareas: [] }).subscribe({
+        next: (response) => console.log('✅ Lista creada:', response),
+        error: (error) => console.error('❌ Error al crear la lista:', error)
+    });
   }
+
+
 
   cambiarVista(vista: string): void {
     this.resumen = vista;
   }
 
-  seleccionarLista(listaId: number): void {
+  seleccionarLista(listaId: string): void { // Cambiado de number a string
     this.router.navigate(['/panel', listaId]);
   }
 }

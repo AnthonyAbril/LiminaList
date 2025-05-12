@@ -17,21 +17,26 @@ export class ListasService {
     return this.http.get(this.apiUrl, { headers });
   }
 
-  getListaPorId(listaId: string): Observable<any> {
-  const token = localStorage.getItem('token'); // 🔹 Obtener el token del almacenamiento local
-  if (!token) {
-    console.error('❌ No hay token de autenticación, redirigir al login.');
-    return throwError(() => new Error('Usuario no autenticado'));
+  getListaPorId(listaId: string): Observable<any> { // Cambiado a string
+    const token = localStorage.getItem('token'); 
+    if (!token) {
+      console.error('❌ No hay token de autenticación, redirigir al login.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<{ tareas: Tarea[] }>(`${this.apiUrl}/${listaId}`, { headers }); // Asegurar que listaId es string
   }
 
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  return this.http.get<{ tareas: Tarea[] }>(`http://localhost:8000/api/lists/${listaId}`, { headers });
-}
+  crearLista(lista: Lista): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    return this.http.post(this.apiUrl, lista, { headers });
+  }
 
   guardarCambiosLista(lista: Lista) {
-    if (!lista) return; // 🔹 Asegurar que la lista existe antes de enviarla
+    if (!lista) return; 
 
-    this.http.put(`http://localhost:8000/api/lists/${lista.id}`, lista).subscribe({
+    this.http.put(`${this.apiUrl}/${lista.id}`, lista).subscribe({
       next: (response) => {
         console.log('✅ Lista guardada:', response);
       },
@@ -39,5 +44,5 @@ export class ListasService {
         console.error('❌ Error al guardar la lista:', error);
       }
     });
-  }
+}
 }

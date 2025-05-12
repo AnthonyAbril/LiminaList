@@ -1,12 +1,12 @@
 export interface Tarea {
     id: number;
     title: string;
-    description?: string | null; // 🔹 Permitir `null`
+    description?: string | null;
     progreso: string | null;
-    list_id?: number;
+    list_id?: string | null; // Permitir `null`
     padre?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
     subtareas: Tarea[];
-    terminado?: boolean; // 🔹 Agregado si está presente en la API
-  }
+    terminado?: boolean;
+}

@@ -1,10 +1,10 @@
 import { Tarea } from "../tareas/components/tarea/tarea";
 
 export interface Lista {
-    id: number;
+    id: string; // Cambiado de number a string
     name: string;
     user_id: number;
     created_at?: string | null;
     updated_at?: string | null;
-    tareas: Tarea[]; // 🔹 Relación con las tareas dentro de la lista
-  }
+    tareas: Tarea[];
+}

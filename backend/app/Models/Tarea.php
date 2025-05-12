@@ -14,7 +14,7 @@ class Tarea extends Model
     
     protected $primaryKey = 'id'; // 🔹 Definir la clave primaria manualmente
     public $incrementing = false; // 🔹 Indicar que no es autoincremental
-    protected $keyType = 'integer'; // 🔹 Asegurar que el ID es de tipo entero
+    protected $keyType = 'int'; // 🔹 Asegurar que el ID es de tipo entero
 
 
     protected $fillable = ['id','title', 'description', 'progreso', 'list_id', 'padre'];
@@ -27,7 +27,7 @@ class Tarea extends Model
     }
 
     public function lista() {
-        return $this->belongsTo(Lista::class, 'list_id');
+        return $this->belongsTo(Lista::class, 'list_id', 'id');
     }
 
     public function subtareas() {
