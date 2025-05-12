@@ -14,7 +14,7 @@
         [id]="tarea.id"
         [title]="tarea.title"
         [subtareas]="tarea.subtareas"
-        (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
+        (eliminar)="eliminarTarea(tarea)"
         [editar]="editar"
         [listaid]="tarea.list_id"
       >

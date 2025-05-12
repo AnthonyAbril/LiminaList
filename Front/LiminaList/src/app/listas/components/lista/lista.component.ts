@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
+import { ActivatedRoute } from '@angular/router';
+import { TareasService } from '../../../services/tareas.service';
 
 @Component({
   selector: 'app-lista',
@@ -190,6 +192,12 @@ export class ListaComponent {
       */
   ];
 
+  listaId;
+  
+  constructor(private route: ActivatedRoute, private tareasService: TareasService) {
+    this.listaId = Number(this.route.snapshot.paramMap.get('id')); // 🔹 Convertir a número al obtenerlo
+  }
+
   // Método para añadir una nueva subtarea
   agregarTarea(): void {
     const nuevaTarea = {
@@ -197,14 +205,46 @@ export class ListaComponent {
       title: `Tarea ${this.tareas.length + 1}`, // title dinámico
       description: null,
       progreso: '',
-      list_id: 4,
+      list_id: this.listaId ? Number(this.listaId) : undefined,
       padre: null,
       created_at: null,
       updated_at: null,
       subtareas: [] 
     };
-    this.tareas.push(nuevaTarea); // Añade la nueva subtarea al array
     console.log(this.tareas)
+
+    //se añade subtarea a backend
+    this.tareasService.agregarTarea(nuevaTarea).subscribe({
+      next: (response) => {
+        console.log('✅ Tarea guardada en el backend:', response);
+
+        // 🔹 Aquí verifica si se está duplicando
+        if (!response.title || response.title.trim() === '') {
+          console.warn('⚠ Tarea sin título detectada, no se agrega al frontend.');
+          return;
+        }
+
+      },
+      error: (error) => {
+        console.error('❌ Error al guardar tarea:', error);
+      }
+    });
+
+    this.tareas.push(nuevaTarea); // Añade la nueva Tarea al array
+  }
+
+  eliminarTarea(tareaEliminada: Tarea): void {
+  
+    this.tareas.splice(this.tareas.indexOf(tareaEliminada), 1);
+
+    this.tareasService.eliminarTarea(tareaEliminada.id).subscribe({
+      next: () => {
+        console.log('✅ Tarea eliminada correctamente');
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar tarea:', error);
+      }
+    });
   }
 
   toggleState() {

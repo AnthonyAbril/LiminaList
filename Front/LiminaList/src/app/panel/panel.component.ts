@@ -35,7 +35,7 @@ export class PanelComponent {
       
       this.tareas = response.tareas.map((tarea: Tarea) => ({
         ...tarea,
-        subtareas: tarea.subtareas || [] // 🔹 Asegurar que siempre es un array
+        subtareas: Array.isArray(tarea.subtareas) ? tarea.subtareas : [] // 🔹 Asegurar
       }));
 
 
