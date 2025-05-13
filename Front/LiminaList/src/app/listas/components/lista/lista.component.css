@@ -4,6 +4,10 @@
     border-top-right-radius: 52px;
 }
 
+ul{
+    padding: 0;
+}
+
 .lista {
     font-size: larger;
 }

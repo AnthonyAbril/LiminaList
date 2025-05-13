@@ -1,6 +1,5 @@
 <div id="placa">
-    <h1>Lista de cosas que hacer
-    </h1>
+    <h1>{{this.listaSeleccionada?.name}}</h1>
 </div>
 
 <div class="contenedor">
@@ -8,7 +7,9 @@
     <app-reloj></app-reloj>
   </div>
   <div class="lista-container">
-    <app-lista [tareas]="this.tareas" [editar]="editar"></app-lista>
+    <div class="scroll-interno">
+      <app-lista [tareas]="this.tareas" [editar]="editar"></app-lista>
+    </div>
   </div>
 </div>
   
