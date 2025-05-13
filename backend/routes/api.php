@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/lists', [ListaController::class, 'index']); // Obtener listas del usuario autenticado
     Route::get('/lists/{id}', [ListaController::class, 'show']); // 🔹 Obtener una lista específica
     Route::put('/lists/{id}', [ListaController::class, 'update']); 
+    Route::post('/lists', [ListaController::class, 'store']); // 🔹 Asegurar que `store` está presente
+    Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
 
     Route::get('/tareas', [TareaController::class, 'index']); // Obtener todas las tareas
     Route::get('/tareas/{id}', [TareaController::class, 'show']); // Obtener una tarea específica

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -46,7 +46,14 @@ export class AuthService {
 
   
   login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password });
+    return this.http.post<{ access_token: string; user: { id: number } }>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(response => {
+        if (response.access_token && response.user.id) {
+          sessionStorage.setItem('token', response.access_token);
+          sessionStorage.setItem('user_id', response.user.id.toString()); // 🔹 Guardar como string
+        }
+      })
+    );
   }
 
   saveToken(token: string): void {
@@ -69,6 +76,11 @@ export class AuthService {
   getUserData(): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
     return this.http.get(`${this.apiUrl}/user`, { headers });
+  }
+
+  
+  getUserId(): number {
+    return Number(sessionStorage.getItem('user_id')) || 0; // 🔹 Si `null`, asigna 0 como valor por defecto
   }
 
   

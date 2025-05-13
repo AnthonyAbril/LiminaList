@@ -14,11 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('lists', function (Blueprint $table) {
-            $table->string('id', 8)->primary();
+            $table->string('id', 8);
             $table->string('name');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-        });        
+
+            $table->primary(['id', 'user_id']); // 🔹 La combinación de `id` + `user_id` es única
+        }); 
     }
 
     /**

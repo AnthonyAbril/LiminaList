@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
+import { AuthService } from '../../../services/auth.service';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -34,7 +35,7 @@ export class TareaComponent {
   readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
-  constructor(private tareasService: TareasService){};
+  constructor(private tareasService: TareasService, private authService: AuthService){};
 
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') {
@@ -129,6 +130,7 @@ export class TareaComponent {
       subtareas: [],
       progreso: '',
       list_id: this.listaid,
+      user_id: Number(this.authService.getUserId()), // 🔹 Si `null`, asigna un valor por defecto
       padre: this.id,
       created_at: null,
       updated_at: null,

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListasService } from '../../../services/listas.service';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
+import { HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-principal',
@@ -21,7 +23,7 @@ export class PrincipalComponent implements OnInit {
   tareas: Tarea[] = [];
   resumen: string = 'listas';
 
-  constructor(private listasService: ListasService, private router: Router) {}
+  constructor(private authService:AuthService, private listasService: ListasService, private router: Router) {}
 
   ngOnInit(): void {
     // Carga inicial de datos
@@ -78,9 +80,20 @@ generarCalendario(): void {
 
   abrirListaDelDia(fecha: Date | null): void {
     if (!fecha) return;
+
     const listaId = `${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
-    this.router.navigate(['/panel', listaId]); // Ahora listaId es un string
-}
+
+    this.listasService.getListaPorId(listaId).subscribe({
+      next: response => {
+        console.log('✅ Lista encontrada:', response);
+        this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
+      },
+      error: () => {
+        console.warn('⚠ Lista no encontrada, creando nueva automáticamente:', listaId);
+        this.crearListaDelDia(listaId, fecha); // 🔹 Crear lista automáticamente
+      }
+    });
+  }
 
   crearListaIndividual(nombre: string) {
     const listaId = `${new Date().getUTCFullYear()}${(new Date().getUTCMonth() + 1).toString().padStart(2, '0')}${new Date().getUTCDate().toString().padStart(2, '0')}`;
@@ -91,7 +104,31 @@ generarCalendario(): void {
     });
   }
 
+  crearListaDelDia(listaId: string, fecha: Date): void {
+    const nombreLista = `${fecha.getUTCDate()}/${fecha.getUTCMonth() + 1}/${fecha.getUTCFullYear()}`;
+    const token = sessionStorage.getItem('token');
+    const userId = Number(this.authService.getUserId());
 
+    if (!token || !userId) {
+      console.error('❌ No hay sesión activa.');
+      return;
+    }
+
+    const listaData = { id: listaId, name: nombreLista, user_id: userId, tareas: [] };
+
+    console.log('📌 Datos enviados:', listaData); // 🔹 Inspección de datos antes de enviar
+
+    this.listasService.crearLista(listaData).subscribe({
+      next: response => {
+        console.log('✅ Lista del día creada:', response);
+        this.router.navigate(['/panel', listaId]);
+      },
+      error: error => {
+        console.error('❌ Error al crear la lista del día:', error);
+        console.log('User ID en frontend:', Number(this.authService.getUserId())); 
+      }
+    });
+  }
 
   cambiarVista(vista: string): void {
     this.resumen = vista;

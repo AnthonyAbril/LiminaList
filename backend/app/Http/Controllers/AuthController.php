@@ -50,7 +50,12 @@ class AuthController extends Controller
 
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
+            'user' => [ 
+                'id' => $user->id,  // 🔹 Enviar `user_id`
+                'name' => $user->name,
+                'email' => $user->email
+            ]
         ]);
     }
 }

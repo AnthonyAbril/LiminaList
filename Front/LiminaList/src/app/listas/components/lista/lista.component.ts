@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { ActivatedRoute } from '@angular/router';
 import { TareasService } from '../../../services/tareas.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-lista',
@@ -194,25 +195,30 @@ export class ListaComponent {
 
   listaId;
   
-  constructor(private route: ActivatedRoute, private tareasService: TareasService) {
+  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
 
   // Método para añadir una nueva subtarea
   agregarTarea(): void {
     const nuevaTarea = {
-      id: Date.now(),
+      //id: Date.now(),const nuevaTarea = {
+  id: Math.floor(Math.random() * 99999999), // 🔹 Mantenerlo dentro de `unsignedBigInteger`
       title: `Tarea ${this.tareas.length + 1}`, // title dinámico
       description: null,
       progreso: '',
       list_id: this.listaId,
+      user_id: Number(this.authService.getUserId()), // 🔹 Asegurar que `user_id` se envía correctamente
       padre: null,
       created_at: null,
       updated_at: null,
       subtareas: [] 
     };
-    console.log(this.tareas)
+    console.log(this.tareas);
 
+    console.log('Datos enviados:', nuevaTarea);
+    console.log('list_id:', nuevaTarea.list_id);
+    console.log('user_id:', nuevaTarea.user_id);
     //se añade subtarea a backend
     this.tareasService.agregarTarea(nuevaTarea).subscribe({
       next: (response) => {

@@ -19,10 +19,12 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('progreso')->nullable();
             $table->string('list_id', 8);
+            $table->unsignedBigInteger('user_id')->default(1); // 🔹 Ahora también necesitamos `user_id` para la relación
             $table->timestamps();
 
-            // 🔹 Definir la clave foránea para `list_id`
-            $table->foreign('list_id')->references('id')->on('lists')->onDelete('cascade');
+
+            // 🔹 Clave foránea corregida para referenciar `lists(id, user_id)`
+            $table->foreign(['list_id', 'user_id'])->references(['id', 'user_id'])->on('lists')->onDelete('cascade');
 
             // 🔹 Asegurar que `id` también es clave única antes de la relación recursiva
             $table->unique('id');  // 🔹 Agrega índice único para evitar error de clave foránea

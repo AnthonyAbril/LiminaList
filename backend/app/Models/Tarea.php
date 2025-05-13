@@ -31,6 +31,8 @@ class Tarea extends Model
     }
 
     public function subtareas() {
-        return $this->hasMany(Tarea::class, 'padre'); // 🔹 Relación recursiva entre tareas
+        return $this->hasMany(Tarea::class, 'padre')->with('subtareas'); // 🔹 Recursividad asegurada
     }
+
+
 }
