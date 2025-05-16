@@ -44,14 +44,23 @@ export class LoginComponent {
   }
 
   iniciarSesion(): void {
-    this.intentandoLogin = true; // 🔹 Solo afecta Login
+    this.intentandoLogin = true;
     this.errorLogin = '';
-  
+
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: (response) => {
           if (response.access_token) {
             this.authService.saveToken(response.access_token);
+            
+             if (response.user?.id) { // 🔹 Usar `response.user.id`
+                sessionStorage.setItem('user_id', String(response.user.id)); 
+              } else {
+                console.error('❌ user_id no recibido en la respuesta del backend');
+              }
+
+
+            
             this.router.navigate(['/home']);
           } else {
             this.errorLogin = '❌ Credenciales incorrectas';
@@ -65,9 +74,9 @@ export class LoginComponent {
   }
 
   registrarse(): void {
-    this.intentandoRegistro = true; // 🔹 Solo afecta Registro
+    this.intentandoRegistro = true;
     this.errorRegistro = '';
-  
+
     if (this.registroForm.valid) {
       this.authService.register(
         this.registroForm.value.name,
@@ -82,6 +91,14 @@ export class LoginComponent {
             next: (response) => {
               if (response.access_token) {
                 this.authService.saveToken(response.access_token);
+                
+                // 🔹 Guardar `user_id` al registrarse y autenticarse
+                if (response.user?.id) { // 🔹 Usar `response.user.id`
+                    sessionStorage.setItem('user_id', String(response.user.id)); 
+                  } else {
+                    console.error('❌ user_id no recibido en la respuesta del backend');
+                  }
+                
                 this.router.navigate(['/home']);
               } else {
                 this.errorRegistro = '❌ Error al autenticar después del registro';

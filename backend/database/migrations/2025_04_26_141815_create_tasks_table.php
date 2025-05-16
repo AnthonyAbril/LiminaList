@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('progreso')->nullable();
             $table->string('list_id', 8);
-            $table->unsignedBigInteger('user_id')->default(1); // 🔹 Ahora también necesitamos `user_id` para la relación
+            $table->unsignedBigInteger('user_id'); // 🔹 Ahora también necesitamos `user_id` para la relación
             $table->timestamps();
 
 

@@ -20,8 +20,8 @@ class Lista extends Model
     
     protected $fillable = ['id', 'name', 'user_id'];
 
-    public function tareas(): HasMany
-    {
-        return $this->hasMany(Tarea::class, 'list_id');
+    public function tareas() {
+        //return $this->hasMany(Tarea::class, 'list_id');
+        return $this->hasMany(Tarea::class, 'list_id')->where('user_id', auth()->id());
     }
 }

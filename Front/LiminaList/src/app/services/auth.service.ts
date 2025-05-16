@@ -51,6 +51,7 @@ export class AuthService {
         if (response.access_token && response.user.id) {
           sessionStorage.setItem('token', response.access_token);
           sessionStorage.setItem('user_id', response.user.id.toString()); // 🔹 Guardar como string
+          console.log(response.user.id.toString());
         }
       })
     );

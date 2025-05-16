@@ -16,8 +16,9 @@ class ListaController extends Controller
     public function show($id)
     {
         $lista = Lista::where('id', $id)->where('user_id', Auth::id())->with(['tareas' => function ($query) {
-            $query->whereNull('padre')->with(['subtareas']);
+            $query->where('user_id', Auth::id())->whereNull('padre')->with('subtareas'); // 🔹 Filtrar por usuario
         }])->first();
+
 
         if (!$lista) {
             return response()->json(['message' => 'Lista no encontrada'], 404);
@@ -41,33 +42,20 @@ class ListaController extends Controller
         return response()->json($lista);
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'id' => 'required|string',
-                'name' => 'required|string|max:255',
-                'user_id' => 'required|exists:users,id', // 🔹 Verifica que el usuario existe en BD
-            ]);
+    public function store(Request $request) {
+        $validatedData = $request->validate([
+            'id' => 'required|string',
+            'name' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-            // 🔹 Verificar si ya existe una lista con este `id` para este usuario
-            $existeLista = Lista::where('id', $request->id)->where('user_id', $request->user_id)->exists();
-
-            if ($existeLista) {
-                return response()->json(['message' => 'Ya tienes una lista creada para esta fecha'], 409);
-            }
-
-
-
-
-            $lista = Lista::create($validatedData);
-
-            return response()->json($lista, 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500); // 🔹 Captura el error y lo devuelve
+        // 🔹 Verificar si ya existe la lista para este usuario
+        if (Lista::where('id', $validatedData['id'])->where('user_id', $validatedData['user_id'])->exists()) {
+            return response()->json(['message' => 'Ya tienes una lista creada para esta fecha'], 409);
         }
 
-
+        // 🔹 Crear la lista
+        return response()->json(Lista::create($validatedData), 201);
     }
 
     public function update(Request $request, $id)

@@ -49,7 +49,11 @@ class TareaController extends Controller
     }
 
     public function destroy($id) {
-        Tarea::destroy($id);
+        $tarea = Tarea::findOrFail($id);
+        $tarea->delete();
+
         return response()->json(['message' => 'Tarea eliminada'], 200);
     }
+
+
 }
