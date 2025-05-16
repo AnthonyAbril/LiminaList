@@ -18,7 +18,6 @@ import { ListaVisorComponent } from './lista-visor/lista-visor.component';
   declarations: [
     AppComponent,
     LoadingComponent,
-    ListaVisorComponent,
   ],
   imports: [
     HttpClientModule,
@@ -27,10 +26,6 @@ import { ListaVisorComponent } from './lista-visor/lista-visor.component';
     FormsModule, // ✅ Agregar aquí para habilitar [(ngModel)]
     ReactiveFormsModule,  // ✅ Esto permitirá el uso de formularios reactivos en la aplicación.
     AppRoutingModule,
-
-    PrincipalModule,
-    ListasModule,
-    TareasModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
