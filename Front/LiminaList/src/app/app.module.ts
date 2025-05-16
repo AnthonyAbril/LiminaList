@@ -12,11 +12,13 @@ import { PrincipalModule } from './principal/principal.module';
 import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './loading/components/loading/loading.component';
+import { ListaVisorComponent } from './lista-visor/lista-visor.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoadingComponent,
+    ListaVisorComponent,
   ],
   imports: [
     HttpClientModule,

@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ListasService } from '../services/listas.service';
 
+
 @Component({
-  selector: 'app-listas',
+  selector: 'app-lista-visor',
   standalone: false,
-  templateUrl: './listas.component.html',
-  styleUrls: ['./listas.component.css']
+  templateUrl: './lista-visor.component.html',
+  styleUrl: './lista-visor.component.css'
 })
-export class ListasComponent implements OnInit {
+
+export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
 
