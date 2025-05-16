@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
 
+            $table->enum('tipo', ['diaria', 'individual'])->default('individual'); // 🔹 Distinguir entre lista diaria e individual
+
             $table->primary(['id', 'user_id']); // 🔹 La combinación de `id` + `user_id` es única
         }); 
     }

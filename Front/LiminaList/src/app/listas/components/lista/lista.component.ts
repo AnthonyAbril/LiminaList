@@ -8,7 +8,7 @@ import { AuthService } from '../../../services/auth.service';
   selector: 'app-lista',
   standalone: false,
   templateUrl: './lista.component.html',
-  styleUrl: './lista.component.css'
+  styleUrls: ['./lista.component.css'] // 🔹 Corregir aquí
 })
 export class ListaComponent {
   @Input() editar = false; // 🔹 Recibe la variable desde PanelComponent

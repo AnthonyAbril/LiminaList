@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Lista } from '../listas/lista';
 import { Tarea } from '../tareas/components/tarea/tarea';
 
@@ -13,8 +13,21 @@ export class ListasService {
   constructor(private http: HttpClient) {}
 
   getListas(): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
-    return this.http.get(this.apiUrl, { headers });
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      console.error('❌ No hay token, redirigiendo al login.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get(this.apiUrl, { headers }).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener listas:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   getListaPorId(listaId: string): Observable<any> { // Cambiado a string
@@ -25,7 +38,13 @@ export class ListasService {
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<{ tareas: Tarea[] }>(`${this.apiUrl}/${listaId}`, { headers }); // Asegurar que listaId es string
+    return this.http.get(`${this.apiUrl}/${listaId}`, { headers }).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener lista:', error);
+        return throwError(() => error);
+      })
+    );
+
   }
 
   crearLista(lista: Lista): Observable<any> {
@@ -33,16 +52,52 @@ export class ListasService {
     return this.http.post(this.apiUrl, lista, { headers });
   }
 
-  guardarCambiosLista(lista: Lista) {
-    if (!lista) return; 
+  guardarCambiosLista(lista: Lista): Observable<any> {
+    if (!lista) {
+      console.warn('⚠ No hay lista para guardar.');
+      return throwError(() => new Error('Lista vacía'));
+    }
 
-    this.http.put(`${this.apiUrl}/${lista.id}`, lista).subscribe({
-      next: (response) => {
-        console.log('✅ Lista guardada:', response);
-      },
-      error: (error) => {
+    return this.http.put(`${this.apiUrl}/${lista.id}`, lista).pipe(
+      tap(response => console.log('✅ Lista guardada:', response)),
+      catchError(error => {
         console.error('❌ Error al guardar la lista:', error);
-      }
-    });
-}
+        return throwError(() => error);
+      })
+    );
+  }
+
+  actualizarLista(id: string, datos: any): Observable<any> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put(`${this.apiUrl}/${id}`, datos, { headers }).pipe(
+      catchError(error => {
+        console.error('❌ Error al actualizar lista:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  filtrarListas(query: string): Observable<any> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token, redirigiendo al login.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.apiUrl}?search=${query}`, { headers }).pipe(
+      catchError(error => {
+        console.error('❌ Error al filtrar listas:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

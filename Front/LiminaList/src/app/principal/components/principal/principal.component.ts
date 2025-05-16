@@ -4,6 +4,7 @@ import { ListasService } from '../../../services/listas.service';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
+import { Lista } from '../../../listas/lista';
 
 @Component({
   selector: 'app-principal',
@@ -96,12 +97,23 @@ generarCalendario(): void {
   }
 
   crearListaIndividual(nombre: string) {
-    const listaId = `${new Date().getUTCFullYear()}${(new Date().getUTCMonth() + 1).toString().padStart(2, '0')}${new Date().getUTCDate().toString().padStart(2, '0')}`;
-    
-    this.listasService.crearLista({ id: listaId, name: nombre, user_id: 1, tareas: [] }).subscribe({
-        next: (response) => console.log('✅ Lista creada:', response),
-        error: (error) => console.error('❌ Error al crear la lista:', error)
+    const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
+    const userId = Number(this.authService.getUserId());
+
+    const listaData: Lista = { 
+      id: listaId, 
+      name: nombre, 
+      user_id: userId, 
+      tipo: 'individual', // 🔹 Agregar tipo 'individual'
+      tareas: [] 
+    };
+
+    this.listasService.crearLista(listaData).subscribe({
+      next: response => console.log('✅ Lista creada:', response),
+      error: error => console.error('❌ Error al crear la lista:', error)
     });
+
+
   }
 
   crearListaDelDia(listaId: string, fecha: Date): void {
@@ -114,7 +126,13 @@ generarCalendario(): void {
       return;
     }
 
-    const listaData = { id: listaId, name: nombreLista, user_id: userId, tareas: [] };
+    const listaData: Lista = { 
+      id: listaId, 
+      name: nombreLista, 
+      user_id: userId, 
+      tipo: 'diaria', // 🔹 Agregar tipo 'diaria'
+      tareas: [] 
+    };
 
     console.log('📌 Datos enviados:', listaData); // 🔹 Inspección de datos antes de enviar
 

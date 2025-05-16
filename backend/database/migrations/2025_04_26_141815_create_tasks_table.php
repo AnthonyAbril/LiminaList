@@ -21,8 +21,7 @@ return new class extends Migration
             $table->string('list_id', 8);
             $table->unsignedBigInteger('user_id'); // 🔹 Ahora también necesitamos `user_id` para la relación
             $table->timestamps();
-
-
+            
             // 🔹 Clave foránea corregida para referenciar `lists(id, user_id)`
             $table->foreign(['list_id', 'user_id'])->references(['id', 'user_id'])->on('lists')->onDelete('cascade');
 

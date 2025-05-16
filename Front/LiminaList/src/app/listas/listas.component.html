@@ -1,0 +1,23 @@
+<div class="listas-container">
+  <h2>📌 Listas disponibles</h2>
+  
+  <!-- Barra de búsqueda -->
+  <input 
+    type="text" 
+    [(ngModel)]="filtro" 
+    placeholder="🔍 Filtrar listas..." 
+    (input)="filtrarListas()" 
+    class="search-bar"
+  />
+
+  <!-- Listado de listas -->
+  <ul class="listas">
+    <li *ngFor="let lista of listas" class="lista-item">
+      <!-- Edición de nombre -->
+      <input [(ngModel)]="lista.name" (change)="actualizarLista(lista)" class="lista-nombre" />
+      
+      <!-- Botón de edición -->
+      <button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>
+    </li>
+  </ul>
+</div>

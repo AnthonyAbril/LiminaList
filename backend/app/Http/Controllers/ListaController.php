@@ -10,14 +10,18 @@ class ListaController extends Controller
 {
     public function index()
     {
-        return Auth::user()->listas()->with('tareas')->get();
+        //return Auth::user()->listas()->with('tareas')->get(); //devuelve todas las listas
+        return Auth::user()->listas()->where('tipo', 'individual')->with('tareas')->get();  //devuelve solo las listas individuales
     }
 
     public function show($id)
     {
-        $lista = Lista::where('id', $id)->where('user_id', Auth::id())->with(['tareas' => function ($query) {
-            $query->where('user_id', Auth::id())->whereNull('padre')->with('subtareas'); // 🔹 Filtrar por usuario
+        $lista = Lista::where('id', $id)
+        ->where('user_id', Auth::id()) // 🔹 Permitir cualquier tipo de lista
+        ->with(['tareas' => function ($query) {
+            $query->where('user_id', Auth::id())->whereNull('padre')->with('subtareas');
         }])->first();
+
 
 
         if (!$lista) {
@@ -47,6 +51,7 @@ class ListaController extends Controller
             'id' => 'required|string',
             'name' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id',
+            'tipo' => 'required|in:diaria,individual', // 🔹 Validación de tipo
         ]);
 
         // 🔹 Verificar si ya existe la lista para este usuario

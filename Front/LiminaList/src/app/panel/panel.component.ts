@@ -18,7 +18,9 @@ export class PanelComponent {
   listaSeleccionada: any;
   tareas: any[] = [];
 
-  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient) {
+    console.log('📌 Módulos cargados: ', this.constructor.name);
+  }
 
   guardarCambiosLista(lista: Lista) {
     this.http.put(`http://localhost:8000/api/lists/${lista.id}`, lista).subscribe(response => {
