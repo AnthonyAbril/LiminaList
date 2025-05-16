@@ -13,8 +13,8 @@ export class ListasService {
   constructor(private http: HttpClient) {}
 
   getListas(): Observable<any> {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem('token');  
+
     if (!token) {
       console.error('❌ No hay token, redirigiendo al login.');
       return throwError(() => new Error('Usuario no autenticado'));
@@ -22,7 +22,7 @@ export class ListasService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get(this.apiUrl, { headers }).pipe(
+    return this.http.get(`${this.apiUrl}?tipo=individual`, { headers }).pipe( // 🔹 Agregar el filtro de `tipo=individual`
       catchError(error => {
         console.error('❌ Error al obtener listas:', error);
         return throwError(() => error);
