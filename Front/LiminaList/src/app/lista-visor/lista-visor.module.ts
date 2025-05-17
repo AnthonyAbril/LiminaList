@@ -15,4 +15,4 @@ import { ListaVisorComponent } from './lista-visor.component';
     ])
   ]
 })
-export class ListaVisorModule { }
+export class ListaVisorModule {}

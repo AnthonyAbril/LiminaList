@@ -21,10 +21,20 @@
   overflow-x: hidden;
 }
 
+.sidebar-header{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 10px;
+}
+
+.sidebar-header h3{
+  margin: 0;
+}
+
 .right-sidebar {
   flex: 1; /* Ocupará el 50% del contenedor padre */
   max-width: 50%; /* Ajuste para el gap */
-  height: auto; /* Quitamos altura fija */
+  height: 100%; /* Quitamos altura fija */
   order: 0; /* Quitamos el order:2 que tenía antes */
 }
 
@@ -33,6 +43,7 @@
   display: flex; /* Añadir flexbox */
   gap: 20px; /* Espacio entre los contenedores (posiblemente lo quite) */
   width: 100%;
+  height: 100vh;
 }
 
 /* Estados colapsados */
@@ -44,10 +55,8 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  padding: 10px;
   cursor: pointer;
-  position: absolute;
-  z-index: 100;
+  padding: 0;
 }
 
 .left-toggle {
@@ -86,6 +95,17 @@
   flex: 1; /* Ocupará el 50% restante */
   max-width: 50%; /* Ajuste para el gap */
   padding: 20px;
+  
+  /* Añadir estas propiedades */
+  max-height: 100%; /* o el alto que necesites */
+  overflow-y: auto;  /* habilita el scroll vertical */
+
+  -ms-overflow-style: none;  /* IE y Edge antiguos */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.listas-container::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari */
 }
 
 
@@ -101,11 +121,6 @@
   max-width: 700px;
 }
 
-.lista-item > div{
-  
-  padding: 2%;
-}
-
 .lista-añadir{
   background-color: #ffba5a;
   width: 85px;
@@ -119,15 +134,12 @@
 .lista-nombre{
   display: flex;
   align-items: center;
+  padding: 2%;
 }
 
 .lista-nombre > h3{
   margin: 0;
 } 
-
-img{
-  height: 100%;
-}
 
 .listas{
   padding-left: 0;
@@ -139,4 +151,9 @@ img{
   /*width: 20%;*/
   
   border-radius: 0 20px 20px 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1%;
 }

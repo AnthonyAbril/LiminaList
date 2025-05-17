@@ -17,6 +17,7 @@ export class ListaVisorComponent implements OnInit {
 
   leftCollapsed = false;
   rightCollapsed = false;
+  listaSeleccionada = 0;
 
   toggleLeft() {
     this.leftCollapsed = !this.leftCollapsed;

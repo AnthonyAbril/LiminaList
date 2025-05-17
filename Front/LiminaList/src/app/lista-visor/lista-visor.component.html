@@ -27,10 +27,10 @@
 <div class="container-fluid">
   <div class="sidebar left-sidebar" [class.left-collapsed]="leftCollapsed">
     <div class="sidebar-header">
+      <h3 *ngIf="!leftCollapsed ">Filtros</h3>
       <button class="toggle-btn" (click)="toggleLeft()">
         {{ leftCollapsed  ? '☰' : '×' }}
       </button>
-      <h4 *ngIf="!leftCollapsed ">Filtros</h4>
     </div>
     
     <div class="sidebar-content" *ngIf="!leftCollapsed ">
@@ -70,7 +70,8 @@
               </div>
               
               <div class="opciones">
-                <img src="assets/icons/lupa.svg" alt="">
+                <img src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr" *ngIf="lista.id == this.listaSeleccionada">
+                <img src="assets/icons/lupa.svg" style="height: 80%;" alt="abrir">
               </div>
             <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
         </li>
