@@ -64,7 +64,7 @@
   border-top-left-radius: 20px;
 }
 
-.sidebar-descripcion{
+.sidebar-info > div{
   padding: 5px 15px;
 }
 
@@ -73,6 +73,29 @@
   border-radius: 10px;
   resize: none;
   background-color: #ffba5a;
+  padding: 10px;
+}
+
+.lista-acciones{
+  display: flex;
+  justify-content: space-around;
+  
+}
+
+.lista-acciones > button{
+  border: none;
+  background-color:#FF9E16;
+  padding: 10px;
+  width: 30%;
+  font-size: larger;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Transición suave */
+}
+
+.lista-acciones > button:hover {
+  transform: translate(-3px, -3px);
 }
 
 .main-content {
