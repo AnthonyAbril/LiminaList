@@ -237,6 +237,7 @@
   display: flex;
   align-items: center;
   padding: 2%;
+  width: calc(100% - 60px);
 }
 
 .lista-nombre > h3{

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ListasService } from '../services/listas.service';
 import { Lista } from '../listas/lista';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -15,7 +16,7 @@ export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
 
-  constructor(private listasService: ListasService, private authService: AuthService) {}
+  constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {}
 
   leftCollapsed = false;
   rightCollapsed = false;
@@ -40,6 +41,10 @@ export class ListaVisorComponent implements OnInit {
     });
   }
 
+  abrirLista(listaId:any){
+    this.router.navigate(['/panel', listaId]);
+  }
+
   filtrarListas() {
     if (this.filtro.trim() !== '') {
       this.listasService.filtrarListas(this.filtro).subscribe(data => {
@@ -56,4 +61,25 @@ export class ListaVisorComponent implements OnInit {
       error: (error) => console.error('❌ Error al actualizar lista:', error)
     });
   }
+
+  crearListaIndividual(nombre: string) {
+    const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
+    const userId = Number(this.authService.getUserId());
+
+    const listaData: Lista = { 
+      id: listaId, 
+      name: nombre, 
+      user_id: userId, 
+      tipo: 'individual', // 🔹 Agregar tipo 'individual'
+      tareas: [] 
+    };
+
+    this.listasService.crearLista(listaData).subscribe({
+      next: response => console.log('✅ Lista creada:', response),
+      error: error => console.error('❌ Error al crear la lista:', error)
+    });
+
+
+  }
+
 }

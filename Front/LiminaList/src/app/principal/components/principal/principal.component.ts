@@ -96,26 +96,6 @@ generarCalendario(): void {
     });
   }
 
-  crearListaIndividual(nombre: string) {
-    const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
-    const userId = Number(this.authService.getUserId());
-
-    const listaData: Lista = { 
-      id: listaId, 
-      name: nombre, 
-      user_id: userId, 
-      tipo: 'individual', // 🔹 Agregar tipo 'individual'
-      tareas: [] 
-    };
-
-    this.listasService.crearLista(listaData).subscribe({
-      next: response => console.log('✅ Lista creada:', response),
-      error: error => console.error('❌ Error al crear la lista:', error)
-    });
-
-
-  }
-
   crearListaDelDia(listaId: string, fecha: Date): void {
     const nombreLista = `${fecha.getUTCDate()}/${fecha.getUTCMonth() + 1}/${fecha.getUTCFullYear()}`;
     const token = sessionStorage.getItem('token');
