@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ListasService } from '../services/listas.service';
 import { Lista } from '../listas/lista';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -14,7 +15,7 @@ export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
 
-  constructor(private listasService: ListasService) {}
+  constructor(private listasService: ListasService, private authService: AuthService) {}
 
   leftCollapsed = false;
   rightCollapsed = false;

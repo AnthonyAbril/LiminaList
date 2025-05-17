@@ -104,9 +104,34 @@
       <div *ngIf="this.listaSeleccionada==null">
         <h4>Selecciona una lista</h4>
       </div>
-      <div class="sidebar-content" *ngIf="this.listaSeleccionada!=null">
-        <h2>{{this.listaSeleccionada.name}}</h2>
+      <div class="right-sidebar-content" *ngIf="this.listaSeleccionada!=null">
+        <h1>{{this.listaSeleccionada.name}}</h1>
+        
+        <div class="sidebar-info">
 
+          <div class="sidebar-descripcion">
+            <p>Descripcion:</p>
+            <textarea name="descripcion" id="descripcion">{{this.listaSeleccionada.id}}</textarea>
+          </div>
+          <div class="lista-creador">
+            <h3>Autor: tu</h3>
+          </div>
+          <div class="lista-compartidos">
+            <h3>Compartido con:</h3>
+            <ul>
+              <li>Jony</li>
+              <li>Kelly</li>
+            </ul>
+          </div>
+          <div class="lista-acciones">
+            <button>Eliminar</button>
+            <button>Compartir</button>
+          </div>
+          <div class="lista-fechas">
+            <h3>Creado el:<br>{{listaSeleccionada.created_at}}</h3>
+            <h3>Ultima actualizacion:<br>{{listaSeleccionada.updated_at}}</h3>
+          </div>
+        </div>
       </div>
     </div>
   </div>
