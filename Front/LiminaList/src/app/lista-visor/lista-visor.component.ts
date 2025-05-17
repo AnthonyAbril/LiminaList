@@ -35,6 +35,19 @@ export class ListaVisorComponent implements OnInit {
     this.cargarListas();
   }
 
+  mostrarModal = false;
+  listaSeleccionadaId = '';
+
+  abrirModal(id: string) {
+    this.listaSeleccionadaId = id;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal() {
+    this.mostrarModal = false;
+  }
+
+
   cargarListas() {
     this.listasService.getListas().subscribe(data => {
       this.listas = data;

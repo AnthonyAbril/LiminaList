@@ -78,7 +78,7 @@
                 <h3>{{lista.name}}</h3>
               </div>
               
-              <div (click)="(borrar)?null:listaSeleccionada=lista" class="opciones">
+              <div (click)="(borrar)?null:(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id)" class="opciones">
                 <ng-container *ngIf="borrar">
                   <a class="opcion">-</a>
                 </ng-container>
@@ -88,14 +88,14 @@
                 </ng-container>
 
                 <ng-container *ngIf="(lista == listaSeleccionada) && borrar==false">
-                  <img class="opcion" src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr">
+                  <img class="opcion" src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr" (click)="abrirModal(lista.id)">
                 </ng-container>
               </div>
+
 
             <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
         </li>
     </ul>
-
     </div>
 
      
@@ -124,8 +124,9 @@
             </ul>
           </div>
           <div class="lista-acciones">
+            <button (click)="abrirModal(this.listaSeleccionada.id)">Compartir</button>
             <button>Eliminar</button>
-            <button>Compartir</button>
+            
           </div>
           <div class="lista-fechas">
             <h3>Creado el:<br>{{listaSeleccionada.created_at}}</h3>
@@ -136,3 +137,9 @@
     </div>
   </div>
 </div>
+
+<app-compartir-modal
+  *ngIf="mostrarModal"
+  [listaId]="listaSeleccionadaId"
+  (cerrar)="cerrarModal()">
+</app-compartir-modal>

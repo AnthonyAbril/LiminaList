@@ -1,0 +1,74 @@
+.manto{
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px); /* Aquí se aplica el desenfoque */
+    -webkit-backdrop-filter: blur(10px); /* Soporte para Safari */
+    color: white; font-size: 1.2rem;
+    z-index: 9999;
+}
+
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffca81;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+button {
+  margin-top: 10px;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* En tu CSS global o de componente */
+.qr-wrapper {
+  display: inline-block;        /* Ajusta al tamaño del QR */
+  border-radius: 15px;          /* Radio de las esquinas */
+  overflow: hidden;             /* Recorta el canvas/SVG dentro */
+  background-color: white;
+}
+
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.botones{
+  display: flex;
+  justify-content: space-around;
+    
+}
+
+  .botones > button{
+    border: none;
+    background-color:#FF9E16;
+    padding: 10px;
+    width: 40%;
+    font-size: larger;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease; /* Transición suave */
+  }
+
+.botones > button:hover {
+  transform: translate(-3px, -3px);
+}
