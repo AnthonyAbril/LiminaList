@@ -12,8 +12,13 @@ import { ListasService } from '../services/listas.service';
 export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
+  sidebarCollapsed = true;
 
   constructor(private listasService: ListasService) {}
+
+toggleSidebar() {
+  this.sidebarCollapsed = !this.sidebarCollapsed;
+}
 
   ngOnInit() {
     this.cargarListas();

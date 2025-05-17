@@ -1,23 +1,83 @@
+<!--
+    
 <div class="listas-container">
-  <h2>📌 Listas disponibles</h2>
-  
-  <!-- Barra de búsqueda -->
-  <input 
+    <h2>📌 Listas disponibles</h2>
+    
+    <input 
     type="text" 
     [(ngModel)]="filtro" 
     placeholder="🔍 Filtrar listas..." 
     (input)="filtrarListas()" 
     class="search-bar"
-  />
+    />
+    
+    
+    <ul class="listas">
+        <li *ngFor="let lista of listas" class="lista-item">
+            
+            <input [(ngModel)]="lista.name" (change)="actualizarLista(lista)" class="lista-nombre" />
+            
+            
+            <button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>
+        </li>
+    </ul>
+</div>
 
-  <!-- Listado de listas -->
-  <ul class="listas">
-    <li *ngFor="let lista of listas" class="lista-item">
-      <!-- Edición de nombre -->
-      <input [(ngModel)]="lista.name" (change)="actualizarLista(lista)" class="lista-nombre" />
+--><!-- En tu template principal -->
+<div class="container-fluid">
+  <div class="sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarCollapsed ? '☰' : '×' }}
+      </button>
+      <h4 *ngIf="!sidebarCollapsed">Filtros</h4>
+    </div>
+    
+    <div class="sidebar-content" *ngIf="!sidebarCollapsed">
       
-      <!-- Botón de edición -->
-      <button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>
-    </li>
-  </ul>
+      <input 
+        type="text" 
+        [(ngModel)]="filtro" 
+        placeholder=" Filtrar listas..." 
+        (input)="filtrarListas()" 
+        class="search-bar"
+      />
+      
+      <div class="filter-section">
+        <h5>Categorías</h5>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox">
+          <label class="form-check-label">Categoría 1</label>
+        </div>
+        <!-- Repetir para otras categorías -->
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content" [class.collapsed]="sidebarCollapsed">
+    <div class="listas-container">
+      <!-- Tu contenido existente aquí -->
+
+      <h2>Listas</h2>
+    
+    
+    <ul class="listas">
+        <li *ngFor="let lista of listas" class="lista-item">
+            
+              <div class="lista-nombre">
+                <h3>{{lista.name}}</h3>
+              </div>
+              
+              <div class="opciones">
+                <img src="assets/icons/lupa.svg" alt="">
+              </div>
+            <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
+        </li>
+        <li class="lista-añadir">
+          +
+        </li>
+    </ul>
+
+    </div>
+  </div>
 </div>
