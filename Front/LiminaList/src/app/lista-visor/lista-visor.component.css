@@ -31,6 +31,10 @@
   margin: 0;
 }
 
+.sidebar-content{
+  padding: 8px;
+}
+
 .right-sidebar {
   flex: 1; /* Ocupará el 50% del contenedor padre */
   max-width: 50%; /* Ajuste para el gap */
@@ -95,6 +99,7 @@
   flex: 1; /* Ocupará el 50% restante */
   max-width: 50%; /* Ajuste para el gap */
   padding: 20px;
+  max-height: 100%; /* o el alto que necesites */
   
   /* Añadir estas propiedades */
   max-height: 100%; /* o el alto que necesites */
@@ -106,6 +111,35 @@
 
 .listas-container::-webkit-scrollbar {
   display: none;             /* Chrome, Safari */
+}
+
+.listas-header{
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 1%;
+}
+
+.listas-header > h2 {
+  margin: 0;
+}
+
+.listas-header > button{
+  background-color: #ffba5a;
+  border: none;
+  font-size: 3em;
+  margin-left: 10px;
+  width: 60px;
+  border-radius: 20px;
+  height: 60px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listas-header button:hover{
+  background-color: #ffca81;
 }
 
 
@@ -156,4 +190,6 @@
   justify-content: center;
   align-items: center;
   padding: 1%;
+  font-size:60px;
+  padding: 10px;
 }

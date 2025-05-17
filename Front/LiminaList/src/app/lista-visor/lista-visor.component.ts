@@ -18,6 +18,7 @@ export class ListaVisorComponent implements OnInit {
   leftCollapsed = false;
   rightCollapsed = false;
   listaSeleccionada = 0;
+  borrar = false; //modo para eliminar o abrir tareas
 
   toggleLeft() {
     this.leftCollapsed = !this.leftCollapsed;

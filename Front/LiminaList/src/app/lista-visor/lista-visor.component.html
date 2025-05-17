@@ -59,8 +59,17 @@
     <div class="listas-container">
       <!-- Tu contenido existente aquí -->
 
-      <h2>Listas</h2>
-    
+      <div class="listas-header">
+        <h2>Listas</h2>
+        <button>+</button>
+        <button (click)="borrar = !borrar">
+          <ng-container *ngIf="!borrar; else conLupa">-</ng-container>
+          <ng-template #conLupa>
+            <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
+          </ng-template>
+        </button>
+
+      </div>
     
     <ul class="listas">
         <li *ngFor="let lista of listas" class="lista-item">
@@ -71,12 +80,15 @@
               
               <div class="opciones">
                 <img src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr" *ngIf="lista.id == this.listaSeleccionada">
-                <img src="assets/icons/lupa.svg" style="height: 80%;" alt="abrir">
+                <ng-container *ngIf="!borrar; else conLupa">-</ng-container>
+                <ng-template #conLupa>
+                  <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
+                </ng-template>
+                <ng-template #conQr>
+                  <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
+                </ng-template>
               </div>
             <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
-        </li>
-        <li class="lista-añadir">
-          +
         </li>
     </ul>
 
@@ -84,9 +96,12 @@
 
      <!-- Barra lateral derecha -->
     <div class="sidebar right-sidebar">
-      <div class="sidebar-content">
-        <h4>Filtros Derecha</h4>
-        <!-- Contenido de filtros derecha -->
+      <div *ngIf="this.listaSeleccionada==null">
+        <h4>Selecciona una lista</h4>
+      </div>
+      <div class="sidebar-content" *ngIf="this.listaSeleccionada!=null">
+        <h2>Lista Individual de tony</h2>
+
       </div>
     </div>
   </div>
