@@ -12,13 +12,19 @@ import { ListasService } from '../services/listas.service';
 export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
-  sidebarCollapsed = true;
 
   constructor(private listasService: ListasService) {}
 
-toggleSidebar() {
-  this.sidebarCollapsed = !this.sidebarCollapsed;
-}
+  leftCollapsed = false;
+  rightCollapsed = false;
+
+  toggleLeft() {
+    this.leftCollapsed = !this.leftCollapsed;
+  }
+
+  toggleRight() {
+    this.rightCollapsed = !this.rightCollapsed;
+  }
 
   ngOnInit() {
     this.cargarListas();

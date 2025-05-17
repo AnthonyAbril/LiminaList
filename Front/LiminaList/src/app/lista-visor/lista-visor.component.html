@@ -25,15 +25,15 @@
 
 --><!-- En tu template principal -->
 <div class="container-fluid">
-  <div class="sidebar" [class.collapsed]="sidebarCollapsed">
+  <div class="sidebar left-sidebar" [class.left-collapsed]="leftCollapsed">
     <div class="sidebar-header">
-      <button class="toggle-btn" (click)="toggleSidebar()">
-        {{ sidebarCollapsed ? '☰' : '×' }}
+      <button class="toggle-btn" (click)="toggleLeft()">
+        {{ leftCollapsed  ? '☰' : '×' }}
       </button>
-      <h4 *ngIf="!sidebarCollapsed">Filtros</h4>
+      <h4 *ngIf="!leftCollapsed ">Filtros</h4>
     </div>
     
-    <div class="sidebar-content" *ngIf="!sidebarCollapsed">
+    <div class="sidebar-content" *ngIf="!leftCollapsed ">
       
       <input 
         type="text" 
@@ -54,7 +54,8 @@
     </div>
   </div>
 
-  <div class="main-content" [class.collapsed]="sidebarCollapsed">
+  <div class="main-content">
+    
     <div class="listas-container">
       <!-- Tu contenido existente aquí -->
 
@@ -78,6 +79,14 @@
         </li>
     </ul>
 
+    </div>
+
+     <!-- Barra lateral derecha -->
+    <div class="sidebar right-sidebar">
+      <div class="sidebar-content">
+        <h4>Filtros Derecha</h4>
+        <!-- Contenido de filtros derecha -->
+      </div>
     </div>
   </div>
 </div>
