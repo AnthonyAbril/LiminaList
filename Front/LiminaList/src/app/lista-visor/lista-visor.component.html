@@ -78,29 +78,34 @@
                 <h3>{{lista.name}}</h3>
               </div>
               
-              <div class="opciones">
-                <img src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr" *ngIf="lista.id == this.listaSeleccionada">
-                <ng-container *ngIf="!borrar; else conLupa">-</ng-container>
-                <ng-template #conLupa>
-                  <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
-                </ng-template>
-                <ng-template #conQr>
-                  <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
-                </ng-template>
+              <div (click)="(borrar)?null:listaSeleccionada=lista" class="opciones">
+                <ng-container *ngIf="borrar">
+                  <a class="opcion">-</a>
+                </ng-container>
+
+                <ng-container *ngIf="lista != listaSeleccionada && borrar==false">
+                  <img class="opcion" src="assets/icons/lupa.svg" style="height: 70%;" alt="">
+                </ng-container>
+
+                <ng-container *ngIf="(lista == listaSeleccionada) && borrar==false">
+                  <img class="opcion" src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr">
+                </ng-container>
               </div>
+
             <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
         </li>
     </ul>
 
     </div>
 
+     
      <!-- Barra lateral derecha -->
     <div class="sidebar right-sidebar">
       <div *ngIf="this.listaSeleccionada==null">
         <h4>Selecciona una lista</h4>
       </div>
       <div class="sidebar-content" *ngIf="this.listaSeleccionada!=null">
-        <h2>Lista Individual de tony</h2>
+        <h2>{{this.listaSeleccionada.name}}</h2>
 
       </div>
     </div>

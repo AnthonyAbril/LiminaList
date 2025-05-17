@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ListasService } from '../services/listas.service';
+import { Lista } from '../listas/lista';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class ListaVisorComponent implements OnInit {
 
   leftCollapsed = false;
   rightCollapsed = false;
-  listaSeleccionada = 0;
+  listaSeleccionada:Lista|null = null;
   borrar = false; //modo para eliminar o abrir tareas
 
   toggleLeft() {

@@ -192,4 +192,23 @@
   padding: 1%;
   font-size:60px;
   padding: 10px;
+  width: 60px;
+
+  transition: width 0.2s ease;
+}
+
+.opcion{
+  
+  /* Animación suave */
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.opciones:hover > .opcion{
+  /* Desplazamiento hacia la izquierda */
+  transform: translateX(-5px);
+}
+
+.opciones:hover{
+  width: 70px;
 }
