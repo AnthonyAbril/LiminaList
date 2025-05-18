@@ -19,6 +19,9 @@
   position: relative;
   height: 100vh;
   overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header{
@@ -82,6 +85,15 @@
   
 }
 
+.boton-atras{
+  height: 50px;
+
+  align-self: flex-start; /* o stretch si quieres que ocupe todo el ancho */
+  margin-top: auto;
+  padding: 10px;
+  cursor:pointer;
+}
+
 .lista-acciones > button{
   border: none;
   background-color:#FF9E16;
@@ -108,7 +120,7 @@
 
 /* Estados colapsados */
 .left-collapsed.left-sidebar {
-  width: 60px;
+  width: 80px;
 }
 
 .toggle-btn {
