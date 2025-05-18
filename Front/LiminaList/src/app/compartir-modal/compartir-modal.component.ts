@@ -1,23 +1,18 @@
 // src/app/compartir-modal/compartir-modal.component.ts
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { QRCodeComponent } from 'angularx-qrcode';  // ← standalone
+import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
+import QRCodeStyling from 'qr-code-styling';
 
 @Component({
   selector: 'app-compartir-modal',
-  standalone: true,                                // ← Ahora es standalone
-  imports: [ QRCodeComponent ],                    // ← Importa directamente el componente QR
+  standalone: true,
+  imports: [],
   template: `
     <div class="manto">
       <div class="modal-container">
         <h2>Compartir Lista</h2>
-        <!-- uso del standalone QRCodeComponent -->
-        <div class="qr-wrapper">
-          <qrcode
-            [qrdata]="listaUrl"
-            [width]="200"
-            [errorCorrectionLevel]="'M'">
-          </qrcode>
-        </div>
+        
+        <div #qrCodeRef class="qr-wrapper"></div>
+
         <p>{{ listaUrl }}</p>
         <div class="botones">
           <button (click)="copiarUrl()">Copiar enlace</button>
@@ -28,14 +23,58 @@ import { QRCodeComponent } from 'angularx-qrcode';  // ← standalone
   `,
   styleUrls: ['./compartir-modal.component.css']
 })
-export class CompartirModalComponent {
+export class CompartirModalComponent implements AfterViewInit, OnChanges {
   @Input() listaId = '';
   @Output() cerrar = new EventEmitter<void>();
+  @ViewChild('qrCodeRef', { static: false }) qrCodeRef!: ElementRef;
+
+  qrCode!: QRCodeStyling;
 
   get listaUrl(): string {
-    const url = "http://localhost:4200";
-    //url = "https://liminalist";
-    return url + `/panel/${this.listaId}`;
+    const base = "http://localhost:4200"; // Cambiar a producción si es necesario
+    return `${base}/panel/${this.listaId}`;
+  }
+
+  ngAfterViewInit() {
+    this.generarQr();
+  }
+
+  ngOnChanges() {
+    if (this.qrCode) {
+      this.qrCode.update({
+        data: this.listaUrl
+      });
+    }
+  }
+
+  generarQr() {
+    this.qrCode = new QRCodeStyling({
+      width: 200,
+      height: 200,
+      data: this.listaUrl,
+      image: "assets/icons/logo.svg", // ✅ Ruta a tu logo aquí
+      imageOptions: {
+        crossOrigin: "anonymous",
+        imageSize: 0.4,   // 40% del QR
+        margin: 5
+      },
+      dotsOptions: {
+        type: "rounded",
+        color: "#000000"
+      },
+      cornersSquareOptions: {
+        type: "extra-rounded",
+        color: "#000000"
+      },
+      backgroundOptions: {
+        color: "#ffffff"
+      },
+      qrOptions: {
+        errorCorrectionLevel: "H"  // Nivel más alto (30%)
+      },
+    });
+
+    this.qrCode.append(this.qrCodeRef.nativeElement);
   }
 
   copiarUrl() {

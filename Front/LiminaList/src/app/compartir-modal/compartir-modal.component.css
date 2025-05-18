@@ -40,8 +40,12 @@ button {
 .qr-wrapper {
   display: inline-block;        /* Ajusta al tamaño del QR */
   border-radius: 15px;          /* Radio de las esquinas */
-  overflow: hidden;             /* Recorta el canvas/SVG dentro */
+  padding: 5px;
   background-color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
