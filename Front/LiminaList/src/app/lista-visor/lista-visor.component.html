@@ -104,39 +104,51 @@
      
      <!-- Barra lateral derecha -->
     <div class="sidebar right-sidebar">
-      <div *ngIf="this.listaSeleccionada==null">
-        <h4>Selecciona una lista</h4>
-      </div>
-      <div class="right-sidebar-content" *ngIf="this.listaSeleccionada!=null">
-        <h1>{{this.listaSeleccionada.name}}</h1>
-        
-        <div class="sidebar-info">
+      <ng-container *ngIf="listaSeleccionada != null && borrar==false">
+        <div *ngIf="this.listaSeleccionada==null">
+          <h4>Selecciona una lista</h4>
+        </div>
+        <div class="right-sidebar-content" *ngIf="this.listaSeleccionada!=null">
+          <h1>{{this.listaSeleccionada.name}}</h1>
+          
+          <div class="sidebar-info">
 
-          <div class="sidebar-descripcion">
-            <p>Descripcion:</p>
-            <textarea name="descripcion" id="descripcion">{{this.listaSeleccionada.id}}</textarea>
-          </div>
-          <div class="lista-creador">
-            <h3 style="margin-bottom:0;">Autor: tu</h3>
-          </div>
-          <div class="lista-compartidos">
-            <h3>Compartido con:</h3>
-            <ul>
-              <li>Jony</li>
-              <li>Kelly</li>
-            </ul>
-          </div>
-          <div class="lista-acciones">
-            <button (click)="abrirModal(this.listaSeleccionada.id)">Compartir</button>
-            <button>Eliminar</button>
-            
-          </div>
-          <div class="lista-fechas">
-            <h3>Creado el:<br>{{listaSeleccionada.created_at}}</h3>
-            <h3>Ultima actualizacion:<br>{{listaSeleccionada.updated_at}}</h3>
+            <div class="sidebar-descripcion">
+              <p>Descripcion:</p>
+              <textarea name="descripcion" id="descripcion">{{this.listaSeleccionada.id}}</textarea>
+            </div>
+            <div class="lista-creador">
+              <h3 style="margin-bottom:0;">Autor: tu</h3>
+            </div>
+            <div class="lista-compartidos">
+              <h3>Compartido con:</h3>
+              <ul>
+                <li>Jony</li>
+                <li>Kelly</li>
+              </ul>
+            </div>
+            <div class="lista-acciones">
+              <button (click)="abrirModal(this.listaSeleccionada.id)">Compartir</button>
+              <button>Eliminar</button>
+              
+            </div>
+            <div class="lista-fechas">
+              <h3>Creado el:<br>{{listaSeleccionada.created_at}}</h3>
+              <h3>Ultima actualizacion:<br>{{listaSeleccionada.updated_at}}</h3>
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
+
+      
+      <ng-container *ngIf="listaSeleccionada == null && borrar==false">
+        <div>Selecciona una lista para verla</div>
+      </ng-container>
+
+            <ng-container *ngIf="borrar==true">
+        <div>Selecciona una lista para borrar</div>
+      </ng-container>
+
     </div>
   </div>
 </div>
