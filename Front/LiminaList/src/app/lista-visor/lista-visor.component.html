@@ -64,7 +64,7 @@
 
       <div class="listas-header">
         <h2>Listas</h2>
-        <button>+</button>
+        <button (click)="creandoLista=true">+</button>
         <button (click)="borrar = !borrar">
           <ng-container *ngIf="!borrar; else conLupa">-</ng-container>
           <ng-template #conLupa>
@@ -81,7 +81,7 @@
                 <h3>{{lista.name}}</h3>
               </div>
               
-              <div (click)="(borrar)?null:(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id)" class="opciones">
+              <div (click)="(borrar)?null:(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id);creandoLista=false;" class="opciones">
                 <ng-container *ngIf="borrar">
                   <a class="opcion">-</a>
                 </ng-container>
@@ -104,7 +104,7 @@
      
      <!-- Barra lateral derecha -->
     <div class="sidebar right-sidebar">
-      <ng-container *ngIf="listaSeleccionada != null && borrar==false">
+      <ng-container *ngIf="!creandoLista && listaSeleccionada != null && borrar==false">
         <div *ngIf="this.listaSeleccionada==null">
           <h4>Selecciona una lista</h4>
         </div>
@@ -141,11 +141,38 @@
       </ng-container>
 
       
-      <ng-container *ngIf="listaSeleccionada == null && borrar==false">
-        <div>Selecciona una lista para verla</div>
+      <ng-container *ngIf="creandoLista && listaSeleccionada == null">
+        <div class="right-sidebar-content">
+          <input (keydown.enter)="crearListaIndividual()" [(ngModel)]="listaStandar.nombre">
+          
+          <div class="sidebar-info">
+
+            <div class="sidebar-descripcion">
+              <p>Descripcion:</p>
+              <textarea name="descripcion" id="descripcion">{{this.listaStandar.descripcion}}</textarea>
+            </div>
+            <div class="lista-creador">
+              <h3 style="margin-bottom:0;">Autor: tu</h3>
+            </div>
+            <div class="lista-compartidos">
+              <h3>Compartido con:</h3>
+              <ul>
+                <li>Jony</li>
+                <li>Kelly</li>
+              </ul>
+            </div>
+            <div class="lista-acciones">
+              <button (click)="crearListaIndividual()">Crear</button>
+            </div>
+          </div>
+        </div>
+
       </ng-container>
 
-            <ng-container *ngIf="borrar==true">
+      <ng-container *ngIf="!creandoLista && listaSeleccionada == null && borrar==false">
+        <div>Selecciona una lista para verla</div>
+      </ng-container>
+      <ng-container *ngIf="borrar==true">
         <div>Selecciona una lista para borrar</div>
       </ng-container>
 

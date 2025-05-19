@@ -75,13 +75,20 @@ export class ListaVisorComponent implements OnInit {
     });
   }
 
-  crearListaIndividual(nombre: string) {
+  creandoLista:boolean = false;
+
+  listaStandar = {
+    nombre: "nombre principal",
+    descripcion: "abasbasdswdb"
+  }
+
+  crearListaIndividual() {
     const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
     const userId = Number(this.authService.getUserId());
 
     const listaData: Lista = { 
       id: listaId, 
-      name: nombre, 
+      name: this.listaStandar.nombre, 
       user_id: userId, 
       tipo: 'individual', // 🔹 Agregar tipo 'individual'
       tareas: [] 
@@ -92,6 +99,9 @@ export class ListaVisorComponent implements OnInit {
       error: error => console.error('❌ Error al crear la lista:', error)
     });
 
+    this.creandoLista=false;
+
+    this.cargarListas();
 
   }
 
