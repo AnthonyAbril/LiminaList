@@ -8,19 +8,36 @@
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
   </li>
-  <li *ngIf="tareas.length>0">
+  <li [hidden]="tipoTarea" *ngIf="tareasPuntuales.length>0">
     <ul>
-      <li *ngFor="let tarea of tareasFiltradas">
-      <app-tarea
-        [id]="tarea.id"
-        [title]="tarea.title"
-        [subtareas]="tarea.subtareas"
-        (eliminar)="eliminarTarea(tarea)"
-        [editar]="editar"
-        [listaid]="tarea.list_id"
-        [rutinario]="tarea.rutinario"
-      >
-    </app-tarea>
+       <li *ngFor="let tarea of tareasPuntuales">
+        <app-tarea
+          [id]="tarea.id"
+          [title]="tarea.title"
+          [subtareas]="tarea.subtareas"
+          (eliminar)="eliminarTarea(tarea)"
+          [editar]="editar"
+          [listaid]="tarea.list_id"
+          [rutinario]="tarea.rutinario"
+        ></app-tarea>
+      </li>
+    </ul>
+  </li>
+
+  <!-- Lista de Tareas Rutinarias -->
+  <li [hidden]="!tipoTarea" *ngIf="tareasRutinarias.length > 0">
+    <ul>
+      <li *ngFor="let tarea of tareasRutinarias">
+        <app-tarea
+          [id]="tarea.id"
+          [title]="tarea.title"
+          [subtareas]="tarea.subtareas"
+          (eliminar)="eliminarTarea(tarea)"
+          [editar]="editar"
+          [listaid]="tarea.list_id"
+          [rutinario]="tarea.rutinario"
+        ></app-tarea>
+      </li>
     </ul>
   </li>
   <li class="sinTareas" *ngIf="tareas.length==0">

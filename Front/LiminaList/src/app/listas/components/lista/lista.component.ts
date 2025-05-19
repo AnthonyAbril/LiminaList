@@ -20,6 +20,15 @@ export class ListaComponent {
   @Input() tareas: Tarea[] = [];
 
   listaId;
+
+  get tareasPuntuales() {
+    return this.tareas.filter(t => !t.rutinario);
+  }
+
+  get tareasRutinarias() {
+    return this.tareas.filter(t => !!t.rutinario);
+  }
+
   
   constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
@@ -64,10 +73,6 @@ export class ListaComponent {
     });
 
     this.tareas.push(nuevaTarea); // Añade la nueva Tarea al array
-  }
-
-  get tareasFiltradas() {
-    return this.tareas.filter(t => !!t.rutinario === this.tipoTarea);
   }
 
 
