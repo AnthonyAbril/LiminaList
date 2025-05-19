@@ -17,7 +17,7 @@ class Tarea extends Model
     protected $keyType = 'int'; // 🔹 Asegurar que el ID es de tipo entero
 
 
-    protected $fillable = ['id','title', 'description', 'progreso', 'list_id', 'user_id', 'padre'];
+    protected $fillable = ['id','title', 'description', 'progreso', 'list_id', 'user_id', 'padre', 'rutinario'];
 
     //protected $appends = ['title'];
 

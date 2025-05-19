@@ -20,6 +20,7 @@ class TareaController extends Controller
                 'list_id' => 'required|string|size:8',
                 'user_id' => 'required|exists:users,id',
                 'padre' => 'nullable|integer|exists:tasks,id',
+                'rutinario' => 'required|boolean'
             ]);
 
 

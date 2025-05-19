@@ -1,15 +1,16 @@
-<!--<div id="tareas"></div>-->
 
 <ul>
   <li class="boton-agregar">
-    <h2>Lista Puntual</h2>
-    <button (click)="(editar)?agregarTarea():null">
+    <h2 *ngIf="!tipoTarea">Tareas Puntuales</h2>
+    <h2 *ngIf="tipoTarea">Tareas Rutinarias</h2>
+    <button (click)="(editar)?agregarTarea():toggleTipoTarea()">
       <a *ngIf="editar">+</a>
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
   </li>
-  <li *ngIf="this.tareas.length>0">
-    <li *ngFor="let tarea of tareas">
+  <li *ngIf="tareas.length>0">
+    <ul>
+      <li *ngFor="let tarea of tareasFiltradas">
       <app-tarea
         [id]="tarea.id"
         [title]="tarea.title"
@@ -17,74 +18,14 @@
         (eliminar)="eliminarTarea(tarea)"
         [editar]="editar"
         [listaid]="tarea.list_id"
+        [rutinario]="tarea.rutinario"
       >
     </app-tarea>
+    </ul>
   </li>
-  <li class="sinTareas" *ngIf="this.tareas.length==0">
+  <li class="sinTareas" *ngIf="tareas.length==0">
     <h2>No hay tareas en esta lista</h2>
     <p *ngIf="!editar"><img src="assets/icons/dedo.png" style="transform: scaleX(-1);" alt="->"> Pulsa <img src="assets/icons/square-pen-solid.svg"> para entrar en modo edicion y usa + para añadir tareas</p>
     <p *ngIf="editar"><img src="assets/icons/dedo.png" style="transform: scaleX(-1);" alt="->"> Pulsa + para añadir tareas</p>
   </li>
 </ul>
-
-<!-- <app-tareas id='2435B' ruta='Lista/Tarea/Subtarea'></app-tareas> -->
-
-<!--
-<div class="lista">
-    <ul>
-      <li>
-        <div class="cabecera">
-            <div class="boton"></div>
-            <div>Tarea 1</div>
-            <div>2/2</div>
-        </div>
-        <div class="subtareas">
-            <ul>
-                <li>
-                    <div class="cabecera">
-                        <div class="boton"></div>
-                        <div>Subtarea 1</div>
-                        <div>2/2</div>
-                    </div>
-                    <div class="subtareas"></div>
-                </li>
-                <li>
-                    <div class="cabecera">
-                        <div class="boton"></div>
-                        <div>Subtarea 2</div>
-                        <div>2/2</div>
-                    </div>
-                    <div class="subtareas"></div>
-                </li>
-                <li>
-                    
-                    <div class="cabecera">
-                        <div class="boton"></div>
-                        <div>Subtarea 3</div>
-                        <div>2/2</div>
-                    </div>
-                    <div class="subtareas"></div>
-                </li>
-            </ul>
-        </div>
-      </li>
-      <li>
-        <div class="cabecera">
-            <div class="boton"></div>
-            <div>Tarea 2</div>
-            <div>2/2</div>
-        </div>
-        <div class="subtareas"></div>
-      </li>
-      <li>
-        <div class="cabecera">
-            <div class="boton"></div>
-            <div>Tarea 3</div>
-            <div>2/2</div>
-        </div>
-        <div class="subtareas"></div>
-      </li>
-    </ul>
-  </div>
-  
--->

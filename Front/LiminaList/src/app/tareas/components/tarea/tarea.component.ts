@@ -19,6 +19,7 @@ export class TareaComponent {
   @Input() nivel = 0;
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
   @Input() listaid:any = 0 ;
+  @Input() rutinario:boolean|undefined = false ;
 
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
@@ -134,7 +135,8 @@ export class TareaComponent {
       padre: this.id,
       created_at: null,
       updated_at: null,
-      terminado: false
+      terminado: false,
+      rutinario: this.rutinario
     };
 
   console.log('➡ Subtarea a enviar:', nuevaSubtarea);

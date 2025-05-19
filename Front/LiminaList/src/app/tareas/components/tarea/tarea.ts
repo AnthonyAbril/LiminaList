@@ -10,4 +10,5 @@ export interface Tarea {
     updated_at?: string | null;
     subtareas: Tarea[];
     terminado?: boolean;
+    rutinario?: boolean; // ✅ Nuevo campo para distinguir tareas rutinarias
 }
