@@ -85,4 +85,19 @@ class ListaController extends Controller
         $lista->update($request->all()); // 🔹 Guarda automáticamente todos los cambios
         return response()->json(['message' => 'Lista actualizada con éxito', 'lista' => $lista]);
     }
+
+    public function destroy($id)
+    {
+        // 🔹 Buscar la lista por ID y usuario autenticado
+        $lista = Lista::where('id', $id)->where('user_id', Auth::id())->first();
+
+        if (!$lista) {
+            return response()->json(['message' => 'Lista no encontrada'], 404);
+        }
+
+        // 🔹 Eliminar la lista
+        $lista->delete();
+
+        return response()->json(['message' => 'Lista eliminada correctamente'], 200);
+    }
 }

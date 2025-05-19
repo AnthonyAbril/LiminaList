@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './loading/components/loading/loading.component';
 import { ListaVisorComponent } from './lista-visor/lista-visor.component';
+import { BorrarListaComponent } from './borrar-lista/borrar-lista.component';
 
 @NgModule({
   declarations: [

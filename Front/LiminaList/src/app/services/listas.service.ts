@@ -52,6 +52,24 @@ export class ListasService {
     return this.http.post(this.apiUrl, lista, { headers });
   }
 
+  borrarLista(listaId: string): Observable<any> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.apiUrl}/${listaId}`, { headers }).pipe(
+      catchError(error => {
+        console.error('❌ Error al borrar lista:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
   guardarCambiosLista(lista: Lista): Observable<any> {
     if (!lista) {
       console.warn('⚠ No hay lista para guardar.');

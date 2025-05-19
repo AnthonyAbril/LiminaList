@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { ListaVisorComponent } from './lista-visor.component';
 import { CompartirModalComponent } from '../compartir-modal/compartir-modal.component'; // ← standalone
+import { BorrarListaComponent } from '../borrar-lista/borrar-lista.component';
 
 @NgModule({
   declarations: [ ListaVisorComponent ],
@@ -13,6 +14,7 @@ import { CompartirModalComponent } from '../compartir-modal/compartir-modal.comp
     CommonModule,
     FormsModule,
     CompartirModalComponent,                           // ← import standalone component
+    BorrarListaComponent,
     RouterModule.forChild([
       { path: '', component: ListaVisorComponent }
     ])

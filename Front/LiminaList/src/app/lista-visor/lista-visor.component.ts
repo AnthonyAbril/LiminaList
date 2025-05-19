@@ -82,6 +82,19 @@ export class ListaVisorComponent implements OnInit {
     descripcion: "abasbasdswdb"
   }
 
+  mostrarBorrarModal = false;
+  listaABorrarId: string = '';
+
+  abrirBorrarModal(lista: Lista) {
+    this.listaABorrarId = lista.id;
+    this.mostrarBorrarModal = true;
+  }
+
+  cerrarBorrarModal() {
+    this.mostrarBorrarModal = false;
+    this.listaABorrarId = '';
+  }
+
   crearListaIndividual() {
     const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
     const userId = Number(this.authService.getUserId());

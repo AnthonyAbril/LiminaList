@@ -81,7 +81,7 @@
                 <h3>{{lista.name}}</h3>
               </div>
               
-              <div (click)="(borrar)?null:(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id);creandoLista=false;" class="opciones">
+              <div (click)="(borrar)?abrirBorrarModal(lista):(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id);creandoLista=false;" class="opciones">
                 <ng-container *ngIf="borrar">
                   <a class="opcion">-</a>
                 </ng-container>
@@ -185,3 +185,10 @@
   [listaId]="listaSeleccionadaId"
   (cerrar)="cerrarModal()">
 </app-compartir-modal>
+
+<app-borrar-lista
+  *ngIf="mostrarBorrarModal"
+  [listaId]="listaABorrarId"
+  (cerrar)="cerrarBorrarModal()"
+  (listaBorrada)="cargarListas(); cerrarBorrarModal(); listaSeleccionada = null;">
+</app-borrar-lista>
