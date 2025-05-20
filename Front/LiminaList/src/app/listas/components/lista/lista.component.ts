@@ -33,7 +33,7 @@ export class ListaComponent {
   get tareasRutinarias() {
     return this.tareas.filter(t => !!t.rutinario);
   }
-  
+
   constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
@@ -45,7 +45,7 @@ export class ListaComponent {
   id: Math.floor(Math.random() * 99999999), // 🔹 Mantenerlo dentro de `unsignedBigInteger`
       title: `Tarea ${this.tareas.length + 1}`, // title dinámico
       description: null,
-      progreso: '',
+      progreso: 1,
       list_id: this.listaId,
       user_id: Number(this.authService.getUserId()), // 🔹 Asegurar que `user_id` se envía correctamente
       padre: null,

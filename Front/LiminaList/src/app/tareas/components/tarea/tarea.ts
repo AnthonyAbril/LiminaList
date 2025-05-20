@@ -2,7 +2,7 @@ export interface Tarea {
     id: number;
     title: string;
     description?: string | null;
-    progreso: string | null;
+    progreso: number;
     list_id?: string | null; // Permitir `null`
     user_id: number;
     padre?: number | null;

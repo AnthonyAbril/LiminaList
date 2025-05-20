@@ -104,19 +104,56 @@ export class TareaComponent {
     //this.comenzarEdicion(event); // Llama al método de edición
   }
 
+  
+  //metodo de tarea hoja
   cambiarEstado(): void {
-    if(this.subtareas.length==0){
-      //tarea hoja
-      this.estadoActual = (this.estadoActual + 1) % this.estados.length;
+    if (this.subtareas.length > 0) return; // Solo tareas hoja
 
-      console.log("cambio de progreso "+this.estadoActual + ", " + this.estados[this.estadoActual].nombre);
-    }else{
-      //tarea rama
+    // Avanzar estado
+    this.estadoActual = (this.estadoActual + 1) % this.estados.length;
+    const estaTerminada = this.estadoActual === this.estados.length - 1;
+    const terminado = estaTerminada;
+    this.actualizarEstadoPadre.emit(); // Dispara evento hacia el padre
 
-      //poner que hara las tareas con subtareas (recalcular el valor de su progreso en base al valor del progreso de sus hijas)
 
-    }
+    // Actualizar tarea actual (hoja) en backend
+    this.tareasService.editarTarea(this.id, { progreso: this.estadoActual, terminado }).subscribe({
+      next: () => {
+        console.log(`✅ Estado de tarea ${this.id} actualizado: ${this.estadoActual} (${this.estados[this.estadoActual].nombre})`);
+      },
+      error: (err) => console.error('❌ Error actualizando estado:', err)
+    });
+  }
 
+  //metodo de tarea rama
+  actualizarEstadoDesdeSubtareas(): void {
+    if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
+
+    const total = this.subtareas.length;  //
+    //const terminadas = this.subtareas.filter(t => t.terminado).length;
+    const terminadas = this.subtareas.filter(t => t.progreso==0).length;
+    console.log(terminadas);
+
+    const progresoCalculado = Math.ceil((terminadas / total) * (this.estados.length - 1));
+    const estadoCambiado = progresoCalculado !== this.estadoActual;
+
+    this.estadoActual = progresoCalculado;
+    const terminado = this.estadoActual === this.estados.length - 1;
+
+    
+    this.actualizarEstadoPadre.emit();
+
+    // Actualizar en backend
+    this.tareasService.editarTarea(this.id, {
+      progreso: this.estadoActual,
+      terminado
+    }).subscribe({
+      next: () => {
+        console.log(`🔁 Estado recalculado para tarea ${this.id}(${this.title}): ${this.estadoActual} ${this.progreso} (${this.estados[this.estadoActual].nombre})`);
+        // Emitir hacia su propio padre (propagación recursiva)
+      },
+      error: (err) => console.error('❌ Error actualizando estado padre:', err)
+    });
   }
 
   get progreso(): string {
@@ -147,7 +184,7 @@ export class TareaComponent {
       id: Date.now(), // Genera un ID único temporal
       title: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
-      progreso: '',
+      progreso: 1,
       list_id: this.listaid,
       user_id: Number(this.authService.getUserId()), // 🔹 Si `null`, asigna un valor por defecto
       padre: this.id,
