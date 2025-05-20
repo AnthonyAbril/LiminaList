@@ -20,6 +20,12 @@ export class TareaComponent {
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
   @Input() listaid:any = 0 ;
   @Input() rutinario:boolean|undefined = false ;
+  @Input() estados: { nombre: string; color: string }[] = [
+    { nombre: 'Sin hacer', color: '#f87171' },
+    { nombre: 'En progreso', color: '#facc15' },
+    { nombre: 'Casi lista', color: '#fb923c' },
+    { nombre: 'Hecha', color: '#4ade80' }
+  ];
 
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
@@ -33,7 +39,7 @@ export class TareaComponent {
   nombreTemporal = '';
   animacionEnCurso = false;
 
-  readonly estados = ESTADOS;
+  //readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
   constructor(private tareasService: TareasService, private authService: AuthService){};

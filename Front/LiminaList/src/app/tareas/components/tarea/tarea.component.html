@@ -2,9 +2,9 @@
   <div class="tarea">
     <div class="cabecera">
       <button 
-        (click)="cambiarEstado()" 
+        (click)="(this.subtareas.length==0)?cambiarEstado():null" 
         class="estado-boton" 
-        [class]="claseEstado"
+        [style]="'background-color:'+this.estados[this.estadoActual].color"
         [attr.aria-label]="'Estado actual: ' + estados[estadoActual]"
       ></button>
       

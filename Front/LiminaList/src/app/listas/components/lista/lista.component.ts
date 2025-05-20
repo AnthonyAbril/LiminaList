@@ -12,14 +12,19 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class ListaComponent {
   @Input() editar = false; // 🔹 Recibe la variable desde PanelComponent
-
-  estados = ['Opción 1', 'Opción 2', 'Opción 3'];
   estadoActual = 0;
   tipoTarea:boolean = false;  //por defecto puntual
   
   @Input() tareas: Tarea[] = [];
 
   listaId;
+  
+  @Input() estados: { nombre: string; color: string }[] = [
+    { nombre: 'Sin hacer', color: '#f87171' },
+    { nombre: 'En progreso', color: '#facc15' },
+    { nombre: 'Casi lista', color: '#fb923c' },
+    { nombre: 'Hecha', color: '#4ade80' }
+  ];
 
   get tareasPuntuales() {
     return this.tareas.filter(t => !t.rutinario);
