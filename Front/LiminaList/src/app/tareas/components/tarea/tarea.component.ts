@@ -131,10 +131,17 @@ export class TareaComponent {
 
     const total = this.subtareas.length;  //
     //const terminadas = this.subtareas.filter(t => t.terminado).length;
-    const terminadas = this.subtareas.filter(t => t.progreso==0).length;
-    console.log(terminadas);
+    const progresoSubtareas = this.subtareas.reduce((suma, sub) => suma + (sub.progreso || 0), 0);
+    console.log("progreso subtareas = "+progresoSubtareas)
+    
+    const progresoCalculado = this.subtareas.length > 0
+    ? progresoSubtareas / this.subtareas.length
+    : 0;
 
-    const progresoCalculado = Math.ceil((terminadas / total) * (this.estados.length - 1));
+    //const terminadas = this.subtareas.filter(t => t.progreso==0).length;  //calcular cuantas subtareas terminadas tiene  
+
+    //const progresoCalculado = Math.ceil((terminadas / total) * (this.estados.length - 1));
+    console.log()
     const estadoCambiado = progresoCalculado !== this.estadoActual;
 
     this.estadoActual = progresoCalculado;
