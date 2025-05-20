@@ -18,7 +18,7 @@
     <h1 class="titulo">Liminalist</h1>
     <div class="header">
         <div class="nav">
-            <img src="assets/icons/exit.svg" [routerLink]="'/'" alt="Icono de Pluma" class="icono">
+            <img src="assets/icons/exit.svg" (click)="logout()" alt="Icono de Pluma" class="icono">
             <img src="assets/icons/calendar.svg" (click)="cambiarVista('calendar')" alt="Icono de calendario" class="icono">
             <img src="assets/icons/square-list.svg" (click)="cambiarVista('listas')" alt="Icono de listas" class="icono">
         </div>
@@ -28,7 +28,7 @@
 
         <div *ngIf="resumen=='calendar'" class="calendar-mini">
             <div class="header-resum">
-                <h2>Calendario</h2>
+                <h2 class="titulo-header">Calendario</h2>
                 <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
                     <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
                 </select>
@@ -58,7 +58,7 @@
 
         <div *ngIf="resumen=='listas'" class="listas-mini">
             <div class="header-resum">
-                <h2 [routerLink]="'/lists'">Listas</h2><a>Filtros: A-Z</a>
+                <h2 class="titulo-header" [routerLink]="'/lists'">Listas</h2><a>Filtros: A-Z</a>
             </div>
             <div class="main-resum">
 

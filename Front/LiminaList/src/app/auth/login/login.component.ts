@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -22,7 +22,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   registroForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -61,7 +61,9 @@ export class LoginComponent {
 
 
             
-            this.router.navigate(['/home']);
+            // Recuperamos la URL original
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+            this.router.navigate([returnUrl]);
           } else {
             this.errorLogin = '❌ Credenciales incorrectas';
           }

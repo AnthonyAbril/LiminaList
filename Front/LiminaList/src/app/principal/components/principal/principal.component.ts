@@ -96,6 +96,10 @@ generarCalendario(): void {
     });
   }
 
+  logout(){
+    this.authService.logout();
+  }
+
   crearListaDelDia(listaId: string, fecha: Date): void {
     const nombreLista = `${fecha.getUTCDate()}/${fecha.getUTCMonth() + 1}/${fecha.getUTCFullYear()}`;
     const token = sessionStorage.getItem('token');

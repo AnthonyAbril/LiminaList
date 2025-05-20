@@ -12,24 +12,6 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-/*
-  login(): void {
-    this.usuarioAutenticado = true;
-    localStorage.setItem('auth', 'true'); // Guardar estado en almacenamiento local
-    this.router.navigate(['/principal']); // Redirigir a la página principal
-  }
-
-  logout(): void {
-    this.usuarioAutenticado = false;
-    localStorage.removeItem('auth'); // Eliminar el estado de autenticación
-    this.router.navigate(['/']); // Redirigir al login
-  }
-
-  estaAutenticado(): boolean {
-    return localStorage.getItem('auth') === 'true'; // Comprueba si hay autenticación guardada
-  }
-    */
-
   register(nombre: string, email: string, password: string) {
     return this.http.post(`${this.apiUrl}/register`, { 
       name: nombre,  // 🔹 Cambiado 'nombre' a 'name' para que Laravel lo reciba correctamente
@@ -66,13 +48,18 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token'); // Elimina el token de autenticación
-    this.router.navigate(['/login']); // Redirige al login
+    localStorage.removeItem('token');     // token en localStorage
+    sessionStorage.removeItem('token');   // token en sessionStorage
+    sessionStorage.removeItem('user_id'); // también limpiar user_id
+    this.router.navigate(['/login']);     // redirigir al login
   }
 
+
   estaAutenticado(): boolean {
-    return !!this.getToken(); // Comprueba si hay un token almacenado
+    const token = localStorage.getItem('token');  // ✅ corregido
+    return !!token;
   }
+
 
   getUserData(): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);

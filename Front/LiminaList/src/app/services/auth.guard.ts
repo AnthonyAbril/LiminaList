@@ -1,18 +1,36 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import {
+  CanActivate,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  CanLoad,
+  Route,
+  UrlSegment
+} from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate, CanLoad {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.authService.estaAutenticado()) {
-      return true; // Permitir acceso a la ruta protegida
+      return true;
     } else {
-      this.router.navigate(['/']); // Redirigir al login si no está autenticado
+      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+      return false;
+    }
+  }
+
+  canLoad(route: Route, segments: UrlSegment[]): boolean {
+    const url = `/${segments.map(s => s.path).join('/')}`;
+    if (this.authService.estaAutenticado()) {
+      return true;
+    } else {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: url } });
       return false;
     }
   }

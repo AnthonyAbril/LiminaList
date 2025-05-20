@@ -4,6 +4,7 @@ import { PrincipalComponent } from './components/principal/principal.component';
 import { RouterModule } from '@angular/router';
 import { TareasModule } from "../tareas/tareas.module";
 import { FormsModule } from '@angular/forms';
+import { AuthGuard } from '../services/auth.guard';
 
 
 @NgModule({
@@ -13,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     RouterModule.forChild([
-        { path: '', component: PrincipalComponent } // Ruta interna del módulo
+        { path: '', component: PrincipalComponent} // Ruta interna del módulo
     ]),
     TareasModule,
     FormsModule
