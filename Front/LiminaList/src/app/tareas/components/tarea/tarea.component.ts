@@ -31,6 +31,7 @@ export class TareaComponent {
   @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
+  @Output() actualizarEstadoPadre = new EventEmitter<void>();
 
   estadoActual = 0;
   mostrarSubtareas = false;
@@ -104,9 +105,18 @@ export class TareaComponent {
   }
 
   cambiarEstado(): void {
-    this.estadoActual = (this.estadoActual + 1) % this.estados.length;
+    if(this.subtareas.length==0){
+      //tarea hoja
+      this.estadoActual = (this.estadoActual + 1) % this.estados.length;
 
-    console.log("cambio de progreso "+this.estadoActual + ", " + this.estados[this.estadoActual].nombre);
+      console.log("cambio de progreso "+this.estadoActual + ", " + this.estados[this.estadoActual].nombre);
+    }else{
+      //tarea rama
+
+      //poner que hara las tareas con subtareas (recalcular el valor de su progreso en base al valor del progreso de sus hijas)
+
+    }
+
   }
 
   get progreso(): string {

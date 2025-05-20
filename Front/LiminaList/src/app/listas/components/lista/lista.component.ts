@@ -18,7 +18,7 @@ export class ListaComponent {
   @Input() tareas: Tarea[] = [];
 
   listaId;
-  
+
   @Input() estados: { nombre: string; color: string }[] = [
     { nombre: 'Sin hacer', color: '#f87171' },
     { nombre: 'En progreso', color: '#facc15' },
@@ -33,7 +33,6 @@ export class ListaComponent {
   get tareasRutinarias() {
     return this.tareas.filter(t => !!t.rutinario);
   }
-
   
   constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
