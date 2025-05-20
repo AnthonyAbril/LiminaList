@@ -21,11 +21,12 @@ export class TareaComponent {
   @Input() listaid:any = 0 ;
   @Input() rutinario:boolean|undefined = false ;
   @Input() estados: { nombre: string; color: string }[] = [
+    { nombre: 'Hecha', color: '#4ade80' },
     { nombre: 'Sin hacer', color: '#f87171' },
     { nombre: 'En progreso', color: '#facc15' },
     { nombre: 'Casi lista', color: '#fb923c' },
-    { nombre: 'Hecha', color: '#4ade80' }
   ];
+  @Input() progreso:number|null=1;
 
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
@@ -115,6 +116,7 @@ export class TareaComponent {
     const terminado = estaTerminada;
     this.actualizarEstadoPadre.emit(); // Dispara evento hacia el padre
 
+    console.log("Estado de "+this.title+" = "+ this.estadoActual );
 
     // Actualizar tarea actual (hoja) en backend
     this.tareasService.editarTarea(this.id, { progreso: this.estadoActual, terminado }).subscribe({
@@ -129,22 +131,53 @@ export class TareaComponent {
   actualizarEstadoDesdeSubtareas(): void {
     if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
 
-    const total = this.subtareas.length;  //
-    //const terminadas = this.subtareas.filter(t => t.terminado).length;
-    const progresoSubtareas = this.subtareas.reduce((suma, sub) => suma + (sub.progreso || 0), 0);
-    console.log("progreso subtareas = "+progresoSubtareas)
-    
-    const progresoCalculado = this.subtareas.length > 0
-    ? progresoSubtareas / this.subtareas.length
-    : 0;
+      const totalSubtareas = this.subtareas.length;
+    if (totalSubtareas === 0) return;
+
+    // Paso 1: crear el mapa de progreso por índice
+    const totalEstados = this.estados.length;
+    const progresoPorEstado: number[] = [];
+
+    for (let i = 0; i < totalEstados; i++) {
+      progresoPorEstado[i] = i === 0
+        ? 100
+        : 100 * (1 - i / (totalEstados - 1));
+    }
+
+    // Paso 2: calcular promedio de progreso de subtareas
+    const progresoTotal = this.subtareas.reduce((suma, sub) => {
+      const estado = sub.progreso ?? 1;
+      return suma + (progresoPorEstado[estado] ?? 0);
+    }, 0);
+
+    const progresoPromedio = progresoTotal / totalSubtareas;
+
+    // Paso 3: encontrar el estado más cercano al progreso promedio
+    let estadoCercano = 0;
+    let diferenciaMinima = Infinity;
+
+    for (let i = 0; i < progresoPorEstado.length; i++) {
+      const diferencia = Math.abs(progresoPromedio - progresoPorEstado[i]);
+      if (diferencia < diferenciaMinima) {
+        diferenciaMinima = diferencia;
+        estadoCercano = i;
+      }
+    }
+
+    // Paso 4: asignar estado correspondiente
+    this.estadoActual = estadoCercano;
+
+
+    // Aquí puedes hacer lo que necesites con el progreso, como asignarlo:
+    const prog = estadoCercano;
 
     //const terminadas = this.subtareas.filter(t => t.progreso==0).length;  //calcular cuantas subtareas terminadas tiene  
 
     //const progresoCalculado = Math.ceil((terminadas / total) * (this.estados.length - 1));
-    console.log()
-    const estadoCambiado = progresoCalculado !== this.estadoActual;
+    console.log(prog,this.estadoActual)
+    const estadoCambiado = prog;
 
-    this.estadoActual = progresoCalculado;
+    this.estadoActual = prog;
     const terminado = this.estadoActual === this.estados.length - 1;
 
     
@@ -153,17 +186,17 @@ export class TareaComponent {
     // Actualizar en backend
     this.tareasService.editarTarea(this.id, {
       progreso: this.estadoActual,
-      terminado
+      //terminado
     }).subscribe({
       next: () => {
-        console.log(`🔁 Estado recalculado para tarea ${this.id}(${this.title}): ${this.estadoActual} ${this.progreso} (${this.estados[this.estadoActual].nombre})`);
+        console.log(`🔁 Estado recalculado para tarea ${this.id}(${this.title}): ${this.estadoActual} (${this.estados[this.estadoActual].nombre})`);
         // Emitir hacia su propio padre (propagación recursiva)
       },
       error: (err) => console.error('❌ Error actualizando estado padre:', err)
     });
   }
 
-  get progreso(): string {
+  get porcentajeProgreso(): string {
     return this.subtareas.length === 0 ? '' : 
       `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
   }

@@ -15,7 +15,7 @@
           (click)="((!editar)?(toggleSubtareas()):(comenzarEdicion($event)))" 
           > <!-- Añade stopPropagation aquí -->
           {{ title }}
-          <span *ngIf="progreso" class="badge-progreso">{{ progreso }}</span>
+          <span *ngIf="porcentajeProgreso" class="badge-progreso">{{ porcentajeProgreso }}</span>
         </div>
         
         <input
@@ -60,6 +60,7 @@
             [listaid]="subtarea.list_id"
             [rutinario]="subtarea.rutinario"
             (actualizarEstadoPadre)="actualizarEstadoDesdeSubtareas()"
+            [progreso]="subtarea.progreso"
           ></app-tarea>
         </li>
       </ul>
