@@ -105,6 +105,8 @@ export class TareaComponent {
 
   cambiarEstado(): void {
     this.estadoActual = (this.estadoActual + 1) % this.estados.length;
+
+    console.log("cambio de progreso "+this.estadoActual + ", " + this.estados[this.estadoActual].nombre);
   }
 
   get progreso(): string {
