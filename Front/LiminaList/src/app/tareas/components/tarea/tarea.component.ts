@@ -127,7 +127,7 @@ export class TareaComponent {
       error: (err) => console.error('❌ Error actualizando estado:', err)
     });
   }
-
+  
   //metodo de tarea rama
   actualizarEstadoDesdeSubtareas(): void {
     if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
@@ -147,10 +147,10 @@ export class TareaComponent {
 
     // Paso 2: calcular promedio de progreso de subtareas
     const progresoTotal = this.subtareas.reduce((suma, sub) => {
-      const estado = sub.progreso ?? 1;
-      console.log("Subtarea:", sub, "→ progreso:", sub.progreso);
+      const estado = Number.isInteger(sub.progreso) ? sub.progreso : 1;
       return suma + (progresoPorEstado[estado] ?? 0);
     }, 0);
+
 
     const progresoPromedio = progresoTotal / totalSubtareas;
 
