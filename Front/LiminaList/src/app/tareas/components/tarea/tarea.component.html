@@ -59,8 +59,9 @@
             [editar]="editar"
             [listaid]="subtarea.list_id"
             [rutinario]="subtarea.rutinario"
-            (actualizarEstadoPadre)="onActualizarDesdeHijo()"
             [progreso]="subtarea.progreso"
+            (progresoActualizado)="onProgresoActualizado($event)"
+            (actualizarEstadoPadre)="onActualizarEstadoPadre()"
           ></app-tarea>
         </li>
       </ul>

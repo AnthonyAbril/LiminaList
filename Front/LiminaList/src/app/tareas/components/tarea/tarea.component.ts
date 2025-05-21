@@ -33,6 +33,7 @@ export class TareaComponent {
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
   @Output() actualizarEstadoPadre = new EventEmitter<void>();
+  @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
 
   mostrarSubtareas = false;
   girando = false;
@@ -107,27 +108,34 @@ export class TareaComponent {
   
   //metodo de tarea hoja
   cambiarEstado(): void {
-    if (this.subtareas.length > 0) return; // Solo tareas hoja
+    if (this.subtareas.length > 0) return; // Solo hojas
 
-    // Avanzar estado
     this.progreso = (this.progreso + 1) % this.estados.length;
-    const estaTerminada = this.progreso === this.estados.length - 1;
-    const terminado = estaTerminada;
-    this.actualizarEstadoPadre.emit(); // Dispara evento hacia el padre
 
-    console.log("progreso de "+this.title+" = "+this.progreso)
+    // Emitir progreso actualizado al padre con id
+    this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
 
-    this.progreso = this.progreso;
-
-    // Actualizar tarea actual (hoja) en backend
-    this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado }).subscribe({
-      next: () => {
-        console.log(`✅ Estado de tarea ${this.id} actualizado: ${this.progreso} (${this.estados[this.progreso].nombre})`);
-      },
-      error: (err) => console.error('❌ Error actualizando estado:', err)
-    });
+    // Actualizar backend
+    this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado: this.progreso === this.estados.length - 1 }).subscribe();
   }
-  
+
+  onProgresoActualizado(event: { id: number; progreso: number }) {
+    // Actualizar progreso de la subtarea en el array
+    const index = this.subtareas.findIndex(s => s.id === event.id);
+    if (index !== -1) {
+      this.subtareas[index].progreso = event.progreso;
+    }
+
+    // Recalcular progreso del padre con subtareas actualizadas
+    this.actualizarEstadoDesdeSubtareas();
+  }
+
+  onActualizarEstadoPadre() {
+    this.actualizarEstadoDesdeSubtareas();
+    this.actualizarEstadoPadre.emit();  // para propagar al siguiente nivel
+  }
+
+
   //metodo de tarea rama
   actualizarEstadoDesdeSubtareas(): void {
     if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
@@ -196,17 +204,6 @@ export class TareaComponent {
       error: (err) => console.error('❌ Error actualizando estado padre:', err)
     });
   }
-
-  onActualizarDesdeHijo(): void {
-    this.tareasService.getTareaPorId(this.id).subscribe({
-      next: (nuevasSubtareas) => {
-        this.subtareas = nuevasSubtareas.subtareas;
-        this.actualizarEstadoDesdeSubtareas();
-      },
-      error: (err) => console.error('❌ Error al obtener subtareas actualizadas:', err)
-    });
-  }
-
 
   get porcentajeProgreso(): string {
     return this.subtareas.length === 0 ? '' : 
