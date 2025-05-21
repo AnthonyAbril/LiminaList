@@ -197,6 +197,17 @@ export class TareaComponent {
     });
   }
 
+  onActualizarDesdeHijo(): void {
+    this.tareasService.getTareaPorId(this.id).subscribe({
+      next: (nuevasSubtareas) => {
+        this.subtareas = nuevasSubtareas.subtareas;
+        this.actualizarEstadoDesdeSubtareas();
+      },
+      error: (err) => console.error('❌ Error al obtener subtareas actualizadas:', err)
+    });
+  }
+
+
   get porcentajeProgreso(): string {
     return this.subtareas.length === 0 ? '' : 
       `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
