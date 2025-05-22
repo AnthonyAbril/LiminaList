@@ -126,9 +126,12 @@ export class TareaComponent {
       this.subtareas[index].progreso = event.progreso;
     }
 
-    // Recalcular progreso del padre con subtareas actualizadas
-    this.actualizarEstadoDesdeSubtareas();
+    // Esperar a que Angular renderice los cambios antes de recalcular
+    setTimeout(() => {
+      this.actualizarEstadoDesdeSubtareas();
+    }, 0);
   }
+
 
   onActualizarEstadoPadre() {
     this.actualizarEstadoDesdeSubtareas();
@@ -139,6 +142,8 @@ export class TareaComponent {
   //metodo de tarea rama
   actualizarEstadoDesdeSubtareas(): void {
     if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
+
+    const progresoAnterior = this.progreso;
 
       const totalSubtareas = this.subtareas.length;
     if (totalSubtareas === 0) return;
@@ -190,7 +195,9 @@ export class TareaComponent {
     const terminado = this.progreso === this.estados.length - 1;
 
     
-    this.actualizarEstadoPadre.emit();
+    if (progresoAnterior !== this.progreso) {
+      this.actualizarEstadoPadre.emit();
+    }
 
     // Actualizar en backend
     this.tareasService.editarTarea(this.id, {

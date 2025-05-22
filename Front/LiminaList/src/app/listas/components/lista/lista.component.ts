@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { ActivatedRoute } from '@angular/router';
 import { TareasService } from '../../../services/tareas.service';
@@ -16,6 +16,7 @@ export class ListaComponent {
   tipoTarea:boolean = false;  //por defecto puntual
   
   @Input() tareas: Tarea[] = [];
+  @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
 
   listaId;
 
@@ -25,6 +26,15 @@ export class ListaComponent {
     { nombre: 'Casi lista', color: '#fb923c' },
     { nombre: 'Hecha', color: '#4ade80' }
   ];
+
+  onProgresoActualizado({ id, progreso }: { id: number, progreso: number }) {
+    const tarea = this.tareas.find(t => t.id === id);
+    if (tarea) {
+      tarea.progreso = progreso;
+      console.log(`🔄 Progreso actualizado en ListaComponent: Tarea ${id} -> ${progreso}`);
+    }
+  }
+
 
   get tareasPuntuales() {
     return this.tareas.filter(t => !t.rutinario);

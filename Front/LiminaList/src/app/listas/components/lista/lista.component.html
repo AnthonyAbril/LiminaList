@@ -38,6 +38,7 @@
           [rutinario]="tarea.rutinario"
           [estados]="this.estados"
           [progreso]="tarea.progreso"
+          (progresoActualizado)="onProgresoActualizado($event)"
         ></app-tarea>
       </li>
     </ul>
