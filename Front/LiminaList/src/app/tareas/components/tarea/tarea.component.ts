@@ -358,7 +358,7 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
 
   eliminarSubtarea(index: number): void {
     const tareaEliminada = this.subtareas[index];
-
+    
     if (this.animacionEnCurso) return;
   
     this.preAnimarAltura();
@@ -372,6 +372,8 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
     } else {
       this.postAnimarAltura(true);
     }
+    
+    this.actualizarEstadoDesdeSubtareas(); // 🔄 Recalcular progreso tras la elimi
 
     this.tareasService.eliminarTarea(tareaEliminada.id).subscribe({
       next: () => {
