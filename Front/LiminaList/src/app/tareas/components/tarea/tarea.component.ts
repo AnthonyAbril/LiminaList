@@ -110,7 +110,11 @@ export class TareaComponent {
   cambiarEstado(): void {
     if (this.subtareas.length > 0) return; // Solo hojas
 
+    const progviejo = this.progreso;
+
     this.progreso = (this.progreso + 1) % this.estados.length;
+
+    console.log("Subtarea hoja progreso de "+progviejo+ " a "+this.progreso)
 
     // Emitir progreso actualizado al padre con id
     this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
@@ -119,6 +123,7 @@ export class TareaComponent {
     this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado: this.progreso === this.estados.length - 1 }).subscribe();
   }
 
+  //esta funcion sirve para actualizar el array de subtareas del padre
   onProgresoActualizado(event: { id: number; progreso: number }) {
     // Actualizar progreso de la subtarea en el array
     const index = this.subtareas.findIndex(s => s.id === event.id);
@@ -126,10 +131,11 @@ export class TareaComponent {
       this.subtareas[index].progreso = event.progreso;
     }
 
+    console.log("Padre "+this.title+" actualiza sus subtareas");
+    console.log(this.subtareas);
+
     // Esperar a que Angular renderice los cambios antes de recalcular
-    setTimeout(() => {
-      this.actualizarEstadoDesdeSubtareas();
-    }, 0);
+    this.actualizarEstadoDesdeSubtareas();
   }
 
 
@@ -182,21 +188,14 @@ export class TareaComponent {
     // Paso 4: asignar estado correspondiente
     this.progreso = estadoCercano;
 
+    console.log("El progreso del padre "+this.title+" pasa de "+progresoAnterior+" a "+this.progreso);
 
-    // Aquí puedes hacer lo que necesites con el progreso, como asignarlo:
-    const prog = estadoCercano;
-
-    //const terminadas = this.subtareas.filter(t => t.progreso==0).length;  //calcular cuantas subtareas terminadas tiene  
-
-    //const progresoCalculado = Math.ceil((terminadas / total) * (this.estados.length - 1));
-    console.log(prog,this.progreso)
-
-    this.progreso = prog;
     const terminado = this.progreso === this.estados.length - 1;
 
     
     if (progresoAnterior !== this.progreso) {
-      this.actualizarEstadoPadre.emit();
+      //this.actualizarEstadoPadre.emit();
+      this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
     }
 
     // Actualizar en backend
