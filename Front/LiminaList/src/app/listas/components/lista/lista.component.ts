@@ -35,7 +35,6 @@ export class ListaComponent {
     }
   }
 
-
   get tareasPuntuales() {
     return this.tareas.filter(t => !t.rutinario);
   }

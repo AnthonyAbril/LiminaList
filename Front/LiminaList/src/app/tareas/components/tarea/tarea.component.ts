@@ -20,18 +20,28 @@ export class TareaComponent {
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
   @Input() listaid:any = 0 ;
   @Input() rutinario:boolean|undefined = false ;
+  @Input() progreso:number = 1;
+
+  @Input() tarea:Tarea = {
+    id:0,
+    title: "",
+    progreso: 1,
+    user_id:1,
+    subtareas:[]
+  };
+
   @Input() estados: { nombre: string; color: string }[] = [
-    { nombre: 'Hecha', color: '#4ade80' },
     { nombre: 'Sin hacer', color: '#f87171' },
     { nombre: 'En progreso', color: '#facc15' },
     { nombre: 'Casi lista', color: '#fb923c' },
+    { nombre: 'Hecha', color: '#4ade80' },
   ];
-  @Input() progreso:number=1;
 
   @Output() eliminar = new EventEmitter<void>();
   @Output() actualizarNombre = new EventEmitter<string>();
   @ViewChild('subtareasContainer') subtareasContainer!: ElementRef;
   @ViewChild('nombreInput') nombreInput!: ElementRef;
+
   @Output() actualizarEstadoPadre = new EventEmitter<void>();
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
 
@@ -145,58 +155,33 @@ export class TareaComponent {
   }
 
 
-  //metodo de tarea rama
+
+  private progresoPorEstado: number[] = ESTADOS.map((_, i) =>
+    i === 0 ? 100 : 100 * (1 - i / (ESTADOS.length - 1))
+  );
+
+  private calcularProgreso(): number {
+    if (this.subtareas.length === 0) return this.progreso;
+
+    const progresoPromedio =
+      this.subtareas.reduce((suma, sub) => suma + sub.progreso, 0) / this.subtareas.length;
+
+    // Evitar que el progreso calculado caiga a "Sin hacer" cuando hay subtareas avanzadas
+    const progresoMinimo = Math.min(...this.subtareas.map(sub => sub.progreso));
+    return Math.max(Math.floor(progresoPromedio), progresoMinimo);
+  }
+
   actualizarEstadoDesdeSubtareas(): void {
-    if (this.subtareas.length === 0) return;  //si es tarea hoja, sale del metodo
+    if (this.subtareas.length === 0) return;
 
     const progresoAnterior = this.progreso;
+    this.progreso = this.calcularProgreso();
 
-      const totalSubtareas = this.subtareas.length;
-    if (totalSubtareas === 0) return;
-
-    // Paso 1: crear el mapa de progreso por índice
-    const totalEstados = this.estados.length;
-    const progresoPorEstado: number[] = [];
-
-    for (let i = 0; i < totalEstados; i++) {
-      progresoPorEstado[i] = i === 0
-        ? 100
-        : 100 * (1 - i / (totalEstados - 1));
-    }
-
-    // Paso 2: calcular promedio de progreso de subtareas
-    const progresoTotal = this.subtareas.reduce((suma, sub) => {
-      const estado = Number.isInteger(sub.progreso) ? sub.progreso : 1;
-      return suma + (progresoPorEstado[estado] ?? 0);
-    }, 0);
-
-
-    const progresoPromedio = progresoTotal / totalSubtareas;
-
-    // Paso 3: encontrar el estado más cercano al progreso promedio
-    let estadoCercano = 0;
-    let diferenciaMinima = Infinity;
-
-    for (let i = 0; i < progresoPorEstado.length; i++) {
-      const diferencia = Math.abs(progresoPromedio - progresoPorEstado[i]);
-      if (diferencia < diferenciaMinima) {
-        diferenciaMinima = diferencia;
-        estadoCercano = i;
-      }
-    }
-
-    // Paso 4: asignar estado correspondiente
-    this.progreso = estadoCercano;
-
-    console.log("El progreso del padre "+this.title+" pasa de "+progresoAnterior+" a "+this.progreso);
-
-    const terminado = this.progreso === this.estados.length - 1;
-
-    
     if (progresoAnterior !== this.progreso) {
-      //this.actualizarEstadoPadre.emit();
       this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
     }
+
+    console.log("El progreso del padre "+this.title+" pasa de "+progresoAnterior+" a "+this.progreso);
 
     // Actualizar en backend
     this.tareasService.editarTarea(this.id, {
@@ -239,7 +224,7 @@ export class TareaComponent {
       id: Date.now(), // Genera un ID único temporal
       title: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
-      progreso: 1,
+      progreso: this.progreso,
       list_id: this.listaid,
       user_id: Number(this.authService.getUserId()), // 🔹 Si `null`, asigna un valor por defecto
       padre: this.id,
@@ -440,7 +425,7 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
     }, 0);
   }
 
-  trackByTarea(index: number, tarea: Tarea): string {
-    return `${index}-${tarea.title}`;
+  trackByTarea(_: number, tarea: Tarea): number {
+    return tarea.id;
   }
 }
