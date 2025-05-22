@@ -24,7 +24,7 @@ export class ListaComponent {
     { nombre: 'Sin hacer', color: '#f87171' },
     { nombre: 'En progreso', color: '#facc15' },
     { nombre: 'Casi lista', color: '#fb923c' },
-    { nombre: 'Hecha', color: '#4ade80' }
+    { nombre: 'Hecha', color: '#4ade80' },
   ];
 
   onProgresoActualizado({ id, progreso }: { id: number, progreso: number }) {
@@ -32,6 +32,13 @@ export class ListaComponent {
     if (tarea) {
       tarea.progreso = progreso;
       console.log(`🔄 Progreso actualizado en ListaComponent: Tarea ${id} -> ${progreso}`);
+
+      this.tareasService.editarTarea(id, { progreso }).subscribe({
+        next: () => console.log(`✅ Progreso de tarea ${id} guardado en backend.`),
+        error: (err) => console.error(`❌ Error al actualizar progreso en backend:`, err)
+      });
+
+      this.tareas = [...this.tareas]; // 🔄 Forzar actualización en Angular
     }
   }
 
@@ -54,7 +61,7 @@ export class ListaComponent {
   id: Math.floor(Math.random() * 99999999), // 🔹 Mantenerlo dentro de `unsignedBigInteger`
       title: `Tarea ${this.tareas.length + 1}`, // title dinámico
       description: null,
-      progreso: 1,
+      progreso: 0,
       list_id: this.listaId,
       user_id: Number(this.authService.getUserId()), // 🔹 Asegurar que `user_id` se envía correctamente
       padre: null,

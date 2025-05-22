@@ -19,6 +19,8 @@
           [editar]="editar"
           [listaid]="tarea.list_id"
           [rutinario]="tarea.rutinario"
+          (progresoActualizado)="onProgresoActualizado($event)"
+          [progreso]="tarea.progreso"
         ></app-tarea>
       </li>
     </ul>
@@ -39,6 +41,7 @@
           [estados]="this.estados"
           [progreso]="tarea.progreso"
           (progresoActualizado)="onProgresoActualizado($event)"
+          [progreso]="tarea.progreso"
         ></app-tarea>
       </li>
     </ul>

@@ -20,7 +20,7 @@ export class TareaComponent {
   @Input() editar = false; // 🔹 Recibe el estado desde ListaComponent
   @Input() listaid:any = 0 ;
   @Input() rutinario:boolean|undefined = false ;
-  @Input() progreso:number = 1;
+  @Input() progreso:number = 0;
 
   @Input() tarea:Tarea = {
     id:0,
@@ -130,7 +130,13 @@ export class TareaComponent {
     this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
 
     // Actualizar backend
-    this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado: this.progreso === this.estados.length - 1 }).subscribe();
+    this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado: this.progreso === this.estados.length - 1 }).subscribe({
+      next: () => {
+        console.log(`🔁 Progreso de hoja a backend ${this.id}(${this.title}): ${this.progreso} (${this.estados[this.progreso].nombre})`);
+        // Emitir hacia su propio padre (propagación recursiva)
+      },
+      error: (err) => console.error('❌ Error actualizando estado hoja:', err)
+    });
   }
 
   //esta funcion sirve para actualizar el array de subtareas del padre
