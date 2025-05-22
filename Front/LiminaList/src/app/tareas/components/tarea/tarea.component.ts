@@ -224,7 +224,7 @@ export class TareaComponent {
       id: Date.now(), // Genera un ID único temporal
       title: `Subtarea ${this.subtareas.length + 1}`,
       subtareas: [],
-      progreso: this.progreso,
+      progreso: 0,
       list_id: this.listaid,
       user_id: Number(this.authService.getUserId()), // 🔹 Si `null`, asigna un valor por defecto
       padre: this.id,
@@ -234,7 +234,8 @@ export class TareaComponent {
       rutinario: this.rutinario
     };
 
-  console.log('➡ Subtarea a enviar:', nuevaSubtarea);
+    console.log('➡ Subtarea a enviar:', nuevaSubtarea);
+    this.actualizarEstadoDesdeSubtareas(); // 🔄 Recalcula progreso tras la adición
 
     //se añade subtarea a backend
     this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
@@ -263,6 +264,8 @@ export class TareaComponent {
     }
   
     this.subtareas = [...this.subtareas, nuevaSubtarea];
+    
+    this.actualizarEstadoDesdeSubtareas(); // 🔄 Recalcula progreso tras la adición
 
     if (eraVacia) {
       this.mostrarSubtareas = true;
@@ -358,7 +361,7 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
 
   eliminarSubtarea(index: number): void {
     const tareaEliminada = this.subtareas[index];
-    
+
     if (this.animacionEnCurso) return;
   
     this.preAnimarAltura();
