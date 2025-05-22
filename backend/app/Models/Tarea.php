@@ -34,5 +34,8 @@ class Tarea extends Model
         return $this->hasMany(Tarea::class, 'padre')->with('subtareas'); // 🔹 Recursividad asegurada
     }
 
-
+    public function fechas()
+    {
+        return $this->hasMany(TareaFecha::class, 'tarea_id');
+    }
 }

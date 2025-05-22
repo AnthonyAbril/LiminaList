@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { Lista } from '../listas/lista';
 import { Tarea } from '../tareas/components/tarea/tarea';
+
+
+
+
+  export interface TareaFecha {
+    fecha: string;
+    hora?: string;
+    tarea: Tarea; // ✅ Garantiza que cada `TareaFecha` tiene una `Tarea`
+  }
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +57,34 @@ export class ListasService {
     );
 
   }
+
+
+  getTareasProximas(diasFuturos: number): Observable<Tarea[]> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    const ahora = new Date();
+    const desde = ahora.toISOString(); // formato ISO: "2025-05-23T14:22:00.000Z"
+
+    const hasta = new Date(ahora.getTime() + diasFuturos * 24 * 60 * 60 * 1000).toISOString();
+
+    return this.http.get<TareaFecha[]>(`http://localhost:8000/api/eventos-proximos?desde=${desde}&hasta=${hasta}`, { headers }).pipe(
+      tap(response => console.log('📌 Respuesta del backend:', response)),
+      map(response => response.map(e => e.tarea)),
+      catchError(error => {
+        console.error('❌ Error al obtener tareas próximas:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
 
   crearLista(lista: Lista): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);

@@ -5,6 +5,7 @@ import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { Lista } from '../../../listas/lista';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-principal',
@@ -27,10 +28,17 @@ export class PrincipalComponent implements OnInit {
   constructor(private authService:AuthService, private listasService: ListasService, private router: Router) {}
 
   ngOnInit(): void {
-    // Carga inicial de datos
     this.listasService.getListas().subscribe({
       next: response => this.listas = response,
       error: err => console.error('Error cargando listas', err)
+    });
+
+    this.listasService.getTareasProximas(7).subscribe({
+      next: response => {
+        console.log('📌 Datos recibidos:', response);
+        this.tareas = response; // ✅ Si el backend está bien, debería funcionar
+      },
+      error: err => console.error('Error cargando eventos próximos:', err)
     });
 
     this.generarCalendario();

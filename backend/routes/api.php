@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/lists', [ListaController::class, 'store']); // 🔹 Asegurar que `store` está presente
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
 
+    Route::get('eventos-proximos', [TareaController::class, 'eventosProximos'])->middleware('auth:sanctum');
+
     Route::get('/tareas', [TareaController::class, 'index']); // Obtener todas las tareas
     Route::get('/tareas/{id}', [TareaController::class, 'show']); // Obtener una tarea específica
     Route::post('/tareas', [TareaController::class, 'store']); // Crear una nueva tarea
