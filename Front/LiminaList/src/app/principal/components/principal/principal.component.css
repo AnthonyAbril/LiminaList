@@ -245,10 +245,9 @@
   width: 90%;
   height: 90%;
   border: none;
-  background-color: #fff;
-  color: #333;
+  background-color: #FF9E16;
+  color: white;
   font-size: 2.5em;
-  font-weight: bold;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
@@ -268,8 +267,8 @@ select, option{
 
 
 .fechas button:hover {
-  background-color: #007bff;
-  color: white;
+  background-color: white;
+  color: #FF9E16;
 }
 
 .fechas button.selected {
@@ -277,7 +276,20 @@ select, option{
   color: white;
 }
 
+.header-resum select{
+    background-color: #ffca81;
+    color: white;
 
+    border-radius: 20px;
+    border: none;
+    text-align: center;
+}
+
+.header-resum option{
+    background-color: #FFBA5A;
+    color: white;
+    border: none;
+}
 
 .icono {
     width: 60px; /* Ajusta el tamaño del icono */
