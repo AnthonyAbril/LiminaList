@@ -6,18 +6,16 @@
     display: flex;
     justify-content: space-between;
     height: 100vh;
+    background-color: #FF9E16;
 }
 
 .lista-lateral {
     width: 30vw;
-    background-color: red;
 }
 
 .main { 
     width: 70vw;
-    background-color: blue;
 
-    
     z-index: 50;
 }
 
@@ -44,7 +42,9 @@
     transform: translate(-50%);
     font-size: 3rem;
     font-weight: bold;
-    background-color: green;
+    background-color: #FFBA5A;
+    
+    border-radius: 0 0 20px 20px;
 
     display: flex;
     justify-content: center;
@@ -60,25 +60,28 @@
 }
 
 .main-content {
-    background-color: aqua;
     height: 90vh;
 
     display: flex;
     justify-content: center;
     align-items: center;    
+
+    border-radius: 20px;
 }
 
 .main-content > div {
-    background-color: green;
+    background-color: #FFBA5A;
     width: 90%;
     height: 90%;
 
     display: flex;
     flex-direction: column;
+
+    
+    border-radius: 20px;
 }
 
 .header-resum {
-    background-color: red;
     height: 15%;
 
     display: flex;
@@ -86,11 +89,16 @@
     align-items: center;
     padding-left: 2vw;
     padding-right: 2vw;
+
+    
+    border-radius: 20px 20px 0 0;
 }
 
 .main-resum { 
-    background-color: coral;
+    background-color: #ffca81;
     height: 75%;
+
+    border-radius:20px;
 }
 
 .main-resum > ul{
@@ -120,12 +128,14 @@
 }
 
 .main-resum > ul > li > div {
-    background-color: blueviolet;
+    background-color: #FF9E16;
     display: inline;
     padding: 5%;
     width: 100%;
 
     height: 4vh;
+
+    border-radius: 20px;
 }
 
 .main-resum > ul > li > .main-resum-lupa{
@@ -145,8 +155,9 @@
 }
 
 .footer-resum {
-    background-color: darkgoldenrod;
     height: 10%;
+
+    border-radius: 0 0 20px 20px;
 }
 
 
@@ -157,11 +168,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #FFBA5A;
 }
 
 .lista-lateral > h2{
     height: 10vh;
-    background-color: purple;
 }
 
 .lista-lateral > ul {
@@ -225,6 +236,9 @@
 
     align-items: center;
     justify-items: center;
+    
+    background-color: #ffca81;
+    border-radius: 20px
 }
 
 .fechas button {

@@ -73,9 +73,11 @@ class TareaController extends Controller
         $desde = $request->input('desde');
         $hasta = $request->input('hasta');
 
-        $tareasFechas = TareaFecha::with('tarea')
-            ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
-            ->get();
+        $tareasFechas = TareaFecha::with(['tarea' => function ($query) {
+            $query->with('subtareas'); // ✅ Cargar subtareas dentro de cada tarea
+        }])
+        ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
+        ->get();
 
         return response()->json($tareasFechas);
     }

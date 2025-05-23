@@ -39,7 +39,7 @@ export class PrincipalComponent implements OnInit {
         // 🔹 Transformar datos para incluir fecha y hora en cada tarea
         this.tareas = response.map((tareaFecha) => ({
           ...tareaFecha.tarea, // ✅ Extraer la tarea dentro de `tareas_fechas`
-          subtareas: Array.isArray(tareaFecha.tarea.subtareas) ? tareaFecha.tarea.subtareas : [], // ✅ Asegurar que `subtareas` existe
+          subtareas: tareaFecha.tarea.subtareas ?? [], // ✅ Mantener subtareas si existen
           fecha: tareaFecha.fecha, // ✅ Agregar fecha desde `tareas_fechas`
           hora: tareaFecha.hora // ✅ Agregar hora desde `tareas_fechas`
         }));
