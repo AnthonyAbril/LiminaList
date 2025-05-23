@@ -21,7 +21,7 @@ export class PrincipalComponent implements OnInit {
   fechas: (Date | null)[] = [];
 
   listas: any[] = [];
-  tareas: Tarea[] = [];
+  tareas: any[] = [];
   resumen: string = 'listas';
 
   constructor(private authService:AuthService, private listasService: ListasService, private router: Router) {}

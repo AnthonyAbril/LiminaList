@@ -3,11 +3,15 @@
         <h2>Eventos Próximos</h2>
         <ul>
             <li *ngFor="let tarea of tareas">
-                <app-tarea
-                [title]="tarea.title"
-                [subtareas]="tarea.subtareas"
-                (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
-                ></app-tarea>
+                <p>{{tarea.fecha}}</p>
+                <div>
+                    <a>{{tarea.hora}}</a>
+                    <app-tarea
+                    [title]="tarea.title"
+                    [subtareas]="tarea.subtareas"
+                    (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
+                    ></app-tarea>
+                </div>
             </li>
         </ul>
     </div>

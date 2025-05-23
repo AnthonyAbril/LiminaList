@@ -164,17 +164,34 @@
     background-color: purple;
 }
 
-.lista-lateral > div {
+.lista-lateral > ul {
     display: flex;
     flex-direction: column;
     align-self: flex-start;
-    width: 30vw;
-}
-
-.lista-lateral > div > ul{
+    width: 100%;
     height: 90vh;
     overflow-y:auto;
     list-style: none;
+    padding: 0;
+
+}
+
+.lista-lateral > ul > li div{
+    display: flex;
+}
+
+.lista-lateral > ul > li > p{
+    text-align: end;
+}
+
+.lista-lateral > ul > li div > a{
+    width: 20%;
+    display: block;
+    align-self: center;
+}
+
+.lista-lateral > ul > li > div > app-tarea{
+    width: 80%;
 }
 
 
