@@ -285,11 +285,18 @@ select, option{
     text-align: center;
 }
 
+.fechas button.hoy{
+    background-color: white;
+    color: #FF9E16;
+}
+
 .header-resum option{
     background-color: #FFBA5A;
     color: white;
     border: none;
 }
+
+
 
 .icono {
     width: 60px; /* Ajusta el tamaño del icono */
