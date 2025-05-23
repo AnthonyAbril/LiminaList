@@ -3,16 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { Lista } from '../listas/lista';
 import { Tarea } from '../tareas/components/tarea/tarea';
-
-
-
-
-  export interface TareaFecha {
-    fecha: string;
-    hora?: string;
-    tarea: Tarea; // ✅ Garantiza que cada `TareaFecha` tiene una `Tarea`
-  }
-
+import { TareaFecha } from '../principal/TareaFecha';
 
 
 @Injectable({
@@ -59,7 +50,7 @@ export class ListasService {
   }
 
 
-  getTareasProximas(diasFuturos: number): Observable<Tarea[]> {
+  getTareasProximas(diasFuturos: number): Observable<TareaFecha[]> {
     const token = localStorage.getItem('token');  
 
     if (!token) {
@@ -70,17 +61,15 @@ export class ListasService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     const ahora = new Date();
-    const desde = ahora.toISOString(); // formato ISO: "2025-05-23T14:22:00.000Z"
-
+    const desde = ahora.toISOString();
     const hasta = new Date(ahora.getTime() + diasFuturos * 24 * 60 * 60 * 1000).toISOString();
 
     return this.http.get<TareaFecha[]>(`http://localhost:8000/api/eventos-proximos?desde=${desde}&hasta=${hasta}`, { headers }).pipe(
-      tap(response => console.log('📌 Respuesta del backend:', response)),
-      map(response => response.map(e => e.tarea)),
+      tap(response => console.log('📌 Respuesta del backend:', response)), // Ver estructura de datos
       catchError(error => {
         console.error('❌ Error al obtener tareas próximas:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
