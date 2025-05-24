@@ -18,6 +18,7 @@ export class PrincipalComponent implements OnInit {
   meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
   anioSeleccionado: number = new Date().getFullYear();
+mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
   fechas: (Date | null)[] = [];
 
   listas: any[] = [];
@@ -58,9 +59,6 @@ export class PrincipalComponent implements OnInit {
            fecha.getUTCMonth() === hoy.getUTCMonth() &&
            fecha.getUTCDate() === hoy.getUTCDate();
 }
-
-  // En tu componente
-mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
 
 generarCalendario(): void {
     const año = Number(this.anioSeleccionado); // Conversión explícita

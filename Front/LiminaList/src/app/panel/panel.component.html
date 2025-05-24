@@ -3,8 +3,36 @@
 </div>
 
 <div class="contenedor">
-  <div class="reloj-container">
-    <app-reloj></app-reloj>
+  <div class="mini-container">
+    <app-reloj *ngIf="resumen=='reloj'"></app-reloj>
+    <div *ngIf="resumen=='calendar'"  class="calendar-mini">
+            <div class="header-resum">
+                <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
+                </select>
+                <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
+                </select>
+            </div>
+
+            <div class="fechas">
+                <ng-container *ngFor="let fecha of fechas">
+                    <!-- Cambia fecha.getDate() por fecha.getUTCDate() -->
+                    <button *ngIf="fecha; else emptyCell" 
+                            (click)="abrirListaDelDia(fecha)"
+                            [class.hoy]="esHoy(fecha)">
+                        {{ fecha.getUTCDate() }} <!-- Mostrar día UTC -->
+                    </button>
+                    <ng-template #emptyCell>
+                        <div class="empty-cell"></div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+            <div class="dias-semana footer-resum">
+                <span *ngFor="let dia of dias">{{ dia }}</span>
+            </div>
+        </div>
   </div>
   <div class="lista-container">
     <div class="scroll-interno">
@@ -16,8 +44,8 @@
 <div id="barra-tareas">
   <img src="assets\icons\dedo.png" [routerLink]="'/lists'" alt="Icono de Pluma" class="icono">
   <img src="assets\icons\cara.png" alt="Icono de Pluma" class="icono">
-  <img src="assets\icons\clock.svg" alt="Icono de Pluma" class="icono">
+  <img (click)="resumen='reloj'" src="assets\icons\clock.svg" alt="Icono de Pluma" class="icono">
   <img src="assets\icons\ajustes.svg" alt="Icono de Pluma" class="icono">
-  <img src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
+  <img (click)="resumen='calendar'" src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
   <img (click)="toggleEdicion()" src="assets\icons\square-pen-solid.svg" alt="Icono de Pluma" class="icono">
 </div>

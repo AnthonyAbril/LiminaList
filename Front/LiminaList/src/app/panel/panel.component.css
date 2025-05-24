@@ -31,13 +31,14 @@
     background: #FF9E16;
   }
   
-  .reloj-container {
+  .mini-container {
     flex-grow: 1; /* Ocupa el espacio restante */
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #FF9E16;
     margin-right: 5vh;
+    width: 30vw;
   }
 
   .lista-container {
@@ -103,3 +104,108 @@
     scrollbar-width: none;       /* Firefox */
     -ms-overflow-style: none;    /* IE 10+ */
   }
+
+
+
+
+
+
+  
+/*calendario*/
+
+.footer-resum {
+    height: 10%;
+
+    border-radius: 0 0 20px 20px;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  align-items: center;
+}
+
+
+
+.calendar-mini {
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  height: 50vh;
+}
+
+.fechas {
+    height: 75%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+    padding: 2%;
+
+    align-items: center;
+    justify-items: center;
+    
+    background-color: #ffca81;
+    border-radius: 20px
+}
+
+.fechas button {
+  width: 90%;
+  height: 90%;
+  border: none;
+  background-color: #FF9E16;
+  color: white;
+  font-size: 1.5em;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+select, option{
+    color: black;
+    height: 80%;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.empty-cell {
+  width: 90%;
+  height: 90%;
+}
+
+
+.fechas button:hover {
+  background-color: white;
+  color: #FF9E16;
+}
+
+.fechas button.selected {
+  background-color: #28a745;
+  color: white;
+}
+
+.header-resum select{
+    background-color: #ffca81;
+    color: white;
+
+    border-radius: 20px;
+    border: none;
+    text-align: center;
+}
+
+.fechas button.hoy{
+    background-color: white;
+    color: #FF9E16;
+}
+
+.header-resum option{
+    background-color: #FFBA5A;
+    color: white;
+    border: none;
+}
+
+

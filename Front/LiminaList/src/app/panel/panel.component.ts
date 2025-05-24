@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ListasService } from '../services/listas.service';
 
 import { HttpClient } from '@angular/common/http';
@@ -19,9 +19,10 @@ export class PanelComponent {
   tareas: any[] = [];
 
   title:string = "";
+  resumen: string = 'reloj';
 
 
-  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient) {
+  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient, private router: Router) {
     console.log('📌 Módulos cargados: ', this.constructor.name);
   }
 
@@ -32,7 +33,82 @@ export class PanelComponent {
   }
   
 
+  //Sistema de mini-calendario
+  
+  dias: string[] = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  anioSeleccionado: number = new Date().getFullYear();
+  mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
+  fechas: (Date | null)[] = [];
+
+
+  esHoy(fecha: Date): boolean {
+      const hoy = new Date();
+      return fecha.getUTCFullYear() === hoy.getUTCFullYear() &&
+            fecha.getUTCMonth() === hoy.getUTCMonth() &&
+            fecha.getUTCDate() === hoy.getUTCDate();
+  }
+
+  generarCalendario(): void {
+      const año = Number(this.anioSeleccionado); // Conversión explícita
+      const mes = Number(this.mesSeleccionado);   // Conversión explícita
+
+      this.fechas = [];
+      
+      // 1. Calcular fechas en UTC
+      const primerDia = new Date(Date.UTC(año, mes, 1));
+      const ultimoDia = new Date(Date.UTC(año, mes + 1, 0));
+      
+      // 2. Calcular offset
+      const offsetInicial = (primerDia.getUTCDay() + 6) % 7;
+      
+      // 3. Llenar nulls iniciales
+      this.fechas = Array(offsetInicial).fill(null);
+      
+      // 4. Agregar días del mes CORRECTO
+      const diasMes = ultimoDia.getUTCDate();
+      for (let dia = 1; dia <= diasMes; dia++) {
+          this.fechas.push(new Date(Date.UTC(año, mes, dia)));
+      }
+      
+      // 5. Completar con nulls
+      const totalCeldas = Math.ceil(this.fechas.length / 7) * 7;
+      while (this.fechas.length < totalCeldas) {
+          this.fechas.push(null);
+      }
+  }
+
+    cambiarMes(): void {
+      this.generarCalendario();
+    }
+
+    abrirListaDelDia(fecha: Date | null): void {
+      if (!fecha) return;
+
+      const listaId = `D${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
+
+      this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
+
+      /*
+      this.listasService.getListaPorId(listaId).subscribe({
+        next: response => {
+          console.log('✅ Lista encontrada:', response);
+          this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
+        },
+        error: () => {
+          console.warn('⚠ Lista no encontrada, creando nueva automáticamente:', listaId);
+          this.crearListaDelDia(listaId, fecha); // 🔹 Crear lista automáticamente
+        }
+      });
+      */
+    }
+
+
   ngOnInit(): void {
+    
+    this.generarCalendario();
+
     const listaId = this.route.snapshot.paramMap.get('id');
 
     //Lista de tareas
