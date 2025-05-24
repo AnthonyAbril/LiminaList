@@ -41,6 +41,7 @@
           (mouseleave)="girando = false"
           aria-label="Añadir subtarea"
         >+</button>
+        <button *ngIf="!editar" class="clock"><img src="assets/icons/clock.svg" alt=""></button>
         <button
         [hidden]="!editandoNombre"
         ><img src="assets/icons/pen-solid.svg" alt=""></button>

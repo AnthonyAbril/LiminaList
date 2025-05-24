@@ -97,6 +97,29 @@ li {
   transition: all 0.3s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
+.clock{
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: black;
+  font-size: 1.2em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: rotate(0deg);
+  transition: all 0.3s ease, transform 0.2s ease, background-color 0.2s ease;
+
+  background-color: transparent;
+}
+
+.cabecera:hover .clock{
+  opacity: 1;
+}
+
 .cabecera:hover .boton-agregar {
   opacity: 1;
 }
@@ -104,6 +127,10 @@ li {
 .boton-agregar:hover {
   background-color: #555;
   color: white;
+}
+
+.clock:hover img{
+  background-color: #555;
 }
 
 .boton-agregar.girando {

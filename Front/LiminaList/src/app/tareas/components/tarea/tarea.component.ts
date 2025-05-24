@@ -22,6 +22,9 @@ export class TareaComponent {
   @Input() rutinario:boolean|undefined = false ;
   @Input() progreso:number = 0;
 
+  @Input() fecha:string|undefined = '--';
+  @Input() hora:string|undefined = '--';
+
   @Input() tarea:Tarea = {
     id:0,
     title: "",
