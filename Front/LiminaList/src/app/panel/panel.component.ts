@@ -90,18 +90,21 @@ export class PanelComponent {
 
       this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
 
-      /*
-      this.listasService.getListaPorId(listaId).subscribe({
-        next: response => {
-          console.log('✅ Lista encontrada:', response);
-          this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
-        },
-        error: () => {
-          console.warn('⚠ Lista no encontrada, creando nueva automáticamente:', listaId);
-          this.crearListaDelDia(listaId, fecha); // 🔹 Crear lista automáticamente
-        }
-      });
-      */
+      //Se vuelven a cargar las tareas asignadas a ese dia
+      this.title = `${listaId?.substring(0, 5)}-${listaId?.substring(5, 7)}-${listaId?.substring(7, 9)}`.substring(1);
+
+        this.listasService.getTareasPorFecha(listaId.substring(1)).subscribe({
+          next: response => {
+            console.log('📌 Datos de la fecha específica:', response);
+            this.tareas = response.map((tareaFecha) => ({
+              ...tareaFecha.tarea, 
+              subtareas: tareaFecha.tarea.subtareas ?? [], 
+              fecha: tareaFecha.fecha, 
+              hora: tareaFecha.hora 
+            }));
+          },
+          error: err => console.error('Error cargando tareas de la fecha:', err)
+        });
     }
 
 

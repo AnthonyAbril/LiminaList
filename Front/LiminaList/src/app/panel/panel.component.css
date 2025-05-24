@@ -153,18 +153,6 @@
     border-radius: 20px
 }
 
-.fechas button {
-  width: 90%;
-  height: 90%;
-  border: none;
-  background-color: #FF9E16;
-  color: white;
-  font-size: 1.5em;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-
 select, option{
     color: black;
     height: 80%;
@@ -178,14 +166,21 @@ select, option{
 }
 
 
+.fechas button {
+  width: 90%;
+  height: 90%;
+  border: none;
+  background-color: #FF9E16;
+  color: white;
+  font-size: 1.5em;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
 .fechas button:hover {
   background-color: white;
   color: #FF9E16;
-}
-
-.fechas button.selected {
-  background-color: #28a745;
-  color: white;
 }
 
 .header-resum select{
@@ -198,8 +193,8 @@ select, option{
 }
 
 .fechas button.hoy{
-    background-color: white;
-    color: #FF9E16;
+    background-color: #FFBA5A;
+    color: white;
 }
 
 .header-resum option{
