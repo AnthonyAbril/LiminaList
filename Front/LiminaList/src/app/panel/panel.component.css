@@ -23,6 +23,8 @@
   /*5abdff o ff5a89*/
   border-top-right-radius: 52px;
   font-size:larger;
+  border-right: 10px solid #FF9E16;
+  border-top: 10px solid #FF9E16;
 }
 
 .contenedor {
@@ -202,5 +204,4 @@ select, option{
     color: white;
     border: none;
 }
-
 

@@ -42,8 +42,9 @@
 </div>
   
 <div id="barra-tareas">
-  <img src="assets\icons\dedo.png" [routerLink]="'/lists'" alt="Icono de Pluma" class="icono">
+  <img [routerLink]="'/lists'" src="assets\icons\dedo.png" alt="Icono de Pluma" class="icono">
   <img src="assets\icons\cara.png" alt="Icono de Pluma" class="icono">
+  <img [routerLink]="'/home'" src="assets\icons\house.svg" alt="" class="icono">
   <img (click)="resumen='reloj'" src="assets\icons\clock.svg" alt="Icono de Pluma" class="icono">
   <img src="assets\icons\ajustes.svg" alt="Icono de Pluma" class="icono">
   <img (click)="resumen='calendar'" src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
