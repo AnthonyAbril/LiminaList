@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('tarea_id');
             $table->date('fecha');
-            $table->time('hora')->nullable(); // ✅ Ahora la hora puede ser NULL
+            $table->time('hora',5)->nullable(); // ✅ Ahora la hora puede ser NULL
 
             // 🔹 Relaciones
             $table->foreign('tarea_id')->references('id')->on('tasks')->onDelete('cascade');
