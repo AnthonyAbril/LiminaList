@@ -98,8 +98,11 @@ generarCalendario(): void {
   abrirListaDelDia(fecha: Date | null): void {
     if (!fecha) return;
 
-    const listaId = `${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
+    const listaId = `D${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
 
+    this.router.navigate(['/panel', listaId]); // Si existe, navegar a la lista
+
+    /*
     this.listasService.getListaPorId(listaId).subscribe({
       next: response => {
         console.log('✅ Lista encontrada:', response);
@@ -110,6 +113,7 @@ generarCalendario(): void {
         this.crearListaDelDia(listaId, fecha); // 🔹 Crear lista automáticamente
       }
     });
+    */
   }
 
   logout(){

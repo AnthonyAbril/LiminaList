@@ -82,5 +82,22 @@ class TareaController extends Controller
         return response()->json($tareasFechas);
     }
 
+    public function eventosPorFecha(Request $request)
+    {
+        $request->validate([
+            'fecha' => 'required|date',
+        ]);
+
+        $fecha = $request->input('fecha');
+
+        $tareasFechas = TareaFecha::with(['tarea' => function ($query) {
+            $query->with('subtareas'); // ✅ Incluir subtareas
+        }])
+        ->whereDate('fecha', $fecha)
+        ->get();
+
+        return response()->json($tareasFechas);
+    }
+
 
 }

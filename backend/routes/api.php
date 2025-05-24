@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
 
     Route::get('eventos-proximos', [TareaController::class, 'eventosProximos'])->middleware('auth:sanctum');
+    Route::get('/eventos-por-fecha', [TareaController::class, 'eventosPorFecha'])->middleware('auth:sanctum');
 
     Route::get('/tareas', [TareaController::class, 'index']); // Obtener todas las tareas
     Route::get('/tareas/{id}', [TareaController::class, 'show']); // Obtener una tarea específica

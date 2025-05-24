@@ -18,6 +18,9 @@ export class PanelComponent {
   listaSeleccionada: any;
   tareas: any[] = [];
 
+  title:string = "";
+
+
   constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient) {
     console.log('📌 Módulos cargados: ', this.constructor.name);
   }
@@ -31,19 +34,41 @@ export class PanelComponent {
 
   ngOnInit(): void {
     const listaId = this.route.snapshot.paramMap.get('id');
+
+    //Lista de tareas
     if (listaId) {
-      this.listasService.getListaPorId(listaId).subscribe(response => {
-      this.listaSeleccionada = response;
-      
-      this.tareas = response.tareas.map((tarea: Tarea) => ({
-        ...tarea,
-        subtareas: Array.isArray(tarea.subtareas) ? tarea.subtareas : [] // 🔹 Asegurar
-      }));
 
+      if(listaId?.toString().startsWith("D")){
+        console.log("diaria");
+        //Lista diaria
 
+        this.title = `${listaId?.substring(0, 5)}-${listaId?.substring(5, 7)}-${listaId?.substring(7, 9)}`.substring(1);
 
-      console.log('Tareas cargadas:', this.tareas);
-    });
+        this.listasService.getTareasPorFecha(listaId.substring(1)).subscribe({
+          next: response => {
+            console.log('📌 Datos de la fecha específica:', response);
+            this.tareas = response.map((tareaFecha) => ({
+              ...tareaFecha.tarea, 
+              subtareas: tareaFecha.tarea.subtareas ?? [], 
+              fecha: tareaFecha.fecha, 
+              hora: tareaFecha.hora 
+            }));
+          },
+          error: err => console.error('Error cargando tareas de la fecha:', err)
+        });
+
+        console.log('Tareas cargadas:', this.tareas);
+      }else{
+        console.log("individual");
+        this.listasService.getListaPorId(listaId).subscribe(response => {
+        this.listaSeleccionada = response;
+        this.title = this.listaSeleccionada.name;
+        this.tareas = response.tareas.map((tarea: Tarea) => ({
+          ...tarea,
+          subtareas: Array.isArray(tarea.subtareas) ? tarea.subtareas : [] // 🔹 Asegurar
+        }));
+      });
+      }
     }
   }
 

@@ -10,7 +10,14 @@
   </li>
   <li [hidden]="tipoTarea" *ngIf="tareasPuntuales.length>0">
     <ul>
-       <li *ngFor="let tarea of tareasPuntuales">
+       <li *ngFor="let tarea of tareasPuntuales; let i = index"  class="tarea">
+        <input 
+        *ngIf="tarea.hora"
+        readonly 
+        [value]="tarea.hora"
+        (click)="openPicker(i)"
+        placeholder="Selecciona la hora" />
+
         <app-tarea
           [id]="tarea.id"
           [title]="tarea.title"
@@ -52,3 +59,6 @@
     <p *ngIf="editar"><img src="assets/icons/dedo.png" style="transform: scaleX(-1);" alt="->"> Pulsa + para añadir tareas</p>
   </li>
 </ul>
+
+
+<ngx-material-timepicker #picker [format]="24" [theme]="myTheme" (timeSet)="onTimeChange($event)"></ngx-material-timepicker>

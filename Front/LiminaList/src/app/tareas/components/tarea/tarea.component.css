@@ -57,11 +57,6 @@ li {
   transition: all 0.2s ease;
 }
 
-.estado-0 { background-color: white; border: 1px solid #ccc; }
-.estado-1 { background-color: orange; }
-.estado-2 { background-color: lightblue; }
-.estado-3 { background-color: green; }
-
 .nombre {
   flex-grow: 1;
   cursor: pointer;

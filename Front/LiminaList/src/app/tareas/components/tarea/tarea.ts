@@ -11,4 +11,8 @@ export interface Tarea {
     subtareas: Tarea[];
     terminado?: boolean;
     rutinario?: boolean; // ✅ Nuevo campo para distinguir tareas rutinarias
+
+    
+    fecha?: string;
+    hora?: string;
 }

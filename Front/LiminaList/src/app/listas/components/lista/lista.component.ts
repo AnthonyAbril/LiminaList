@@ -3,6 +3,9 @@ import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { ActivatedRoute } from '@angular/router';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
+import { ViewChild } from '@angular/core';
+import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-lista',
@@ -17,8 +20,18 @@ export class ListaComponent {
   
   @Input() tareas: Tarea[] = [];
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
+  @ViewChild('picker') picker!: NgxMaterialTimepickerComponent;
 
   listaId;
+
+  myTheme = {
+    container: { 
+      bodyBackgroundColor: "#ffca81",
+      buttonColor: "#fff",
+    },
+    dial: { dialBackgroundColor: "#FF9E16" },
+    clockFace: { clockFaceInnerTimeInactiveColor:"white",clockFaceBackgroundColor: "#ffca81", clockHandColor: "#FF9E16", clockFaceTimeInactiveColor: "white" }
+  };
 
   @Input() estados: { nombre: string; color: string }[] = [
     { nombre: 'Sin hacer', color: '#f87171' },
@@ -26,6 +39,22 @@ export class ListaComponent {
     { nombre: 'Casi lista', color: '#fb923c' },
     { nombre: 'Hecha', color: '#4ade80' },
   ];
+
+
+  selectedIndex: number = -1;
+
+  openPicker(index: number) {
+    this.selectedIndex = index;
+    this.picker.open(); // ✅ Esto SÍ funciona
+  }
+
+  onTimeChange(newTime: string) {
+    if (this.selectedIndex >= 0) {
+      this.tareasPuntuales[this.selectedIndex].hora = newTime;
+    }
+  }
+
+
 
   onProgresoActualizado({ id, progreso }: { id: number, progreso: number }) {
     const tarea = this.tareas.find(t => t.id === id);

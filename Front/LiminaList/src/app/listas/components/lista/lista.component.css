@@ -42,6 +42,10 @@ ul{
     align-items: center;
 }
 
+.custom-class .timepicker-button:hover {
+  background-color: #ff9800 !important;
+}
+
 img{
     height:3vh;
 }
@@ -50,6 +54,37 @@ img{
     background: #FF9E16;
 }
 
+.tarea{
+    display: flex;
+    width: 100%;
+    justify-content: end;
+    align-items: center;
+}
+
+.tarea > app-tarea{
+    width: 100%;
+}
+
+.tarea > input{
+    margin-right: 10px;
+    width: 10%;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    text-align: center;
+    transition: ease-in-out padding 0.2s, background-color 0.2s;
+}
+
+
+.tarea > input:hover{
+
+    background-color: #ffca81;
+    border-radius: 20px;
+    padding: 10px;
+}
 
 .cabecera {
     display: flex;
@@ -68,7 +103,6 @@ ul>li {
 li>div:first-child {
     padding-right: 15px;
 }
-
 
 
 .sinTareas p{

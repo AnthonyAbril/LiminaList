@@ -49,6 +49,27 @@ export class ListasService {
 
   }
 
+  getTareasPorFecha(fechaCompacta: string): Observable<TareaFecha[]> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    // 🔹 Transformar `YYYYMMDD` a `YYYY-MM-DD`
+    const fechaFormatoAPI = `${fechaCompacta.substring(0, 4)}-${fechaCompacta.substring(4, 6)}-${fechaCompacta.substring(6, 8)}`;
+
+    return this.http.get<TareaFecha[]>(`http://localhost:8000/api/eventos-por-fecha?fecha=${fechaFormatoAPI}`, { headers }).pipe(
+      tap(response => console.log('📌 Respuesta del backend:', response)),
+      catchError(error => {
+        console.error('❌ Error al obtener tareas de la fecha:', error);
+        return throwError(() => error);
+      }),
+    );
+  }
 
   getTareasProximas(diasFuturos: number): Observable<TareaFecha[]> {
     const token = localStorage.getItem('token');  

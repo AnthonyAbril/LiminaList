@@ -15,3 +15,37 @@ body{
 
 *{
 }
+
+
+
+/* Ajustes de modulo de reloj */
+
+
+
+ngx-material-timepicker {
+  --timepicker-background-color: #ffffff; /* fondo blanco */
+  --timepicker-text-color: #000000;       /* texto negro */
+  --timepicker-accent-color: #ffca81 !important;     /* color principal (azul por ejemplo)*/
+}
+
+.timepicker__content {
+  border-radius: 16px !important;     /* bordes redondeados */
+  box-shadow: none;
+  padding: 16px;
+}
+
+.timepicker__header{
+    border-radius: 20px 20px 0 0;
+}
+
+.timepicker__main-content, .timepicker__actions{
+    border-radius:  0 0 20px 20px !important;
+}
+
+.timepicker {
+    box-shadow: none !important;
+}
+
+.custom-class .timepicker-button:hover {
+  background-color: #ff9800 !important;
+}
