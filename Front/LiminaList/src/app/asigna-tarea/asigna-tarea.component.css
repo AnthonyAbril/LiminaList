@@ -97,7 +97,7 @@
 }
 
 .fechas {
-    height: 75%;
+    height: 80%;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
@@ -127,18 +127,29 @@ select, option{
 .fechas button {
   width: 90%;
   height: 90%;
+  min-height: 50px; /* Ajusta el tamaño mínimo para evitar cambios */
   border: none;
   background-color: #FF9E16;
   color: white;
-  font-size: 1.5em;
+  font-size: 1em;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+    transition: background-color 0.2s, color 0.2s;
+
 }
 
-.fechas button:hover, .fechas button.seleccionado {
+.fechas button.asignado {
   background-color: white;
   color: #FF9E16;
+}
+
+.fechas button:hover{
+  border: 2px solid white;
 }
 
 .header-resum select{
@@ -167,7 +178,38 @@ select, option{
     justify-content: space-around;
 }
 
+.seleccionado {
+  border: 2px solid white !important; /* 🔹 Borde azul */
+}
 
+.hora-establecida {
+  color: white; /* Color por defecto */
+  font-size: 0.5em;
+  min-height: 15px; /* 🔹 Fija un tamaño mínimo */
+  visibility: hidden; /* 🔹 Oculta sin eliminar el espacio */
+}
+
+.fechas button:hover > .hora-establecida,
+.fechas button.asignado > .hora-establecida {
+  color: #FF9E16; /* 🔹 Color más oscuro cuando el fondo es blanco */
+  text-shadow: none;
+}
+
+.fechas button.hoy > .hora-establecida{
+  color: white;
+}
+
+.fechas button.asignado > .hora-establecida {
+  visibility: visible; /* 🔹 Muestra el texto cuando hay una asignación */
+}
+.fechas button.hoy.asignado > .hora-establecida{
+  color: #FF9E16;
+}
+
+.fechas button.hoy.asignado{
+  background-color: white;
+  color: #FF9E16;
+}
 
 /* HORA */
 .inputHora{

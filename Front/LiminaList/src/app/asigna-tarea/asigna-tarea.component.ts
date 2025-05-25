@@ -42,6 +42,9 @@ export class AsignaTareaComponent {
   fechas: (Date | null)[] = [];
   fechaAsignada: string = '';
 
+  diaSeleccionado: string | null = null; // Guarda el día que el usuario está viendo
+  diasAsignados: Map<string, string> = new Map(); // Guarda fechas asignadas con sus respectivas horas
+
 
   esHoy(fecha: Date): boolean {
       const hoy = new Date();
@@ -51,12 +54,9 @@ export class AsignaTareaComponent {
   }
 
   guardarTarea() {
-    console.log(`✅ Guardando tarea con fecha: ${this.fechaAsignada}, hora: ${this.horaAsignada}`);
-    this.fechaSeleccionada.emit(this.fechaAsignada);
-    this.horaSeleccionada.emit(this.horaAsignada);
-    //this.actualizarNombre.emit(this.nombre); // ✅ Emitir el nombre de la tarea
-
-    this.cerrarVentana.emit(); // 🔹 Cierra el modal después de guardar
+    console.log(`✅ Guardando tarea con asignaciones:`, this.diasAsignados);
+    this.fechaSeleccionada.emit(JSON.stringify(Array.from(this.diasAsignados.entries()))); // 🔹 Convertir a JSON string
+    this.cerrarVentana.emit();
   }
 
   generarCalendario(): void {
@@ -93,10 +93,21 @@ export class AsignaTareaComponent {
     }
 
     seleccionarFecha(fecha: Date) {
-      if (fecha) {
-        this.fechaAsignada = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-        //this.fechaSeleccionada.emit(this.fechaAsignada); // 🔹 Emitir fecha
+      const fechaStr = fecha.toISOString().split('T')[0];
+
+      if (this.diaSeleccionado === fechaStr) {
+        // Si el día ya está seleccionado, alternar la asignación
+        if (this.diasAsignados.has(fechaStr)) {
+          this.diasAsignados.delete(fechaStr); // 🔹 Eliminar si ya estaba asignado
+        } else {
+          this.diasAsignados.set(fechaStr, '--:--'); // 🔹 Asignar con hora predeterminada
+        }
+      } else {
+        // Si no está seleccionado, simplemente seleccionarlo para ver detalles
+        this.diaSeleccionado = fechaStr;
       }
+
+      console.log(`📅 Día seleccionado: ${this.diaSeleccionado}, asignaciones actuales:`, this.diasAsignados);
     }
 
   ngOnInit(): void {
@@ -108,13 +119,13 @@ export class AsignaTareaComponent {
 @ViewChild('picker') picker!: NgxMaterialTimepickerComponent;
 
     myTheme = {
-    container: { 
-      bodyBackgroundColor: "#ffca81",
-      buttonColor: "#fff",
-    },
-    dial: { dialBackgroundColor: "#FF9E16" },
-    clockFace: { clockFaceInnerTimeInactiveColor:"white",clockFaceBackgroundColor: "#ffca81", clockHandColor: "#FF9E16", clockFaceTimeInactiveColor: "white" }
-  };
+      container: { 
+        bodyBackgroundColor: "#ffca81",
+        buttonColor: "#fff",
+      },
+      dial: { dialBackgroundColor: "#FF9E16" },
+      clockFace: { clockFaceInnerTimeInactiveColor:"white",clockFaceBackgroundColor: "#ffca81", clockHandColor: "#FF9E16", clockFaceTimeInactiveColor: "white" }
+    };
 
   @Input() estados: { nombre: string; color: string }[] = [
     { nombre: 'Sin hacer', color: '#f87171' },
@@ -124,10 +135,13 @@ export class AsignaTareaComponent {
   ];
 
 
+
+  
   selectedIndex: number = -1;
 
   onTimeChange(newTime: string) {
-    this.horaAsignada = newTime; // 🔹 Guarda la hora en la variable
-    //this.horaSeleccionada.emit(newTime); // 🔹 Emite la hora seleccionada
+    if (this.diaSeleccionado) {
+      this.diasAsignados.set(this.diaSeleccionado, newTime);
+    }
   }
 }

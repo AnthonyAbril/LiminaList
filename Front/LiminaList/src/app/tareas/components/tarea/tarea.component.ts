@@ -80,9 +80,10 @@ export class TareaComponent {
 
   
 
-  guardarFecha(fecha: string) {
-    this.fecha = fecha;
-    console.log(`📅 Fecha guardada en la tarea: ${fecha}`);
+  guardarFecha(fechasJson: string) {
+    //this.fecha = fecha;
+    const fechasAsignadas = new Map(JSON.parse(fechasJson));
+    console.log(`📅 Fechas guardadas en la tarea:`, fechasAsignadas);
     this.mostrarCalendario = false; // 🔹 Cierra automáticamente
   }
 

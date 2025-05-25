@@ -21,7 +21,7 @@
                 <input 
                 class="inputHora"
                 readonly 
-                [value]="horaAsignada || '--:--'" 
+                [value]="diasAsignados.get(diaSeleccionado ?? '') || '--:--'" 
                 (click)="picker.open()" 
                 placeholder="Selecciona la hora" />
 
@@ -30,11 +30,15 @@
             <div class="fechas">
                 <ng-container *ngFor="let fecha of fechas">
                     <!-- Cambia fecha.getDate() por fecha.getUTCDate() -->
-                    <button *ngIf="fecha; else emptyCell" 
-                            (click)="seleccionarFecha(fecha)"
-                            [class.hoy]="esHoy(fecha)"
-                            [class.seleccionado]="fechaAsignada === fecha.toISOString().split('T')[0]">
-                        {{ fecha.getUTCDate() }} <!-- Mostrar día UTC -->
+                    <button *ngIf="fecha; else emptyCell"  
+                            (click)="seleccionarFecha(fecha)" 
+                            [class.hoy]="esHoy(fecha)" 
+                            [class.seleccionado]="diaSeleccionado === fecha.toISOString().split('T')[0]"
+                            [class.asignado]="diasAsignados.has(fecha.toISOString().split('T')[0])">
+                        {{ fecha.getUTCDate() }} 
+                        <span class="hora-establecida">
+                            {{ diasAsignados.get(fecha.toISOString().split('T')[0]) }}
+                        </span>
                     </button>
                     <ng-template #emptyCell>
                         <div class="empty-cell"></div>
