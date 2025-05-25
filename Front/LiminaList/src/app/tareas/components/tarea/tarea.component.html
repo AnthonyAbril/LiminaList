@@ -74,6 +74,7 @@
 <app-asigna-tarea 
   *ngIf="mostrarCalendario" 
   [nombre]="title" 
+  [id]="id"
   (fechaSeleccionada)="guardarFecha($event)" 
   (horaSeleccionada)="guardarHora($event)"
   (cerrarVentana)="mostrarCalendario = false">

@@ -18,10 +18,14 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 
 export class AsignaTareaComponent {
 
+  @Input() id!: number;
+
   @Input() nombre: string = "Nombre";
+
   @Output() fechaSeleccionada = new EventEmitter<string>();
   @Output() horaSeleccionada = new EventEmitter<string>();
   @Output() cerrarVentana = new EventEmitter<void>();
+
   horaAsignada: string = '23:23'; // 🔹 Nueva variable para almacenar la hora
 
   cerrarCalendario() {
@@ -112,7 +116,16 @@ export class AsignaTareaComponent {
 
   ngOnInit(): void {
     this.generarCalendario();
-    this.horaAsignada = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // ✅ Configurar hora actual al iniciar
+    this.horaAsignada = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // 🔹 Cargar asignaciones previas de la tarea
+    this.listasService.getAsignacionesTarea(this.id).subscribe({
+      next: response => {
+        console.log('📌 Asignaciones previas:', response);
+        this.diasAsignados = new Map(response.map(({ fecha, hora }) => [fecha, hora ?? '--:--'])); // ✅ Corregido para evitar error de `null`
+      },
+      error: err => console.error('❌ Error al cargar asignaciones:', err)
+    });
   }
 
 

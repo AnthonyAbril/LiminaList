@@ -49,6 +49,26 @@ export class ListasService {
 
   }
 
+
+  getAsignacionesTarea(tareaId: number): Observable<{ fecha: string; hora: string | null }[]> {
+    const token = localStorage.getItem('token');  
+
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<{ fecha: string; hora: string | null }[]>(`http://localhost:8000/api/tarea-asignaciones/${tareaId}`, { headers }).pipe(
+      tap(response => console.log('📌 Asignaciones cargadas:', response)),
+      catchError(error => {
+        console.error('❌ Error al obtener asignaciones:', error);
+        return throwError(() => error);
+      }),
+    );
+  }
+
   getTareasPorFecha(fechaCompacta: string): Observable<TareaFecha[]> {
     const token = localStorage.getItem('token');  
 
@@ -95,23 +115,42 @@ export class ListasService {
   }
 
   asignarTareaFechas(tareasFechas: any[]): Observable<any> {
-  const token = localStorage.getItem('token');  
+    const token = localStorage.getItem('token');  
 
-  if (!token) {
-    console.error('❌ No hay token de autenticación.');
-    return throwError(() => new Error('Usuario no autenticado'));
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post(`http://localhost:8000/api/asignar-tarea-fechas`, { tareasFechas }, { headers }).pipe(
+      tap(response => console.log('📌 Respuesta del backend:', response)),
+      catchError(error => {
+        console.error('❌ Error al asignar tareas:', error);
+        return throwError(() => error);
+      }),
+    );
   }
 
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  editarAsignacionesTarea(tareaId: number, asignaciones: any[]): Observable<any> {
+    const token = localStorage.getItem('token');  
 
-  return this.http.post(`http://localhost:8000/api/asignar-tarea-fechas`, { tareasFechas }, { headers }).pipe(
-    tap(response => console.log('📌 Respuesta del backend:', response)),
-    catchError(error => {
-      console.error('❌ Error al asignar tareas:', error);
-      return throwError(() => error);
-    }),
-  );
-}
+    if (!token) {
+      console.error('❌ No hay token de autenticación.');
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post(`http://localhost:8000/api/editar-asignaciones-tarea`, { tarea_id: tareaId, asignaciones }, { headers }).pipe(
+      tap(response => console.log('📌 Asignaciones editadas:', response)),
+      catchError(error => {
+        console.error('❌ Error al editar asignaciones:', error);
+        return throwError(() => error);
+      }),
+    );
+  }
 
 
   crearLista(lista: Lista): Observable<any> {

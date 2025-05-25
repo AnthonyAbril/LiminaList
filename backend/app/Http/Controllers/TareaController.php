@@ -112,9 +112,6 @@ class TareaController extends Controller
             'tareasFechas.*.hora' => 'nullable|date_format:H:i',
         ]);
 
-        // 🔹 Registrar después de validación
-        Log::info('✅ Datos validados correctamente.');
-
         try {
             foreach ($request->input('tareasFechas') as $data) {
                 Log::info('📝 Insertando:', $data);
@@ -125,7 +122,49 @@ class TareaController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
-        Log::info('✔ Asignaciones guardadas correctamente.');
         return response()->json(['message' => 'Asignaciones guardadas correctamente'], 201);
+    }
+
+    public function getAsignaciones($tareaId)
+    {
+        $asignaciones = TareaFecha::where('tarea_id', $tareaId)->get(['fecha', 'hora']);
+        return response()->json($asignaciones);
+    }
+
+    public function editarAsignaciones(Request $request)
+    {
+        $request->validate([
+            'tarea_id' => 'required|exists:tasks,id',
+            'asignaciones' => 'nullable|array',
+            'asignaciones.*.fecha' => 'required|date',
+            'asignaciones.*.hora' => 'nullable|date_format:H:i',
+        ]);
+
+        $tareaId = $request->input('tarea_id');
+        $nuevasAsignaciones = collect($request->input('asignaciones') ?? []);
+
+        // 🔹 Si el array está vacío, eliminar todas las asignaciones y salir
+        if ($nuevasAsignaciones->isEmpty()) {
+            TareaFecha::where('tarea_id', $tareaId)->delete();
+            return response()->json(['message' => 'Todas las asignaciones eliminadas'], 200);
+        }
+
+        // 🔹 Proceder con la actualización normal
+        $asignacionesPrevias = TareaFecha::where('tarea_id', $tareaId)->pluck('fecha');
+
+        $asignacionesPrevias->each(function ($fecha) use ($tareaId, $nuevasAsignaciones) {
+            if (!$nuevasAsignaciones->contains('fecha', $fecha)) {
+                TareaFecha::where('tarea_id', $tareaId)->where('fecha', $fecha)->delete();
+            }
+        });
+
+        foreach ($request->input('asignaciones') as $data) {
+            TareaFecha::updateOrCreate(
+                ['tarea_id' => $tareaId, 'fecha' => $data['fecha']],
+                ['hora' => $data['hora'] ?: null]
+            );
+        }
+
+        return response()->json(['message' => 'Asignaciones actualizadas correctamente'], 200);
     }
 }

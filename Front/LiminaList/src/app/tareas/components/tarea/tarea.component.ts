@@ -85,19 +85,20 @@ export class TareaComponent {
     const fechasAsignadas = new Map(JSON.parse(fechasJson));
     console.log(`📅 Fechas guardadas en la tarea:`, fechasAsignadas);
 
-    // 🔹 Preparar los datos para enviarlos al backend
-    const tareasFechas = Array.from(fechasAsignadas.entries()).map(([fecha, hora]) => ({
-      tarea_id: this.id, // ✅ ID de la tarea
-      fecha: fecha,
-      hora: hora !== "--:--" ? hora : null // ✅ Si la hora es "--:--", se guarda como `null`
-    }));
+    // 🔹 Transformar datos para el backend
+    const asignaciones = fechasAsignadas.size > 0
+      ? Array.from(fechasAsignadas.entries()).map(([fecha, hora]) => ({
+          fecha: fecha,
+          hora: hora === "--:--" ? null : hora // ✅ Convertir "--:--" a null
+        }))
+      : []; // ✅ Enviar un array vacío en lugar de `null`
 
-    console.log(`📌 Datos a enviar:`, tareasFechas);
+    console.log(`📌 Enviando asignaciones corregidas:`, asignaciones);
 
-    // 🔹 Llamar al servicio para guardar las asignaciones
-    this.listasService.asignarTareaFechas(tareasFechas).subscribe({
-      next: response => console.log("✅ Asignaciones guardadas correctamente:", response),
-      error: err => console.error("❌ Error al asignar fechas:", err)
+    // 🔹 Llamar al servicio para actualizar las asignaciones
+    this.listasService.editarAsignacionesTarea(this.id, asignaciones).subscribe({
+      next: response => console.log("✅ Asignaciones actualizadas correctamente:", response),
+      error: err => console.error("❌ Error al actualizar asignaciones:", err)
     });
 
     this.mostrarCalendario = false;

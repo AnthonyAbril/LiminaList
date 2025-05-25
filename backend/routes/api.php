@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/eventos-proximos', [TareaController::class, 'eventosProximos']);
     Route::get('/eventos-por-fecha', [TareaController::class, 'eventosPorFecha']);
     Route::post('/asignar-tarea-fechas', [TareaController::class, 'asignarTareaFechas']);
+    Route::get('/tarea-asignaciones/{tareaId}', [TareaController::class, 'getAsignaciones']);
+    Route::post('/editar-asignaciones-tarea', [TareaController::class, 'editarAsignaciones']);
 
     Route::get('/tareas', [TareaController::class, 'index']); // Obtener todas las tareas
     Route::get('/tareas/{id}', [TareaController::class, 'show']); // Obtener una tarea específica
