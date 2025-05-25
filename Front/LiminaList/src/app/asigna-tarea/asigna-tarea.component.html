@@ -1,0 +1,50 @@
+<div class="container">
+    <div>
+        <div class="formulario">
+            <input [readOnly]="true" [(ngModel)]="nombre" type="text" name="nombre" id="nombre">
+            
+            <ngx-material-timepicker #picker [format]="24" [theme]="myTheme" (timeSet)="onTimeChange($event)"></ngx-material-timepicker>
+
+            <div class="botones">
+                <button (click)="guardarTarea()">Guardar</button>
+                <button (click)="cerrarCalendario()">Cerrar</button>
+            </div>
+        </div>
+        <div class="calendar-mini">
+            <div class="header-resum">
+                <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
+                </select>
+                <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
+                    <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
+                </select>
+                <input 
+                class="inputHora"
+                readonly 
+                [value]="horaAsignada || '--:--'" 
+                (click)="picker.open()" 
+                placeholder="Selecciona la hora" />
+
+            </div>
+
+            <div class="fechas">
+                <ng-container *ngFor="let fecha of fechas">
+                    <!-- Cambia fecha.getDate() por fecha.getUTCDate() -->
+                    <button *ngIf="fecha; else emptyCell" 
+                            (click)="seleccionarFecha(fecha)"
+                            [class.hoy]="esHoy(fecha)"
+                            [class.seleccionado]="fechaAsignada === fecha.toISOString().split('T')[0]">
+                        {{ fecha.getUTCDate() }} <!-- Mostrar día UTC -->
+                    </button>
+                    <ng-template #emptyCell>
+                        <div class="empty-cell"></div>
+                    </ng-template>
+                </ng-container>
+            </div>
+
+            <div class="dias-semana footer-resum">
+                <span *ngFor="let dia of dias">{{ dia }}</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,183 @@
+.container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+
+    background: #FFBA5A;
+    color: white; font-size: 1.5rem;
+    z-index: 9999;
+  }
+
+.container > div{
+    background-color: #FF9E16;
+    border-radius: 8vh;
+    
+
+}
+
+.container > div {
+  display: flex;
+  padding: 20px;
+}
+
+.formulario{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.formulario .botones{
+  display: flex;
+  justify-content: space-around;
+  height: 20%;
+  padding: 10%;
+  width: 100%;
+}
+
+.formulario button{
+  height: 100%;
+  width: 40%;
+  background-color: #ffca81;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.formulario button:hover{
+  background-color: white;
+  color: #FF9E16;
+}
+
+.formulario input{
+  color: white;
+  border-radius: 25px;
+  border: none;
+  background-color: #FFBA5A;
+  text-align: center;
+  width: 100%;
+  font-size: 1.5em;
+  height: 20%;
+}
+
+
+
+/*calendario*/
+
+.footer-resum {
+    height: 10%;
+
+    border-radius: 0 0 20px 20px;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  align-items: center;
+}
+
+
+
+.calendar-mini {
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  height: 50vh;
+}
+
+.fechas {
+    height: 75%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+    padding: 2%;
+
+    align-items: center;
+    justify-items: center;
+    
+    background-color: #ffca81;
+    border-radius: 20px
+}
+
+select, option{
+    color: black;
+    height: 80%;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.empty-cell {
+  width: 90%;
+  height: 90%;
+}
+
+
+.fechas button {
+  width: 90%;
+  height: 90%;
+  border: none;
+  background-color: #FF9E16;
+  color: white;
+  font-size: 1.5em;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.fechas button:hover, .fechas button.seleccionado {
+  background-color: white;
+  color: #FF9E16;
+}
+
+.header-resum select{
+    background-color: #ffca81;
+    color: white;
+
+    border-radius: 20px;
+    border: none;
+    text-align: center;
+}
+
+.fechas button.hoy{
+    background-color: #FFBA5A;
+    color: white;
+}
+
+.header-resum option{
+    background-color: #FFBA5A;
+    color: white;
+    border: none;
+}
+
+.header-resum{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+
+
+/* HORA */
+.inputHora{
+    width: 10%;
+    cursor: pointer;
+
+    text-align: center;
+
+    background-color: #ffca81;
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+}

@@ -5,6 +5,7 @@ import { PanelComponent } from './panel.component';
 import { TareasModule } from "../tareas/tareas.module";
 import { ListasModule } from "../listas/listas.module";
 import { FormsModule } from '@angular/forms';
+import { AsignaTareaComponent } from '../asigna-tarea/asigna-tarea.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     TareasModule,
     FormsModule,
+    AsignaTareaComponent,
     ListasModule,
     RouterModule.forChild([
       { path: '', component: PanelComponent } // Ruta interna del módulo

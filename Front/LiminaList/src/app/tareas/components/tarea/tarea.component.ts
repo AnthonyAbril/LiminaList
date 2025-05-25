@@ -59,6 +59,8 @@ export class TareaComponent {
 
   constructor(private tareasService: TareasService, private authService: AuthService){};
 
+  mostrarCalendario: boolean = false;
+
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') {
       this.tareasService.editarTarea(this.id, { title: this.nombreTemporal }).subscribe({
@@ -74,6 +76,20 @@ export class TareaComponent {
       alert('El nombre no puede estar vacío');
     }
     this.editandoNombre = false;
+  }
+
+  
+
+  guardarFecha(fecha: string) {
+    this.fecha = fecha;
+    console.log(`📅 Fecha guardada en la tarea: ${fecha}`);
+    this.mostrarCalendario = false; // 🔹 Cierra automáticamente
+  }
+
+  guardarHora(hora: string) {
+    this.hora = hora;
+    console.log(`🕒 Hora guardada en la tarea: ${hora}`);
+    this.mostrarCalendario = false; // 🔹 Cierra automáticamente
   }
 
 

@@ -30,7 +30,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule, // ✅ Agregar aquí para habilitar [(ngModel)]
     ReactiveFormsModule,  // ✅ Esto permitirá el uso de formularios reactivos en la aplicación.
     AppRoutingModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
