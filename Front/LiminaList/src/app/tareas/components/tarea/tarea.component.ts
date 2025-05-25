@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDe
 import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
+import { ListasService } from '../../../services/listas.service';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -57,7 +58,7 @@ export class TareaComponent {
   //readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
-  constructor(private tareasService: TareasService, private authService: AuthService){};
+  constructor(private tareasService: TareasService, private authService: AuthService, private listasService: ListasService){};
 
   mostrarCalendario: boolean = false;
 
@@ -81,10 +82,25 @@ export class TareaComponent {
   
 
   guardarFecha(fechasJson: string) {
-    //this.fecha = fecha;
     const fechasAsignadas = new Map(JSON.parse(fechasJson));
     console.log(`📅 Fechas guardadas en la tarea:`, fechasAsignadas);
-    this.mostrarCalendario = false; // 🔹 Cierra automáticamente
+
+    // 🔹 Preparar los datos para enviarlos al backend
+    const tareasFechas = Array.from(fechasAsignadas.entries()).map(([fecha, hora]) => ({
+      tarea_id: this.id, // ✅ ID de la tarea
+      fecha: fecha,
+      hora: hora !== "--:--" ? hora : null // ✅ Si la hora es "--:--", se guarda como `null`
+    }));
+
+    console.log(`📌 Datos a enviar:`, tareasFechas);
+
+    // 🔹 Llamar al servicio para guardar las asignaciones
+    this.listasService.asignarTareaFechas(tareasFechas).subscribe({
+      next: response => console.log("✅ Asignaciones guardadas correctamente:", response),
+      error: err => console.error("❌ Error al asignar fechas:", err)
+    });
+
+    this.mostrarCalendario = false;
   }
 
   guardarHora(hora: string) {

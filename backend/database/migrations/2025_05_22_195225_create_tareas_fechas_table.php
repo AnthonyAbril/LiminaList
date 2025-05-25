@@ -16,6 +16,8 @@ return new class extends Migration
 
             // 🔹 Relaciones
             $table->foreign('tarea_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->timestamps(); // ✅ Esto agrega `created_at` y `updated_at`
+
         });
     }
 

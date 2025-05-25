@@ -6,6 +6,8 @@ use App\Models\Tarea;
 use App\Models\TareaFecha;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado
+
 class TareaController extends Controller
 {
     public function index() {
@@ -99,5 +101,31 @@ class TareaController extends Controller
         return response()->json($tareasFechas);
     }
 
+    public function asignarTareaFechas(Request $request)
+    {
+        Log::info('📌 Datos recibidos:', $request->all()); // 🔹 Registrar lo que llega al backend
 
+        $request->validate([
+            'tareasFechas' => 'required|array',
+            'tareasFechas.*.tarea_id' => 'required|exists:tasks,id',
+            'tareasFechas.*.fecha' => 'required|date',
+            'tareasFechas.*.hora' => 'nullable|date_format:H:i',
+        ]);
+
+        // 🔹 Registrar después de validación
+        Log::info('✅ Datos validados correctamente.');
+
+        try {
+            foreach ($request->input('tareasFechas') as $data) {
+                Log::info('📝 Insertando:', $data);
+                TareaFecha::create($data);
+            }
+        } catch (\Exception $e) {
+            Log::error('❌ Error al insertar datos:', ['message' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+        Log::info('✔ Asignaciones guardadas correctamente.');
+        return response()->json(['message' => 'Asignaciones guardadas correctamente'], 201);
+    }
 }
