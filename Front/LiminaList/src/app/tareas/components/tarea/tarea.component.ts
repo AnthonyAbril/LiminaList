@@ -3,6 +3,7 @@ import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
 import { ListasService } from '../../../services/listas.service';
+import { AsignacionOverlayService } from '../../../services/asignacion-overlay.service';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -58,9 +59,12 @@ export class TareaComponent {
   //readonly estados = ESTADOS;
   readonly coloresNivel = COLORES_NIVEL;
 
-  constructor(private tareasService: TareasService, private authService: AuthService, private listasService: ListasService){};
-
-  mostrarCalendario: boolean = false;
+  constructor(
+    private tareasService: TareasService,
+    private authService: AuthService,
+    private listasService: ListasService,
+    private asignacionOverlayService: AsignacionOverlayService
+  ) {}
 
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') {
@@ -79,7 +83,16 @@ export class TareaComponent {
     this.editandoNombre = false;
   }
 
-  
+  abrirAsignador(): void {
+    this.asignacionOverlayService.abrirAsignador(
+      this.id,
+      this.title,
+      (fechasJson: string) => this.guardarFecha(fechasJson),
+      (hora: string) => this.guardarHora(hora)
+    );
+  }
+
+
 
   guardarFecha(fechasJson: string) {
     const fechasAsignadas = new Map(JSON.parse(fechasJson));
@@ -100,14 +113,11 @@ export class TareaComponent {
       next: response => console.log("✅ Asignaciones actualizadas correctamente:", response),
       error: err => console.error("❌ Error al actualizar asignaciones:", err)
     });
-
-    this.mostrarCalendario = false;
   }
 
   guardarHora(hora: string) {
     this.hora = hora;
     console.log(`🕒 Hora guardada en la tarea: ${hora}`);
-    this.mostrarCalendario = false; // 🔹 Cierra automáticamente
   }
 
 
@@ -167,12 +177,11 @@ export class TareaComponent {
     this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
 
     // Actualizar backend
-    this.tareasService.editarTarea(this.id, { progreso: this.progreso, terminado: this.progreso === this.estados.length - 1 }).subscribe({
+    this.tareasService.editarProgreso(this.id, this.fecha!, this.progreso).subscribe({
       next: () => {
-        console.log(`🔁 Progreso de hoja a backend ${this.id}(${this.title}): ${this.progreso} (${this.estados[this.progreso].nombre})`);
-        // Emitir hacia su propio padre (propagación recursiva)
+        console.log(`🔁 Progreso actualizado en tarea asignada (${this.id} - ${this.fecha}): ${this.progreso}`);
       },
-      error: (err) => console.error('❌ Error actualizando estado hoja:', err)
+      error: (err) => console.error('❌ Error actualizando progreso:', err),
     });
   }
 
@@ -226,16 +235,12 @@ export class TareaComponent {
 
     console.log("El progreso del padre "+this.title+" pasa de "+progresoAnterior+" a "+this.progreso);
 
-    // Actualizar en backend
-    this.tareasService.editarTarea(this.id, {
-      progreso: this.progreso,
-      //terminado
-    }).subscribe({
+    // 🔹 Nuevo método para actualizar el progreso en `tareas_fechas`
+    this.tareasService.editarProgreso(this.id, this.fecha!, this.progreso).subscribe({
       next: () => {
-        console.log(`🔁 Estado recalculado para tarea ${this.id}(${this.title}): ${this.progreso} (${this.estados[this.progreso].nombre})`);
-        // Emitir hacia su propio padre (propagación recursiva)
+        console.log(`🔁 Progreso actualizado en tarea asignada (${this.id} - ${this.fecha}): ${this.progreso}`);
       },
-      error: (err) => console.error('❌ Error actualizando estado padre:', err)
+      error: (err) => console.error('❌ Error actualizando progreso:', err),
     });
   }
 

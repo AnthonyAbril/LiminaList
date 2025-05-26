@@ -11,7 +11,7 @@ class TareaFecha extends Model
     use HasFactory;
 
     protected $table = 'tareas_fechas'; // 🔹 Especificar la tabla de la base de datos
-    protected $fillable = ['tarea_id', 'fecha', 'hora']; // 🔹 Campos permitidos para inserción
+    protected $fillable = ['tarea_id', 'fecha', 'hora', 'progreso']; // 🔹 Campos permitidos para inserción
 
     public function setHoraAttribute($value)
     {

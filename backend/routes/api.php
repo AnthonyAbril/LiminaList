@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/lists/{id}', [ListaController::class, 'update']); 
     Route::post('/lists', [ListaController::class, 'store']); // 🔹 Asegurar que `store` está presente
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
+    Route::post('/editar-progreso', [TareaController::class, 'editarProgreso']);
 
     Route::get('/eventos-proximos', [TareaController::class, 'eventosProximos']);
     Route::get('/eventos-por-fecha', [TareaController::class, 'eventosPorFecha']);

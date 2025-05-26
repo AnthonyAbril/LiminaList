@@ -62,10 +62,15 @@ export class ListaComponent {
       tarea.progreso = progreso;
       console.log(`🔄 Progreso actualizado en ListaComponent: Tarea ${id} -> ${progreso}`);
 
-      this.tareasService.editarTarea(id, { progreso }).subscribe({
-        next: () => console.log(`✅ Progreso de tarea ${id} guardado en backend.`),
-        error: (err) => console.error(`❌ Error al actualizar progreso en backend:`, err)
-      });
+      // 🔹 Obtener la fecha de la tarea (si la tiene asignada)
+      if (tarea.fecha) {
+        this.tareasService.editarProgreso(id, tarea.fecha, progreso).subscribe({
+          next: () => console.log(`✅ Progreso de tarea ${id} guardado en backend (fecha: ${tarea.fecha}).`),
+          error: (err) => console.error(`❌ Error al actualizar progreso en backend:`, err),
+        });
+      } else {
+        console.warn(`⚠ Tarea ${id} no tiene fecha asignada, no se actualiza progreso en tareas_fechas.`);
+      }
 
       this.tareas = [...this.tareas]; // 🔄 Forzar actualización en Angular
     }

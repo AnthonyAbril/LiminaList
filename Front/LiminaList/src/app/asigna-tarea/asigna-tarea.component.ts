@@ -9,18 +9,20 @@ import { FormsModule } from '@angular/forms'; // Para [(ngModel)]
 import { CommonModule } from '@angular/common';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
+import { OverlayModule } from '@angular/cdk/overlay';
+import { PortalModule } from '@angular/cdk/portal';
+import { Inject } from '@angular/core';
 @Component({
   selector: 'app-asigna-tarea',
-  imports: [CommonModule, FormsModule,NgxMaterialTimepickerModule], // 👈 Importar módulos necesarios
+  imports: [
+    OverlayModule,
+    PortalModule,
+    CommonModule, FormsModule,NgxMaterialTimepickerModule], // 👈 Importar módulos necesarios
   templateUrl: './asigna-tarea.component.html',
   styleUrl: './asigna-tarea.component.css'
 })
 
 export class AsignaTareaComponent {
-
-  @Input() id!: number;
-
-  @Input() nombre: string = "Nombre";
 
   @Output() fechaSeleccionada = new EventEmitter<string>();
   @Output() horaSeleccionada = new EventEmitter<string>();
@@ -32,7 +34,10 @@ export class AsignaTareaComponent {
     this.cerrarVentana.emit();
   }
 
-  constructor(private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient, private router: Router) {
+  constructor(
+    @Inject('ASIGNACION_ID') public id: number,
+  @Inject('ASIGNACION_NOMBRE') public nombre: string,
+  private route: ActivatedRoute, private listasService: ListasService, private http: HttpClient, private router: Router) {
     
   }
   
@@ -155,6 +160,7 @@ export class AsignaTareaComponent {
   onTimeChange(newTime: string) {
     if (this.diaSeleccionado) {
       this.diasAsignados.set(this.diaSeleccionado, newTime);
+      this.horaSeleccionada.emit(newTime); // ✅ Esto es necesario
     }
   }
 }

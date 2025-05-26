@@ -167,4 +167,40 @@ class TareaController extends Controller
 
         return response()->json(['message' => 'Asignaciones actualizadas correctamente'], 200);
     }
+
+    public function editarProgreso(Request $request)
+    {
+        $request->validate([
+            'tarea_id' => 'required|exists:tasks,id',
+            'fecha' => 'required|date',
+            'progreso' => 'required|integer|min:0|max:100',
+        ]);
+
+        $tarea = Tarea::findOrFail($request->input('tarea_id'));
+
+        // 🔹 Verificar si la tarea es rutinaria
+        if ($tarea->rutinario) {
+            // ✅ Solo actualizar el progreso de hoy sin afectar días futuros
+            TareaFecha::where('tarea_id', $tarea->id)
+                ->where('fecha', now()->toDateString())
+                ->update(['progreso' => $request->input('progreso')]);
+        } else {
+            // ✅ Si es puntual, sincronizar progreso con días futuros
+            TareaFecha::where('tarea_id', $tarea->id)
+                ->where('fecha', '>=', now()->toDateString())
+                ->update(['progreso' => $request->input('progreso')]);
+        }
+
+        return response()->json(['message' => 'Progreso actualizado correctamente'], 200);
+    }
+
+    public function obtenerHistorialProgreso($tareaId)
+    {
+        $historial = TareaFecha::where('tarea_id', $tareaId)
+            ->where('fecha', '<', now()->toDateString())
+            ->orderBy('fecha', 'desc')
+            ->get(['fecha', 'progreso']);
+
+        return response()->json($historial);
+    }
 }

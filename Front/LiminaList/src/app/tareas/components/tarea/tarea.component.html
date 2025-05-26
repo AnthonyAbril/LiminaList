@@ -41,7 +41,7 @@
           (mouseleave)="girando = false"
           aria-label="Añadir subtarea"
         >+</button>
-        <button *ngIf="!editar" (click)="mostrarCalendario = true" class="clock"><img src="assets/icons/clock.svg" alt=""></button>
+        <button *ngIf="!editar" (click)="abrirAsignador()" class="clock"><img src="assets/icons/clock.svg" alt=""></button>
         <button
         [hidden]="!editandoNombre"
         ><img src="assets/icons/pen-solid.svg" alt=""></button>
@@ -70,13 +70,4 @@
     </div>
   </div>
 </li>
-
-<app-asigna-tarea 
-  *ngIf="mostrarCalendario" 
-  [nombre]="title" 
-  [id]="id"
-  (fechaSeleccionada)="guardarFecha($event)" 
-  (horaSeleccionada)="guardarHora($event)"
-  (cerrarVentana)="mostrarCalendario = false">
-</app-asigna-tarea>
 
