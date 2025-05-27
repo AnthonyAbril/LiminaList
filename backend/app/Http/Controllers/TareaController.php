@@ -202,6 +202,15 @@ class TareaController extends Controller
 
     public function editarProgreso(Request $request)
     {
+        // TareaController.php  (dentro de editarProgreso)
+        Log::info('REQ editarProgreso', [
+            'id'      => $request->tarea_id,
+            'prog'    => $request->progreso,
+            'fecha'   => $request->fecha,
+            'usuario' => auth()->id()
+        ]);
+
+
         /* 1️⃣  Validación */
         $data = $request->validate([
             'tarea_id' => 'required|exists:tasks,id',
@@ -237,21 +246,16 @@ class TareaController extends Controller
             }
 
             /* ──────────────  B) Cambio desde lista individual ───────────── */
-            //  B-1  Actualizamos progreso en tasks (raíz + descendientes)
-            $todos = $tarea->descendientesRecursivos();   // incluye la raíz
+            // B-1  ▶️  sólo la tarea clicada
+            $tarea->progreso = $progreso;
+            $tarea->save();
 
-            foreach ($todos as $nodo) {
-                $nodo->progreso = $progreso;
-                $nodo->save();
+            // B-2  ▶️  si es PUNTUAL, sincronizar sus asignaciones futuras
+            if (!$tarea->rutinario) {
+                TareaFecha::where('tarea_id', $tarea->id)
+                        ->where('fecha', '>=', $hoy)
+                        ->update(['progreso' => $progreso]);
             }
-
-            //  B-2  Sincronizamos asignaciones FUTURAS **solo** de los nodos puntuales
-            $todos->filter(fn ($n) => !$n->rutinario)     // descarta los rutinarios
-                ->each(function ($n) use ($progreso, $hoy) {
-                    TareaFecha::where('tarea_id', $n->id)
-                                ->where('fecha', '>=', $hoy)
-                                ->update(['progreso' => $progreso]);
-                });
         });
 
         /* 4️⃣  Respuesta */

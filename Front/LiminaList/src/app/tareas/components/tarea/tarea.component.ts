@@ -4,6 +4,7 @@ import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
 import { ListasService } from '../../../services/listas.service';
 import { AsignacionOverlayService } from '../../../services/asignacion-overlay.service';
+import { finalize } from 'rxjs';
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -66,6 +67,41 @@ export class TareaComponent {
     private listasService: ListasService,
     private asignacionOverlayService: AsignacionOverlayService
   ) {}
+
+
+  private _saving   = false;
+  private _pending: { prog:number; fecha:string|null } | null = null;
+
+  editarProgresoBackend(prog: number, fecha: string | null) {
+
+    /* 1️⃣  si hay una en marcha, lo guardo como “pendiente” y salgo */
+    if (this._saving) {
+      this._pending = { prog, fecha };
+      return;
+    }
+
+    /* 2️⃣  lanzo la petición */
+    this._saving = true;
+    this.tareasService.editarProgreso(this.id, prog, fecha)
+        .pipe( finalize(() => {
+
+          /* 3️⃣  al terminar:  libero _saving … */
+          this._saving = false;
+
+          /* 4️⃣  … y si quedó algo pendiente, lo envío */
+          if (this._pending) {
+            const { prog, fecha } = this._pending;
+            this._pending = null;          // ⚠️ limpiar antes de llamar
+            this.editarProgresoBackend(prog, fecha);
+          }
+
+        }))
+        .subscribe({
+          /* tu código de éxito / error si quieres */
+        });
+  }
+
+
 
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') {
@@ -171,12 +207,7 @@ export class TareaComponent {
     const necesitoFecha = this.rutinario && !( !this.fecha || this.fecha === '--' );  
     const fechaAUsar: string | null = necesitoFecha ? this.fecha! : null;
 
-    this.tareasService.editarProgreso(this.id, this.progreso, fechaAUsar).subscribe({
-      next: () => {
-        console.log(`🔁 Progreso actualizado para tarea ${this.id} con fecha ${fechaAUsar}`);
-      },
-      error: err => console.error('❌ Error actualizando progreso:', err),
-    });
+    this.editarProgresoBackend(this.progreso, fechaAUsar);
   }
 
 
@@ -245,12 +276,7 @@ export class TareaComponent {
       ? (this.fecha ?? null)   // ←-- NUNCA inventar 'hoy' si no hay fecha
       : null;                  // puntual => null
 
-    this.tareasService.editarProgreso(this.id, this.progreso, fechaAUsar).subscribe({
-      next: () => {
-        console.log(`✅ Progreso de tarea ${this.id} guardado (${this.rutinario ? 'rutinaria' : 'puntual'}), fecha: ${fechaAUsar}`);
-      },
-      error: err => console.error('❌ Error al guardar progreso recalculado:', err),
-    });
+    this.editarProgresoBackend(this.progreso, fechaAUsar);
   }
 
 
