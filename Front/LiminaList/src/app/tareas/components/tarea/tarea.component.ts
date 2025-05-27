@@ -49,6 +49,7 @@ export class TareaComponent {
 
   @Output() actualizarEstadoPadre = new EventEmitter<void>();
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
+  
 
   mostrarSubtareas = false;
   girando = false;
@@ -95,25 +96,19 @@ export class TareaComponent {
 
 
   guardarFecha(fechasJson: string) {
-    const fechasAsignadas = new Map(JSON.parse(fechasJson));
-    console.log(`📅 Fechas guardadas en la tarea:`, fechasAsignadas);
+    const fechas = new Map(JSON.parse(fechasJson));
 
-    // 🔹 Transformar datos para el backend
-    const asignaciones = fechasAsignadas.size > 0
-      ? Array.from(fechasAsignadas.entries()).map(([fecha, hora]) => ({
-          fecha: fecha,
-          hora: hora === "--:--" ? null : hora // ✅ Convertir "--:--" a null
-        }))
-      : []; // ✅ Enviar un array vacío en lugar de `null`
+    const tareasFechas = Array.from(fechas.entries()).map(([fecha, hora]) => ({
+      tarea_id: this.id,
+      fecha,
+      hora: hora === '--:--' ? null : hora
+    }));
 
-    console.log(`📌 Enviando asignaciones corregidas:`, asignaciones);
-
-    // 🔹 Llamar al servicio para actualizar las asignaciones
-    this.listasService.editarAsignacionesTarea(this.id, asignaciones).subscribe({
-      next: response => console.log("✅ Asignaciones actualizadas correctamente:", response),
-      error: err => console.error("❌ Error al actualizar asignaciones:", err)
-    });
+    this.listasService.asignarTareaFechas(tareasFechas).subscribe(/* … */);
   }
+
+
+
 
   guardarHora(hora: string) {
     this.hora = hora;
@@ -165,25 +160,26 @@ export class TareaComponent {
   
   //metodo de tarea hoja
   cambiarEstado(): void {
-    if (this.subtareas.length > 0) return; // Solo hojas
+    if (this.subtareas.length > 0) return;
 
     const progviejo = this.progreso;
-
     this.progreso = (this.progreso + 1) % this.estados.length;
 
-    console.log("Subtarea hoja progreso de "+progviejo+ " a "+this.progreso)
-
-    // Emitir progreso actualizado al padre con id
     this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
 
-    // Actualizar backend
-    this.tareasService.editarProgreso(this.id, this.fecha!, this.progreso).subscribe({
+    const hoy = new Date().toISOString().split('T')[0];
+    const necesitoFecha = this.rutinario && !( !this.fecha || this.fecha === '--' );  
+    const fechaAUsar: string | null = necesitoFecha ? this.fecha! : null;
+
+    this.tareasService.editarProgreso(this.id, this.progreso, fechaAUsar).subscribe({
       next: () => {
-        console.log(`🔁 Progreso actualizado en tarea asignada (${this.id} - ${this.fecha}): ${this.progreso}`);
+        console.log(`🔁 Progreso actualizado para tarea ${this.id} con fecha ${fechaAUsar}`);
       },
-      error: (err) => console.error('❌ Error actualizando progreso:', err),
+      error: err => console.error('❌ Error actualizando progreso:', err),
     });
   }
+
+
 
   //esta funcion sirve para actualizar el array de subtareas del padre
   onProgresoActualizado(event: { id: number; progreso: number }) {
@@ -227,22 +223,36 @@ export class TareaComponent {
     if (this.subtareas.length === 0) return;
 
     const progresoAnterior = this.progreso;
-    this.progreso = this.calcularProgreso();
+    const progresoNuevo = this.calcularProgreso();
 
-    if (progresoAnterior !== this.progreso) {
-      this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
+    if (progresoAnterior === progresoNuevo) return;
+
+    this.progreso = progresoNuevo;
+    this.progresoActualizado.emit({ id: this.id, progreso: this.progreso });
+
+    console.log(`🔄 Progreso recalculado de "${this.title}" → ${progresoAnterior} ➝ ${this.progreso}`);
+
+    const hoy = new Date().toISOString().split('T')[0];
+
+    // 🧠 No actualices progreso en backend si es tarea rutinaria con fecha pasada
+    if (this.rutinario && this.fecha && this.fecha < hoy) {
+      console.log(`⏳ Tarea rutinaria en día pasado. No se actualiza progreso.`);
+      return;
     }
 
-    console.log("El progreso del padre "+this.title+" pasa de "+progresoAnterior+" a "+this.progreso);
+    // 🧠 Decide la fecha a usar
+    const fechaAUsar: string | null = this.rutinario
+      ? (this.fecha ?? null)   // ←-- NUNCA inventar 'hoy' si no hay fecha
+      : null;                  // puntual => null
 
-    // 🔹 Nuevo método para actualizar el progreso en `tareas_fechas`
-    this.tareasService.editarProgreso(this.id, this.fecha!, this.progreso).subscribe({
+    this.tareasService.editarProgreso(this.id, this.progreso, fechaAUsar).subscribe({
       next: () => {
-        console.log(`🔁 Progreso actualizado en tarea asignada (${this.id} - ${this.fecha}): ${this.progreso}`);
+        console.log(`✅ Progreso de tarea ${this.id} guardado (${this.rutinario ? 'rutinaria' : 'puntual'}), fecha: ${fechaAUsar}`);
       },
-      error: (err) => console.error('❌ Error actualizando progreso:', err),
+      error: err => console.error('❌ Error al guardar progreso recalculado:', err),
     });
   }
+
 
   get porcentajeProgreso(): string {
     return this.subtareas.length === 0 ? '' : 

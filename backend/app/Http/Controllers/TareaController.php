@@ -7,6 +7,8 @@ use App\Models\TareaFecha;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado
+use Illuminate\Support\Facades\DB;   // ⬅︎ asegúrate de tenerlo arriba del controlador
+
 
 class TareaController extends Controller
 {
@@ -103,27 +105,36 @@ class TareaController extends Controller
 
     public function asignarTareaFechas(Request $request)
     {
-        Log::info('📌 Datos recibidos:', $request->all()); // 🔹 Registrar lo que llega al backend
-
-        $request->validate([
-            'tareasFechas' => 'required|array',
+        $data = $request->validate([
+            'tareasFechas'            => 'required|array',
             'tareasFechas.*.tarea_id' => 'required|exists:tasks,id',
-            'tareasFechas.*.fecha' => 'required|date',
-            'tareasFechas.*.hora' => 'nullable|date_format:H:i',
+            'tareasFechas.*.fecha'    => 'required|date',
+            'tareasFechas.*.hora'     => 'nullable|date_format:H:i',
         ]);
 
-        try {
-            foreach ($request->input('tareasFechas') as $data) {
-                Log::info('📝 Insertando:', $data);
-                TareaFecha::create($data);
-            }
-        } catch (\Exception $e) {
-            Log::error('❌ Error al insertar datos:', ['message' => $e->getMessage()]);
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        foreach ($data['tareasFechas'] as $row) {
 
-        return response()->json(['message' => 'Asignaciones guardadas correctamente'], 201);
+            /** 1️⃣ Confirmo que es raíz */
+            $tareaRaiz = Tarea::raiz()->find($row['tarea_id']);
+            if (!$tareaRaiz) {
+                return response()->json(['error'=>'Solo tareas raíz'], 422);
+            }
+
+            /** 2️⃣ Construyo la lista de la raíz + TODAS sus subtareas */
+            $todas = $tareaRaiz->descendientesRecursivos();
+
+            /** 3️⃣ Creo/actualizo una fila por cada una */
+            foreach ($todas as $t) {
+                TareaFecha::updateOrCreate(
+                    ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
+                    ['hora' => $row['hora'], 'progreso' => 0]
+                );
+            }
+        }
+        return response()->json(['message' => 'Asignaciones guardadas'], 201);
     }
+
+
 
     public function getAsignaciones($tareaId)
     {
@@ -133,66 +144,123 @@ class TareaController extends Controller
 
     public function editarAsignaciones(Request $request)
     {
-        $request->validate([
-            'tarea_id' => 'required|exists:tasks,id',
-            'asignaciones' => 'nullable|array',
+        /** 1. Validación básica */
+        $data = $request->validate([
+            'tarea_id'      => 'required|exists:tasks,id',
+            'asignaciones'  => 'nullable|array',
             'asignaciones.*.fecha' => 'required|date',
-            'asignaciones.*.hora' => 'nullable|date_format:H:i',
+            'asignaciones.*.hora'  => 'nullable|date_format:H:i',
         ]);
 
-        $tareaId = $request->input('tarea_id');
-        $nuevasAsignaciones = collect($request->input('asignaciones') ?? []);
+        /** 2. Comprobar que la tarea es raíz */
+        $raiz = Tarea::raiz()->with('subtareas.subtareas')->find($data['tarea_id']);
+        if (! $raiz) {
+            return response()->json(['error' => 'Solo tareas de primer nivel pueden editarse'], 422);
+        }
 
-        // 🔹 Si el array está vacío, eliminar todas las asignaciones y salir
-        if ($nuevasAsignaciones->isEmpty()) {
-            TareaFecha::where('tarea_id', $tareaId)->delete();
+        /** 3. Colección con la raíz + TODOS los descendientes */
+        $todos = $raiz->descendientesRecursivos();        // collection única
+
+        /** 4. Si el array está vacío ⇒ eliminar TODAS las asignaciones de todos los nodos */
+        if (empty($data['asignaciones'])) {
+            DB::transaction(function () use ($todos) {
+                $todos->each(fn ($t) => $t->fechas()->delete());
+            });
             return response()->json(['message' => 'Todas las asignaciones eliminadas'], 200);
         }
 
-        // 🔹 Proceder con la actualización normal
-        $asignacionesPrevias = TareaFecha::where('tarea_id', $tareaId)->pluck('fecha');
+        /** 5. Convertir a collection para búsquedas rápidas */
+        $nuevas = collect($data['asignaciones']);   // cada elem: ['fecha'=>…, 'hora'=>…]
 
-        $asignacionesPrevias->each(function ($fecha) use ($tareaId, $nuevasAsignaciones) {
-            if (!$nuevasAsignaciones->contains('fecha', $fecha)) {
-                TareaFecha::where('tarea_id', $tareaId)->where('fecha', $fecha)->delete();
-            }
+        /** 6. Operaciones atómicas */
+        DB::transaction(function () use ($todos, $nuevas) {
+
+            /** 6-a. Limpiar fechas que ya no están */
+            $todos->each(function ($t) use ($nuevas) {
+                $t->fechas                       // pluck fechas existentes de ese nodo
+                ->pluck('fecha')
+                ->each(function ($f) use ($t, $nuevas) {
+                    if (! $nuevas->contains('fecha', $f)) {
+                        $t->fechas()->where('fecha', $f)->delete();
+                    }
+                });
+            });
+
+            /** 6-b. Crear / actualizar todas las nuevas fechas para cada nodo */
+            $nuevas->each(function ($row) use ($todos) {
+                $todos->each(function ($t) use ($row) {
+                    TareaFecha::updateOrCreate(
+                        ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
+                        ['hora' => $row['hora'] ?: null]        // mantén progreso tal cual
+                    );
+                });
+            });
         });
-
-        foreach ($request->input('asignaciones') as $data) {
-            TareaFecha::updateOrCreate(
-                ['tarea_id' => $tareaId, 'fecha' => $data['fecha']],
-                ['hora' => $data['hora'] ?: null]
-            );
-        }
 
         return response()->json(['message' => 'Asignaciones actualizadas correctamente'], 200);
     }
 
     public function editarProgreso(Request $request)
     {
-        $request->validate([
+        /* 1️⃣  Validación */
+        $data = $request->validate([
             'tarea_id' => 'required|exists:tasks,id',
-            'fecha' => 'required|date',
             'progreso' => 'required|integer|min:0|max:100',
+            'fecha'    => 'nullable|date',   // null  ⇒  lista individual
         ]);
 
-        $tarea = Tarea::findOrFail($request->input('tarea_id'));
+        /* 2️⃣  Cargamos la tarea con toda la jerarquía (para usar descendientes) */
+        $tarea = Tarea::with('subtareas.subtareas')->findOrFail($data['tarea_id']);
 
-        // 🔹 Verificar si la tarea es rutinaria
-        if ($tarea->rutinario) {
-            // ✅ Solo actualizar el progreso de hoy sin afectar días futuros
-            TareaFecha::where('tarea_id', $tarea->id)
-                ->where('fecha', now()->toDateString())
-                ->update(['progreso' => $request->input('progreso')]);
-        } else {
-            // ✅ Si es puntual, sincronizar progreso con días futuros
-            TareaFecha::where('tarea_id', $tarea->id)
-                ->where('fecha', '>=', now()->toDateString())
-                ->update(['progreso' => $request->input('progreso')]);
-        }
+        /* 3️⃣  Transacción */
+        DB::transaction(function () use ($tarea, $data) {
 
+            $progreso = $data['progreso'];
+            $hoy      = now()->toDateString();
+
+            /* ──────────────  A) Cambio desde lista diaria  ───────────── */
+            if (!empty($data['fecha'])) {
+
+                $fila = TareaFecha::where('tarea_id', $tarea->id)
+                                ->where('fecha',   $data['fecha'])
+                                ->first();
+
+                if (!$fila) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'fecha' => 'No existe asignación para esa fecha.',
+                    ]);
+                }
+
+                $fila->progreso = $progreso;
+                $fila->save();                 // ✔️  solo esa fila
+                return;                        //   Fin caso A
+            }
+
+            /* ──────────────  B) Cambio desde lista individual ───────────── */
+            //  B-1  Actualizamos progreso en tasks (raíz + descendientes)
+            $todos = $tarea->descendientesRecursivos();   // incluye la raíz
+
+            foreach ($todos as $nodo) {
+                $nodo->progreso = $progreso;
+                $nodo->save();
+            }
+
+            //  B-2  Sincronizamos asignaciones FUTURAS **solo** de los nodos puntuales
+            $todos->filter(fn ($n) => !$n->rutinario)     // descarta los rutinarios
+                ->each(function ($n) use ($progreso, $hoy) {
+                    TareaFecha::where('tarea_id', $n->id)
+                                ->where('fecha', '>=', $hoy)
+                                ->update(['progreso' => $progreso]);
+                });
+        });
+
+        /* 4️⃣  Respuesta */
         return response()->json(['message' => 'Progreso actualizado correctamente'], 200);
     }
+
+
+
+
 
     public function obtenerHistorialProgreso($tareaId)
     {

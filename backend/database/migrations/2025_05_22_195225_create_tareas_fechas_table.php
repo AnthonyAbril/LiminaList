@@ -15,6 +15,7 @@ return new class extends Migration
             $table->time('hora',5)->nullable(); // ✅ Ahora la hora puede ser NULL
 
             $table->integer('progreso')->nullable();
+            $table->unique(['tarea_id','fecha']);   //  ⬅️  justo antes del timestamps()
 
             // 🔹 Relaciones
             $table->foreign('tarea_id')->references('id')->on('tasks')->onDelete('cascade');

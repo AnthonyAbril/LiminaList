@@ -36,22 +36,26 @@ export class TareasService {
     return this.http.delete<void>(`${this.apiUrl}/${tareaId}`, { headers });
   }
 
-  editarProgreso(tareaId: number, fecha: string, progreso: number): Observable<any> {
-    const token = localStorage.getItem('token');  
+  editarProgreso(
+    tareaId: number,
+    progreso: number,
+    fecha: string | null = null            // primero el dato “fijo”, luego la fecha opcional
+  ): Observable<any> {
 
+    const token = localStorage.getItem('token');
     if (!token) {
-      console.error('❌ No hay token de autenticación.');
       return throwError(() => new Error('Usuario no autenticado'));
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.post(`http://localhost:8000/api/editar-progreso`, { tarea_id: tareaId, fecha, progreso }, { headers }).pipe(
-      tap(response => console.log('📌 Progreso actualizado:', response)),
-      catchError(error => {
-        console.error('❌ Error al actualizar progreso:', error);
-        return throwError(() => error);
-      }),
+    /* armamos el body sin ‘fecha’ cuando no hace falta */
+    const body: any = { tarea_id: tareaId, progreso };
+    if (fecha !== null) { body.fecha = fecha; }
+
+    return this.http.post('http://localhost:8000/api/editar-progreso', body, { headers }).pipe(
+      tap(r => console.log('📌 Progreso actualizado', r)),
+      catchError(err => { console.error('❌', err); return throwError(() => err); })
     );
   }
 }

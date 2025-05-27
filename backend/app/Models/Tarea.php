@@ -38,4 +38,48 @@ class Tarea extends Model
     {
         return $this->hasMany(TareaFecha::class, 'tarea_id');
     }
+
+    
+
+    // Tarea.php
+    public function scopeRaiz($q)  { return $q->whereNull('padre'); }
+    public function scopeHijos($q) { return $q->whereNotNull('padre'); }
+
+
+    /**  🔄  Devuelve la raíz + todos los descendientes en un solo collection  */
+    public function descendientesRecursivos()
+    {
+        $this->loadRecursive('subtareas');
+
+        $todo = collect([$this]);
+        $recorrer = function ($t) use (&$recorrer, &$todo) {
+            foreach ($t->subtareas as $hijo) {
+                $todo->push($hijo);
+                $recorrer($hijo);
+            }
+        };
+        $recorrer($this);
+        return $todo->unique('id');   // por si acaso
+    }
+
+    /** Carga recursivamente cualquier relación */
+    protected function loadRecursive($rel)
+    {
+        $this->load($rel);
+        $this->$rel->each(fn ($h) => $h->loadRecursive($rel));
+    }
+
+
+
+    /** — pequeño trait interno — */
+    protected function flattenDescendants($level = 0)
+    {
+        $all = collect([$this]);
+        foreach ($this->subtareas as $sub) {
+            $all = $all->merge($sub->flattenDescendants($level + 1));
+        }
+        return $all;
+    }
+
+
 }

@@ -26,6 +26,7 @@
           [editar]="editar"
           [listaid]="tarea.list_id"
           [rutinario]="tarea.rutinario"
+          [estados]="this.estados"
           (progresoActualizado)="onProgresoActualizado($event)"
           [progreso]="tarea.progreso"
           [fecha]="tarea.fecha"
@@ -49,7 +50,7 @@
           [estados]="this.estados"
           [progreso]="tarea.progreso"
           (progresoActualizado)="onProgresoActualizado($event)"
-          [progreso]="tarea.progreso"
+          [fecha]="tarea.fecha"
         ></app-tarea>
       </li>
     </ul>

@@ -32,6 +32,51 @@ export class PanelComponent {
     });
   }
   
+  /** Convierte el array de tareas_fechas en una jerarquía única
+   *  y recalcula el progreso de cada nodo               */
+  buildTree(tfArray: any[]): any[] {
+
+    /* ---------- 1) mapear cada fila a un nodo plano ---------- */
+    const map = new Map<number, any>();
+
+    tfArray.forEach(tf => {
+      const nodo = {
+        ...tf.tarea,
+        progreso : tf.progreso ?? 0,    // valor REAL de la fila
+        fecha    : tf.fecha,
+        hora     : tf.hora,
+        subtareas: [] as any[]
+      };
+      map.set(nodo.id, nodo);
+    });
+
+    /* ---------- 2) enlazar padre-hijo ------------------------ */
+    map.forEach(nodo => {
+      if (nodo.padre && map.has(nodo.padre)) {
+        map.get(nodo.padre)!.subtareas.push(nodo);
+      }
+    });
+
+    /* ---------- 3)   bottom-up: progreso = media de hijos ---- */
+    const calcular = (n: any): number => {
+      if (n.subtareas.length === 0) {           // hoja
+        return n.progreso;
+      }
+      const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0)
+                  / n.subtareas.length;
+      n.progreso = Math.round(media);           // o Math.floor … como prefieras
+      return n.progreso;
+    };
+
+    Array.from(map.values())
+        .filter(n => !n.padre)                 // sólo raíces
+        .forEach(calcular);
+
+    /* ---------- 4)   devolver raíces ------------------------- */
+    return Array.from(map.values()).filter(n => !n.padre);
+  }
+
+
 
   //Sistema de mini-calendario
   
@@ -94,14 +139,9 @@ export class PanelComponent {
       this.title = `${listaId?.substring(0, 5)}-${listaId?.substring(5, 7)}-${listaId?.substring(7, 9)}`.substring(1);
 
         this.listasService.getTareasPorFecha(listaId.substring(1)).subscribe({
-          next: response => {
-            console.log('📌 Datos de la fecha específica:', response);
-            this.tareas = response.map((tareaFecha) => ({
-              ...tareaFecha.tarea, 
-              subtareas: tareaFecha.tarea.subtareas ?? [], 
-              fecha: tareaFecha.fecha, 
-              hora: tareaFecha.hora 
-            }));
+          next: rows => {
+            //console.log('📌 Datos de la fecha específica:', response);
+            this.tareas = this.buildTree(rows);
           },
           error: err => console.error('Error cargando tareas de la fecha:', err)
         });
@@ -117,36 +157,33 @@ export class PanelComponent {
     //Lista de tareas
     if (listaId) {
 
-      if(listaId?.toString().startsWith("D")){
-        console.log("diaria");
-        //Lista diaria
+      // … dentro de ngOnInit()
+      if (listaId?.toString().startsWith('D')) {
+        // ­──────── lista diaria ────────
+        this.title = `${listaId.slice(1,5)}-${listaId.slice(5,7)}-${listaId.slice(7,9)}`;
 
-        this.title = `${listaId?.substring(0, 5)}-${listaId?.substring(5, 7)}-${listaId?.substring(7, 9)}`.substring(1);
-
-        this.listasService.getTareasPorFecha(listaId.substring(1)).subscribe({
-          next: response => {
-            console.log('📌 Datos de la fecha específica:', response);
-            this.tareas = response.map((tareaFecha) => ({
-              ...tareaFecha.tarea, 
-              subtareas: tareaFecha.tarea.subtareas ?? [], 
-              fecha: tareaFecha.fecha, 
-              hora: tareaFecha.hora 
-            }));
+        this.listasService.getTareasPorFecha(listaId.slice(1)).subscribe({
+          next: rows => {
+            this.tareas = this.buildTree(rows);   // 👈  usar helper
           },
           error: err => console.error('Error cargando tareas de la fecha:', err)
         });
 
-        console.log('Tareas cargadas:', this.tareas);
-      }else{
-        console.log("individual");
-        this.listasService.getListaPorId(listaId).subscribe(response => {
-        this.listaSeleccionada = response;
-        this.title = this.listaSeleccionada.name;
-        this.tareas = response.tareas.map((tarea: Tarea) => ({
-          ...tarea,
-          subtareas: Array.isArray(tarea.subtareas) ? tarea.subtareas : [] // 🔹 Asegurar
+      } else {
+        console.log('individual');
+
+        this.listasService.getListaPorId(listaId).subscribe(res => {
+        this.listaSeleccionada = res;
+        this.title = res.name;
+
+        // ✅ AHORA: solo raíces; las subtareas se verán dentro del componente
+        this.tareas = res.tareas
+          .filter((t: Tarea) => !t.padre)               // ← sin padre ⇒ raíz
+          .map((t: Tarea) => ({
+            ...t,
+            subtareas: Array.isArray(t.subtareas) ? t.subtareas : []
         }));
-      });
+        });
       }
     }
   }

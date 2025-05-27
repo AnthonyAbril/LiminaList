@@ -64,7 +64,7 @@ export class ListaComponent {
 
       // 🔹 Obtener la fecha de la tarea (si la tiene asignada)
       if (tarea.fecha) {
-        this.tareasService.editarProgreso(id, tarea.fecha, progreso).subscribe({
+        this.tareasService.editarProgreso(id, progreso, tarea.fecha).subscribe({
           next: () => console.log(`✅ Progreso de tarea ${id} guardado en backend (fecha: ${tarea.fecha}).`),
           error: (err) => console.error(`❌ Error al actualizar progreso en backend:`, err),
         });
