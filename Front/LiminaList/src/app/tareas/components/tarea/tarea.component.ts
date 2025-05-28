@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener, OnInit, OnDestroy  } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectionStrategy, HostListener, OnInit, OnDestroy  } from '@angular/core';
 import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
@@ -16,7 +16,8 @@ const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
   selector: 'app-tarea',
   templateUrl: './tarea.component.html',
   standalone: false,
-  styleUrls: ['./tarea.component.css']
+  styleUrls: ['./tarea.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush   // 👈
 })
 export class TareaComponent implements OnInit, OnDestroy {
   @Input() id!: number;
@@ -55,13 +56,10 @@ export class TareaComponent implements OnInit, OnDestroy {
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
   
   ngAfterViewInit() {
-    /*   ⬇️  Sólo padres (= tienen subtareas)                */
-    /*   ⬇️  Y sólo si BD ≠ cálculo del cliente             */
-    if (this.subtareas?.length && this.progreso !== this.calcularProgreso()) {
-      // fuerza la corrección y la persiste (enviarProgreso ya decide fecha)
-      this.actualizarEstadoDesdeSubtareas();
-    }
+  if (this.subtareas?.length && this.progreso !== this.calcularProgreso()) {
+    setTimeout(() => this.actualizarEstadoDesdeSubtareas());   // ⬅️ micro-tick
   }
+}
 
   mostrarSubtareas = false;
   girando = false;
@@ -78,6 +76,12 @@ export class TareaComponent implements OnInit, OnDestroy {
     private listasService: ListasService,
     private asignacionOverlayService: AsignacionOverlayService
   ) {}
+
+
+  canal = new BroadcastChannel('tareas');
+
+
+
 
   /**  ➤  dispara cada vez que cambia el progreso de ESTA tarea  */
   private progreso$ = new Subject<{ prog: number; fecha: string | null }>();
@@ -333,7 +337,7 @@ export class TareaComponent implements OnInit, OnDestroy {
     this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
     next: (response) => {
       console.log('✅ Subtarea guardada en el backend:', response);
-
+      this.canal.postMessage({ tipo: 'refrescar_lista', listaId: this.listaid });
       // 🔹 Aquí verifica si se está duplicando
       if (!response.title || response.title.trim() === '') {
         console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');

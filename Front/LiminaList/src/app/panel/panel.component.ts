@@ -15,6 +15,8 @@ import { Tarea } from '../tareas/components/tarea/tarea';
 export class PanelComponent {
   editar = false; // 🔹 Estado global del modo edición
 
+  private idListaActual: string | null = null; 
+
   listaSeleccionada: any;
   tareas: any[] = [];
 
@@ -147,6 +149,20 @@ export class PanelComponent {
         });
     }
 
+  private cargarIndividual(id: string) {
+    this.listasService.getListaPorId(id).subscribe(res => {
+      this.listaSeleccionada = res;
+      this.title            = res.name;
+      this.tareas = res.tareas           // solo raíces
+        .filter((t: Tarea) => !t.padre)
+        .map((t: Tarea) => ({
+          ...t,
+          subtareas: Array.isArray(t.subtareas) ? t.subtareas : []
+        }));
+    });
+  }
+
+
 
   ngOnInit(): void {
     
@@ -172,6 +188,9 @@ export class PanelComponent {
       } else {
         console.log('individual');
 
+          this.idListaActual = listaId; 
+          this.cargarIndividual(listaId);   
+
         this.listasService.getListaPorId(listaId).subscribe(res => {
         this.listaSeleccionada = res;
         this.title = res.name;
@@ -186,6 +205,15 @@ export class PanelComponent {
         });
       }
     }
+
+    const canal = new BroadcastChannel('tareas');
+    canal.onmessage = (event) => {
+      const { tipo, listaId } = event.data;
+
+      if (tipo === 'refrescar_lista' && listaId === this.idListaActual) {
+        this.cargarIndividual(listaId);
+      }
+    };
   }
 
   

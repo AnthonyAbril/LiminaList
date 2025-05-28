@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { ActivatedRoute } from '@angular/router';
 import { TareasService } from '../../../services/tareas.service';
@@ -12,7 +12,8 @@ import { updateNodeProgress } from '../../helpers/list-utils'
   selector: 'app-lista',
   standalone: false,
   templateUrl: './lista.component.html',
-  styleUrls: ['./lista.component.css'] // 🔹 Corregir aquí
+  styleUrls: ['./lista.component.css'], // 🔹 Corregir aquí
+  changeDetection: ChangeDetectionStrategy.OnPush   // 👈
 })
 export class ListaComponent {
   @Input() editar = false; // 🔹 Recibe la variable desde PanelComponent
@@ -57,10 +58,13 @@ export class ListaComponent {
 
 
 
-  // lista.component.ts
   onProgresoActualizado({ id, progreso }: { id: number; progreso: number }) {
     if (updateNodeProgress(this.tareas, id, progreso)) {
-      this.tareas = [...this.tareas];          // 🔄 refresh UI
+      Promise.resolve().then(() => {          // micro-tick
+        this.tareas = [...this.tareas];       // inmutabilidad
+        this.cd.detectChanges();              // fuerza repaint
+        this.cd.markForCheck();           // 👈 en vez de detectChanges()
+      });
     }
   }
 
@@ -73,7 +77,7 @@ export class ListaComponent {
     return this.tareas.filter(t => !!t.rutinario);
   }
 
-  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService) {
+  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
 
@@ -102,7 +106,7 @@ export class ListaComponent {
     this.tareasService.agregarTarea(nuevaTarea).subscribe({
       next: (response) => {
         console.log('✅ Tarea guardada en el backend:', response);
-
+        this.cd.markForCheck();           // 👈 en vez de detectChanges()
         // 🔹 Aquí verifica si se está duplicando
         if (!response.title || response.title.trim() === '') {
           console.warn('⚠ Tarea sin título detectada, no se agrega al frontend.');
@@ -125,6 +129,8 @@ export class ListaComponent {
 
     this.tareasService.eliminarTarea(tareaEliminada.id).subscribe({
       next: () => {
+        
+        this.cd.markForCheck();           // 👈 en vez de detectChanges()
         console.log('✅ Tarea eliminada correctamente');
       },
       error: (error) => {
