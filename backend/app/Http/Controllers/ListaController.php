@@ -100,4 +100,5 @@ class ListaController extends Controller
 
         return response()->json(['message' => 'Lista eliminada correctamente'], 200);
     }
+
 }

@@ -59,4 +59,12 @@ export class TareasService {
       catchError(err => { console.error('❌', err); return throwError(() => err); })
     );
   }
+
+  // tareas.service.ts
+  getHistorialProgreso(tareaId: number): Observable<{ fecha: string; progreso: number }[]> {
+    return this.http.get<{ fecha: string; progreso: number }[]>(
+      `${this.apiUrl}/${tareaId}/historial-progreso`
+    );
+  }
+
 }

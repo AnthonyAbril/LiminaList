@@ -325,4 +325,31 @@ class TareaController extends Controller
 
         return response()->json($historial);
     }
+
+    public function historialProgresoGeneral(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $rows = TareaFecha::with('tarea')
+            ->whereIn('tarea_id', function($q) use($userId){
+                $q->select('id')
+                ->from('tasks')
+                ->whereNull('padre')
+                ->where('user_id', $userId);
+            })
+            ->orderBy('fecha')
+            ->get();
+
+        $hist = $rows->groupBy('fecha')
+            ->map(fn($colecc, $fecha) => [
+                'fecha'  => $fecha,
+                'tareas' => $colecc->map(fn($tf) => [
+                    'titulo'   => $tf->tarea->title,
+                    'progreso' => $tf->progreso,
+                ])->values(),
+            ])->values();
+
+        return response()->json($hist);
+    }
+
 }

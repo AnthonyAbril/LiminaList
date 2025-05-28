@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RelojComponent } from './components/reloj/reloj.component';
 import { TareaComponent } from './components/tarea/tarea.component';
 import { AsignaTareaComponent } from "../asigna-tarea/asigna-tarea.component";
+import { TareaHistoricoComponent } from './components/tarea-historico/tarea-historico.component';
 
 
 

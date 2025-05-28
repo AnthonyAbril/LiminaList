@@ -4,7 +4,7 @@ import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { Lista } from '../listas/lista';
 import { Tarea } from '../tareas/components/tarea/tarea';
 import { TareaFecha } from '../principal/TareaFecha';
-
+import { ProgresoDia }       from '../historico/progreso-dia.model';
 
 @Injectable({
   providedIn: 'root'
@@ -214,4 +214,16 @@ export class ListasService {
       { headers }
     );
   }
+
+
+  getHistorialProgreso(): Observable<ProgresoDia[]> {
+    const token = localStorage.getItem('token')!;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<ProgresoDia[]>(
+      `http://localhost:8000/api/historial-progreso`,
+      { headers }
+    );
+  }
+
+
 }
