@@ -227,36 +227,44 @@ class TareaController extends Controller
             $progreso = $data['progreso'];
             $hoy      = now()->toDateString();
 
-            /* ──────────────  A) Cambio desde lista diaria  ───────────── */
+            /* ────── 1. SI viene fecha  → siempre actualizamos ambas cosas ────── */
             if (!empty($data['fecha'])) {
 
+                // 1-a  tareas_fechas  (throw si no existe)
                 $fila = TareaFecha::where('tarea_id', $tarea->id)
                                 ->where('fecha',   $data['fecha'])
-                                ->first();
-
-                if (!$fila) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'fecha' => 'No existe asignación para esa fecha.',
-                    ]);
-                }
+                                ->firstOrFail();
 
                 $fila->progreso = $progreso;
-                $fila->save();                 // ✔️  solo esa fila
-                return;                        //   Fin caso A
+                $fila->save();
+
+                // 1-b  tasks
+                $tarea->progreso = $progreso;
+                $tarea->save();
+
+                return;                    // ⬅️  FIN caso con fecha
             }
 
-            /* ──────────────  B) Cambio desde lista individual ───────────── */
-            // B-1  ▶️  sólo la tarea clicada
+            /* ─────────── 2. SIN fecha  (lista individual) ─────────── */
+
             $tarea->progreso = $progreso;
             $tarea->save();
 
-            // B-2  ▶️  si es PUNTUAL, sincronizar sus asignaciones futuras
-            if (!$tarea->rutinario) {
+            /* 2-a  Si la tarea es RUTINARIA → ya lo tenemos cubierto    */
+            if ($tarea->rutinario) {
                 TareaFecha::where('tarea_id', $tarea->id)
-                        ->where('fecha', '>=', $hoy)
+                        ->where('fecha', $hoy)
                         ->update(['progreso' => $progreso]);
+                return;
             }
+
+            /* 2-b  Si es PUNTUAL → sincronizar todas las fechas ≥ hoy   */
+            TareaFecha::where('tarea_id', $tarea->id)
+                    ->where('fecha', '>=', $hoy)    // incluye la de hoy si existe
+                    ->update(['progreso' => $progreso]);
+
         });
+
 
         /* 4️⃣  Respuesta */
         return response()->json(['message' => 'Progreso actualizado correctamente'], 200);

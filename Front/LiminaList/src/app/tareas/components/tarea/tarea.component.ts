@@ -6,6 +6,7 @@ import { ListasService } from '../../../services/listas.service';
 import { AsignacionOverlayService } from '../../../services/asignacion-overlay.service';
 
 import { Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
+import { AfterViewInit } from '@angular/core';
 
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
@@ -53,6 +54,14 @@ export class TareaComponent implements OnInit, OnDestroy {
   @Output() actualizarEstadoPadre = new EventEmitter<void>();
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
   
+  ngAfterViewInit() {
+    /*   ⬇️  Sólo padres (= tienen subtareas)                */
+    /*   ⬇️  Y sólo si BD ≠ cálculo del cliente             */
+    if (this.subtareas?.length && this.progreso !== this.calcularProgreso()) {
+      // fuerza la corrección y la persiste (enviarProgreso ya decide fecha)
+      this.actualizarEstadoDesdeSubtareas();
+    }
+  }
 
   mostrarSubtareas = false;
   girando = false;

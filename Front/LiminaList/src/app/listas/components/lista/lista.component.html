@@ -38,7 +38,13 @@
   <!-- Lista de Tareas Rutinarias -->
   <li [hidden]="!tipoTarea" *ngIf="tareasRutinarias.length > 0">
     <ul>
-      <li *ngFor="let tarea of tareasRutinarias">
+      <li *ngFor="let tarea of tareasRutinarias; let i = index" class="tarea">
+        <input 
+        *ngIf="tarea.hora"
+        readonly 
+        [value]="tarea.hora"
+        (click)="openPicker(i)"
+        placeholder="Selecciona la hora" />
         <app-tarea
           [id]="tarea.id"
           [title]="tarea.title"

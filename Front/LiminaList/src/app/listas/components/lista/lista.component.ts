@@ -6,6 +6,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { updateNodeProgress } from '../../helpers/list-utils'
 
 @Component({
   selector: 'app-lista',
@@ -56,25 +57,13 @@ export class ListaComponent {
 
 
 
-  onProgresoActualizado({ id, progreso }: { id: number, progreso: number }) {
-    const tarea = this.tareas.find(t => t.id === id);
-    if (tarea) {
-      tarea.progreso = progreso;
-      console.log(`🔄 Progreso actualizado en ListaComponent: Tarea ${id} -> ${progreso}`);
-
-      // 🔹 Obtener la fecha de la tarea (si la tiene asignada)
-      if (tarea.fecha) {
-        this.tareasService.editarProgreso(id, progreso, tarea.fecha).subscribe({
-          next: () => console.log(`✅ Progreso de tarea ${id} guardado en backend (fecha: ${tarea.fecha}).`),
-          error: (err) => console.error(`❌ Error al actualizar progreso en backend:`, err),
-        });
-      } else {
-        console.warn(`⚠ Tarea ${id} no tiene fecha asignada, no se actualiza progreso en tareas_fechas.`);
-      }
-
-      this.tareas = [...this.tareas]; // 🔄 Forzar actualización en Angular
+  // lista.component.ts
+  onProgresoActualizado({ id, progreso }: { id: number; progreso: number }) {
+    if (updateNodeProgress(this.tareas, id, progreso)) {
+      this.tareas = [...this.tareas];          // 🔄 refresh UI
     }
   }
+
 
   get tareasPuntuales() {
     return this.tareas.filter(t => !t.rutinario);
