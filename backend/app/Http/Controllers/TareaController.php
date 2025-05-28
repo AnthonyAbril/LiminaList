@@ -251,63 +251,65 @@ class TareaController extends Controller
 
     public function editarProgreso(Request $request)
     {
+        \Log::info('EDITAR PROGRESO recibo:', $request->all());
         $data = $request->validate([
             'tarea_id' => 'required|exists:tasks,id',
             'progreso' => 'required|integer|min:0|max:100',
             'fecha'    => 'nullable|date',
         ]);
 
-        $tarea  = Tarea::findOrFail($data['tarea_id']);
-        $p      = $data['progreso'];
-        $fecha  = $data['fecha'] ?? null;   // null ⇒ edición desde lista individual (hoy)
-        $hoy    = today()->toDateString();
+        $tarea = Tarea::findOrFail($data['tarea_id']);
+        $p     = $data['progreso'];
+        $fecha = $data['fecha'] ?? null;            // null ⇒ edición desde lista individual (hoy)
+        $hoy   = today()->toDateString();
 
         DB::transaction(function () use ($tarea, $p, $fecha, $hoy) {
+
             // ———— 1) edición desde lista diaria ————
             if ($fecha) {
-                // 1.1) Actualiza SOLO esa fila de TareaFecha(fecha)
+                // 1.1) Actualiza SOLO esa fila de TareaFecha
                 TareaFecha::updateOrCreate(
                     ['tarea_id' => $tarea->id, 'fecha' => $fecha],
                     ['progreso' => $p]
                 );
 
-                // 1.2) Si es puntual, sincroniza también el central y el futuro
                 if (! $tarea->rutinario) {
-                    // a) Progreso central
+                    // ——— puntual: sincroniza central + futuras ———
                     $tarea->update(['progreso' => $p]);
-                    // b) A todas las asignaciones >= hoy
                     TareaFecha::where('tarea_id', $tarea->id)
                         ->where('fecha', '>=', $hoy)
                         ->update(['progreso' => $p]);
                 }
+                elseif ($fecha === $hoy) {
+                    // ——— rutinaria, pero SONDE hoy: solo sincroniza central ———
+                    $tarea->update(['progreso' => $p]);
+                }
 
-                // 1.3) Si es rutinaria ⇒ no se tocan ni central ni futuras
+                // en rutinaria FUTURA no tocamos nada más
                 return;
             }
 
-            // ———— 2) edición desde lista individual (hoy) ————
-            // 2.1) Actualiza el progreso central
+            // ———— 2) edición desde lista individual (fecha = null ⇒ hoy) ————
             $tarea->update(['progreso' => $p]);
 
-            // 2.2) Si está asignada a hoy, sincroniza también TareaFecha(hoy)
-            if (TareaFecha::where('tarea_id', $tarea->id)->where('fecha', $hoy)->exists()) {
-                TareaFecha::updateOrCreate(
-                    ['tarea_id' => $tarea->id, 'fecha' => $hoy],
-                    ['progreso' => $p]
-                );
-            }
+            // si existe asignación para hoy, la actualizamos
+            TareaFecha::updateOrCreate(
+                ['tarea_id' => $tarea->id, 'fecha' => $hoy],
+                ['progreso' => $p]
+            );
 
-            // 2.3) Si es puntual, además propaga a futuras
             if (! $tarea->rutinario) {
+                // puntual: además propagamos a futuras
                 TareaFecha::where('tarea_id', $tarea->id)
                     ->where('fecha', '>=', $hoy)
                     ->update(['progreso' => $p]);
             }
-            // 2.4) Si es rutinaria ⇒ no tocar futuras
+            // rutina: nunca tocamos futuras
         });
 
         return response()->json(['ok' => true]);
     }
+
 
 
 

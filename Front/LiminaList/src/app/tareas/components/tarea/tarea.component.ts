@@ -82,6 +82,7 @@ export class TareaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
+    console.log('>>> ngOnInit, fecha es:', this.fecha);
     this.progreso$
       .pipe(
         debounceTime(200),
