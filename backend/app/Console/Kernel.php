@@ -13,9 +13,12 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    
+
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Ejecuta a las 00:01 cada día
+        $schedule->command('tasks:sync-routine')->dailyAt('00:01');
     }
 
     /**
@@ -29,4 +32,5 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
 }
