@@ -96,7 +96,11 @@ export class ListaVisorComponent implements OnInit {
   }
 
   crearListaIndividual() {
-    const listaId = Math.floor(Math.random() * 99999999).toString(); // 🔹 ID aleatorio para evitar conflicto con listas diarias
+    // Genera un número aleatorio de hasta 8 dígitos…
+    const rawId = Math.floor(Math.random() * 99999999).toString();
+    // …y asegúrate de que siempre tenga 8 caracteres:
+    const listaId = rawId.padStart(8, '0');  // p.ej. "00457231"
+
     const userId = Number(this.authService.getUserId());
 
     const listaData: Lista = { 

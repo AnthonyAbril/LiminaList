@@ -23,6 +23,7 @@ export class AsignacionOverlayService {
     this.overlayRef = this.overlay.create({
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-dark-backdrop',
+      panelClass: 'overlay-padre',           // ← lo añadimos aquí
       positionStrategy: this.overlay.position()
         .global()
         .centerHorizontally()

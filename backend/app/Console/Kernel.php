@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Ejecuta a las 00:01 cada día
-        $schedule->command('tasks:sync-routine')->dailyAt('00:01');
+        $schedule->command('tasks:sync-routine')->dailyAt('00:00');
     }
 
     /**

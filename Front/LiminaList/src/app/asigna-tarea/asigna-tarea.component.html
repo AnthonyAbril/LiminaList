@@ -3,8 +3,15 @@
         <div class="formulario">
             <input [readOnly]="true" [(ngModel)]="nombre" type="text" name="nombre" id="nombre">
             
-            <ngx-material-timepicker #picker [format]="24" [theme]="myTheme" (timeSet)="onTimeChange($event)"></ngx-material-timepicker>
-
+            <ngx-material-timepicker
+            #picker
+            [format]="24"
+            [theme]="myTheme"
+            appendTo="body"
+            panelClass="mi-timepicker-al-frente"
+            (timeSet)="onTimeChange($event)">
+            </ngx-material-timepicker>
+            
             <div class="botones">
                 <button (click)="guardarTarea()">Guardar</button>
                 <button (click)="cerrarCalendario()">Cerrar</button>

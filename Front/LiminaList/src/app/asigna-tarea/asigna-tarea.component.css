@@ -19,6 +19,8 @@
 
 }
 
+
+
 .container > div {
   display: flex;
   padding: 20px;
@@ -222,4 +224,16 @@ select, option{
     border-radius: 20px;
     padding: 10px;
     border: none;
+}
+
+/* styles.scss */
+
+.overlay-padre,
+.container {
+  z-index: 1000 !important;
+}
+
+.mi-timepicker-al-frente .ngx-material-timepicker-content {
+  /* Sube el timepicker justo por encima */
+  z-index: 10050 !important;
 }
