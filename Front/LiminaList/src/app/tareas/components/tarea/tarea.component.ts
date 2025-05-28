@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef, HostListener, OnInit, OnDestroy  } from '@angular/core';
 import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
 import { ListasService } from '../../../services/listas.service';
 import { AsignacionOverlayService } from '../../../services/asignacion-overlay.service';
-import { finalize } from 'rxjs';
+
+import { Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
+
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
 const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
@@ -15,7 +17,7 @@ const COLORES_NIVEL = ['#ffca81', '#FF9E16', '#ffba5a'];
   standalone: false,
   styleUrls: ['./tarea.component.css']
 })
-export class TareaComponent {
+export class TareaComponent implements OnInit, OnDestroy {
   @Input() id!: number;
   @Input() title!: string;
   @Input() subtareas: Tarea[] = [];
@@ -68,39 +70,36 @@ export class TareaComponent {
     private asignacionOverlayService: AsignacionOverlayService
   ) {}
 
+  /**  ➤  dispara cada vez que cambia el progreso de ESTA tarea  */
+  private progreso$ = new Subject<{ prog: number; fecha: string | null }>();
 
-  private _saving   = false;
-  private _pending: { prog:number; fecha:string|null } | null = null;
+  /**  ➤  para limpiar suscripciones al destruir el componente  */
+  private destroy$ = new Subject<void>();
 
-  editarProgresoBackend(prog: number, fecha: string | null) {
-
-    /* 1️⃣  si hay una en marcha, lo guardo como “pendiente” y salgo */
-    if (this._saving) {
-      this._pending = { prog, fecha };
-      return;
-    }
-
-    /* 2️⃣  lanzo la petición */
-    this._saving = true;
-    this.tareasService.editarProgreso(this.id, prog, fecha)
-        .pipe( finalize(() => {
-
-          /* 3️⃣  al terminar:  libero _saving … */
-          this._saving = false;
-
-          /* 4️⃣  … y si quedó algo pendiente, lo envío */
-          if (this._pending) {
-            const { prog, fecha } = this._pending;
-            this._pending = null;          // ⚠️ limpiar antes de llamar
-            this.editarProgresoBackend(prog, fecha);
-          }
-
-        }))
-        .subscribe({
-          /* tu código de éxito / error si quieres */
-        });
+  ngOnInit() {
+    this.progreso$
+      .pipe(
+        debounceTime(200),
+        switchMap(({ prog, fecha }) =>
+          this.tareasService.editarProgreso(this.id, prog, fecha)
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next : () => console.log('✅ progreso guardado'),
+        error: e  => console.error('❌ error guardando', e)
+      });
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+
+  private enviarProgreso(prog: number, fecha: string | null) {
+    this.progreso$.next({ prog, fecha });
+  }
 
 
   guardarNombre(): void {
@@ -207,7 +206,7 @@ export class TareaComponent {
     const necesitoFecha = this.rutinario && !( !this.fecha || this.fecha === '--' );  
     const fechaAUsar: string | null = necesitoFecha ? this.fecha! : null;
 
-    this.editarProgresoBackend(this.progreso, fechaAUsar);
+    this.enviarProgreso(this.progreso, fechaAUsar);
   }
 
 
@@ -276,7 +275,7 @@ export class TareaComponent {
       ? (this.fecha ?? null)   // ←-- NUNCA inventar 'hoy' si no hay fecha
       : null;                  // puntual => null
 
-    this.editarProgresoBackend(this.progreso, fechaAUsar);
+    this.enviarProgreso(this.progreso, fechaAUsar);
   }
 
 
