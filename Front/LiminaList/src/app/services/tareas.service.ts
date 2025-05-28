@@ -52,6 +52,7 @@ export class TareasService {
     /* armamos el body sin ‘fecha’ cuando no hace falta */
     const body: any = { tarea_id: tareaId, progreso };
     if (fecha !== null) { body.fecha = fecha; }
+    console.log('EDITAR PROGRESO payload', body);
 
     return this.http.post('http://localhost:8000/api/editar-progreso', body, { headers }).pipe(
       tap(r => console.log('📌 Progreso actualizado', r)),

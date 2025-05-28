@@ -133,26 +133,6 @@ export class ListasService {
     );
   }
 
-  editarAsignacionesTarea(tareaId: number, asignaciones: any[]): Observable<any> {
-    const token = localStorage.getItem('token');  
-
-    if (!token) {
-      console.error('❌ No hay token de autenticación.');
-      return throwError(() => new Error('Usuario no autenticado'));
-    }
-
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    return this.http.post(`http://localhost:8000/api/editar-asignaciones-tarea`, { tarea_id: tareaId, asignaciones }, { headers }).pipe(
-      tap(response => console.log('📌 Asignaciones editadas:', response)),
-      catchError(error => {
-        console.error('❌ Error al editar asignaciones:', error);
-        return throwError(() => error);
-      }),
-    );
-  }
-
-
   crearLista(lista: Lista): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.post(this.apiUrl, lista, { headers });
@@ -222,6 +202,16 @@ export class ListasService {
         console.error('❌ Error al filtrar listas:', error);
         return throwError(() => error);
       })
+    );
+  }
+
+  editarAsignacionesTarea(tareaId: number, asignaciones: { fecha: string; hora: string | null }[]): Observable<any> {
+    const token = localStorage.getItem('token')!;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(
+      `http://localhost:8000/api/editar-asignaciones-tarea`,
+      { tarea_id: tareaId, asignaciones },
+      { headers }
     );
   }
 }

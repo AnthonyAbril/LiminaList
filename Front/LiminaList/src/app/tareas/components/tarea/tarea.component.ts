@@ -284,6 +284,18 @@ export class TareaComponent implements OnInit, OnDestroy {
     this.enviarProgreso(this.progreso, fechaAUsar);
   }
 
+  // en TareaComponent por ejemplo:
+  quitarTodasLasAsignaciones() {
+    this.listasService.editarAsignacionesTarea(this.id, [])
+      .subscribe({
+        next: () => {
+          console.log('Asignaciones eliminadas');
+          // refresca si hace falta…
+        },
+        error: err => console.error('Error al desasignar:', err)
+      });
+  }
+
 
   get porcentajeProgreso(): string {
     return this.subtareas.length === 0 ? '' : 

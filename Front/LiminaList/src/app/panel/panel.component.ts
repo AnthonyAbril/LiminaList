@@ -64,7 +64,7 @@ export class PanelComponent {
       }
       const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0)
                   / n.subtareas.length;
-      n.progreso = Math.round(media);           // o Math.floor … como prefieras
+      n.progreso = Math.floor(media);           // o Math.floor … como prefieras
       return n.progreso;
     };
 

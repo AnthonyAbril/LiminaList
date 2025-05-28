@@ -47,6 +47,7 @@ export class ListaComponent {
     { nombre: 'Hecha', color: '#4ade80' },
   ];
 
+  
 
   selectedIndex: number = -1;
 
@@ -93,7 +94,7 @@ export class ListaComponent {
       }
       const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0)
                   / n.subtareas.length;
-      n.progreso = Math.round(media);           // o Math.floor … como prefieras
+      n.progreso = Math.floor(media);           // o Math.floor … como prefieras
       return n.progreso;
     };
 
@@ -107,17 +108,13 @@ export class ListaComponent {
 
   onProgresoActualizado(event: { id: number; progreso: number }) {
     updateNodeProgress(this.tareas, event.id, event.progreso);
-
-    // Si estás en una lista DIARIA (id empieza por 'D'), recarga desde la API:
-    const id = this.route.snapshot.paramMap.get('id')!;
-    if (id.startsWith('D')) {
-      this.listasService
-        .getTareasPorFecha(id.slice(1))
-        .subscribe(rows => this.tareas = this.buildTree(rows));
-    }
-    // En caso de lista individual, no hace falta recargar porque el cambio de progreso
-    // ya está reflejado en el objeto `tareas`.
   }
+
+  // helper en ListaComponent
+  private esTareaRaiz(id: number): boolean {
+    return this.tareas.some(t => t.id === id);
+  }
+
 
 
   get tareasPuntuales() {
