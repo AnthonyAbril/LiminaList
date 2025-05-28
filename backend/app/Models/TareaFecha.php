@@ -25,6 +25,8 @@ class TareaFecha extends Model
 
     public function tarea()
     {
-        return $this->belongsTo(Tarea::class, 'tarea_id', 'id'); // ✅ Especificar correctamente `tarea_id`
+        /* 👇  con esto la relación trae incluso las tareas soft-deleted */
+        return $this->belongsTo(Tarea::class, 'tarea_id', 'id')
+                    ->withTrashed();           // ← añade esta llamada
     }
 }

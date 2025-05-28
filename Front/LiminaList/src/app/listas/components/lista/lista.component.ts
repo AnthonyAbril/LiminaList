@@ -6,7 +6,8 @@ import { AuthService } from '../../../services/auth.service';
 import { ViewChild } from '@angular/core';
 import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { updateNodeProgress } from '../../helpers/list-utils'
+import { ListasService } from '../../../services/listas.service';
+import { updateNodeProgress  } from '../../helpers/list-utils';
 
 @Component({
   selector: 'app-lista',
@@ -23,6 +24,10 @@ export class ListaComponent {
   @Input() tareas: Tarea[] = [];
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
   @ViewChild('picker') picker!: NgxMaterialTimepickerComponent;
+
+  // en ListaComponent
+  hoy = new Date().toISOString().split('T')[0];
+
 
   listaId;
 
@@ -56,16 +61,62 @@ export class ListaComponent {
     }
   }
 
+  /** Convierte el array de tareas_fechas en una jerarquía única
+   *  y recalcula el progreso de cada nodo               */
+  buildTree(tfArray: any[]): any[] {
 
+    /* ---------- 1) mapear cada fila a un nodo plano ---------- */
+    const map = new Map<number, any>();
 
-  onProgresoActualizado({ id, progreso }: { id: number; progreso: number }) {
-    if (updateNodeProgress(this.tareas, id, progreso)) {
-      Promise.resolve().then(() => {          // micro-tick
-        this.tareas = [...this.tareas];       // inmutabilidad
-        this.cd.detectChanges();              // fuerza repaint
-        this.cd.markForCheck();           // 👈 en vez de detectChanges()
-      });
+    tfArray.forEach(tf => {
+      const nodo = {
+        ...tf.tarea,
+        progreso : tf.progreso ?? 0,    // valor REAL de la fila
+        fecha    : tf.fecha,
+        hora     : tf.hora,
+        subtareas: [] as any[]
+      };
+      map.set(nodo.id, nodo);
+    });
+
+    /* ---------- 2) enlazar padre-hijo ------------------------ */
+    map.forEach(nodo => {
+      if (nodo.padre && map.has(nodo.padre)) {
+        map.get(nodo.padre)!.subtareas.push(nodo);
+      }
+    });
+
+    /* ---------- 3)   bottom-up: progreso = media de hijos ---- */
+    const calcular = (n: any): number => {
+      if (n.subtareas.length === 0) {           // hoja
+        return n.progreso;
+      }
+      const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0)
+                  / n.subtareas.length;
+      n.progreso = Math.round(media);           // o Math.floor … como prefieras
+      return n.progreso;
+    };
+
+    Array.from(map.values())
+        .filter(n => !n.padre)                 // sólo raíces
+        .forEach(calcular);
+
+    /* ---------- 4)   devolver raíces ------------------------- */
+    return Array.from(map.values()).filter(n => !n.padre);
+  }
+
+  onProgresoActualizado(event: { id: number; progreso: number }) {
+    updateNodeProgress(this.tareas, event.id, event.progreso);
+
+    // Si estás en una lista DIARIA (id empieza por 'D'), recarga desde la API:
+    const id = this.route.snapshot.paramMap.get('id')!;
+    if (id.startsWith('D')) {
+      this.listasService
+        .getTareasPorFecha(id.slice(1))
+        .subscribe(rows => this.tareas = this.buildTree(rows));
     }
+    // En caso de lista individual, no hace falta recargar porque el cambio de progreso
+    // ya está reflejado en el objeto `tareas`.
   }
 
 
@@ -77,7 +128,7 @@ export class ListaComponent {
     return this.tareas.filter(t => !!t.rutinario);
   }
 
-  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef) {
+  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef, private listasService: ListasService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
 

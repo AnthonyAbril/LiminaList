@@ -5,4 +5,5 @@ export interface TareaFecha {
     fecha: string;
     hora?: string;
     tarea: Tarea; // ✅ Garantiza que cada `TareaFecha` tiene una `Tarea`
+    progreso: number;
 }

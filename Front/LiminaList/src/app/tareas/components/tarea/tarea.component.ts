@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectionStrategy, HostListener, OnInit, OnDestroy  } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectionStrategy, HostListener, OnInit, OnDestroy, ChangeDetectorRef  } from '@angular/core';
 import { Tarea } from './tarea';
 import { TareasService } from '../../../services/tareas.service';
 import { AuthService } from '../../../services/auth.service';
@@ -55,11 +55,6 @@ export class TareaComponent implements OnInit, OnDestroy {
   @Output() actualizarEstadoPadre = new EventEmitter<void>();
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
   
-  ngAfterViewInit() {
-  if (this.subtareas?.length && this.progreso !== this.calcularProgreso()) {
-    setTimeout(() => this.actualizarEstadoDesdeSubtareas());   // ⬅️ micro-tick
-  }
-}
 
   mostrarSubtareas = false;
   girando = false;
@@ -74,12 +69,9 @@ export class TareaComponent implements OnInit, OnDestroy {
     private tareasService: TareasService,
     private authService: AuthService,
     private listasService: ListasService,
-    private asignacionOverlayService: AsignacionOverlayService
+    private asignacionOverlayService: AsignacionOverlayService,
+    private cd: ChangeDetectorRef
   ) {}
-
-
-  canal = new BroadcastChannel('tareas');
-
 
 
 
@@ -117,10 +109,11 @@ export class TareaComponent implements OnInit, OnDestroy {
 
   guardarNombre(): void {
     if (this.nombreTemporal.trim() !== '') {
+      
+          this.title = this.nombreTemporal; // 🔹 Sincronizar título actualizado
       this.tareasService.editarTarea(this.id, { title: this.nombreTemporal }).subscribe({
         next: (response) => {
           console.log('✅ Título actualizado:', response);
-          this.title = response.title; // 🔹 Sincronizar título actualizado
         },
         error: (error) => {
           console.error('❌ Error al actualizar título:', error);
@@ -217,7 +210,8 @@ export class TareaComponent implements OnInit, OnDestroy {
 
     const hoy = new Date().toISOString().split('T')[0];
     const necesitoFecha = this.rutinario && !( !this.fecha || this.fecha === '--' );  
-    const fechaAUsar: string | null = necesitoFecha ? this.fecha! : null;
+    const fechaAUsar: string | null =
+  this.fecha && this.fecha !== '--' ? this.fecha : null;
 
     this.enviarProgreso(this.progreso, fechaAUsar);
   }
@@ -284,9 +278,8 @@ export class TareaComponent implements OnInit, OnDestroy {
     }
 
     // 🧠 Decide la fecha a usar
-    const fechaAUsar: string | null = this.rutinario
-      ? (this.fecha ?? null)   // ←-- NUNCA inventar 'hoy' si no hay fecha
-      : null;                  // puntual => null
+    const fechaAUsar: string | null =
+  this.fecha && this.fecha !== '--' ? this.fecha : null;
 
     this.enviarProgreso(this.progreso, fechaAUsar);
   }
@@ -336,8 +329,8 @@ export class TareaComponent implements OnInit, OnDestroy {
     //se añade subtarea a backend
     this.tareasService.agregarTarea(nuevaSubtarea).subscribe({
     next: (response) => {
+      this.cd.markForCheck();           // ✔ avisa al motor
       console.log('✅ Subtarea guardada en el backend:', response);
-      this.canal.postMessage({ tipo: 'refrescar_lista', listaId: this.listaid });
       // 🔹 Aquí verifica si se está duplicando
       if (!response.title || response.title.trim() === '') {
         console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');
@@ -476,6 +469,7 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
 
     this.tareasService.eliminarTarea(tareaEliminada.id).subscribe({
       next: () => {
+        this.cd.markForCheck();           // ✔ avisa al motor
         console.log('✅ Tarea eliminada correctamente');
       },
       error: (error) => {

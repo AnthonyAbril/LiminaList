@@ -20,29 +20,50 @@ class TareaController extends Controller
     public function store(Request $request) {
 
         try {
-            $validatedData = $request->validate([
-                'id' => 'required|integer|unique:tasks,id',
-                'title' => 'required|string|max:255',
-                'list_id' => 'required|string|size:8',
-                'user_id' => 'required|exists:users,id',
-                'padre' => 'nullable|integer|exists:tasks,id',
+            // 1) validación ÚNICA
+            $data = $request->validate([
+                'id'        => 'required|integer|unique:tasks,id',
+                'title'     => 'required|string|max:255',
+                'list_id'   => 'required|string|size:8',
+                'user_id'   => 'required|exists:users,id',
+                'padre'     => 'nullable|exists:tasks,id',
                 'rutinario' => 'required|boolean',
-                'progreso' => 'required|integer',
-
-                'fechas' => 'sometimes|array', // ✅ Validación de array
-                'fechas.*.fecha' => 'required|date',
-                'fechas.*.hora' => 'required|date_format:H:i:s'
+                'progreso'  => 'required|integer',
             ]);
 
-
-            // 🔹 Verificar si la lista existe
-            if (!\App\Models\Lista::where('id', $validatedData['list_id'])->where('user_id', $validatedData['user_id'])->exists()) {
-                return response()->json(['error' => 'La lista no existe para este usuario'], 404);
+            // 2) comprobar lista
+            $existe = \App\Models\Lista::where('id',$data['list_id'])
+                    ->where('user_id',$data['user_id'])->exists();
+            if (!$existe) {
+                return response()->json(['error'=>'La lista no existe para este usuario'],404);
             }
 
-            // 🔹 Crear la tarea
-            $tarea = Tarea::create($validatedData);
-            return response()->json($tarea, 201);
+            // 3) operar
+            $nueva = DB::transaction(function () use ($data) {
+
+                /** A. crear tarea ---------------------------------- */
+                $t = Tarea::create($data);
+
+                /** B. si es subtarea ⇒ clonar asignaciones futuras -- */
+                if ($t->padre) {
+                    $hoy = now()->toDateString();
+
+                    TareaFecha::where('tarea_id', $t->padre)
+                        ->where('fecha','>=',$hoy)
+                        ->each(function ($f) use ($t) {
+                            TareaFecha::create([
+                                'tarea_id' => $t->id,
+                                'fecha'    => $f->fecha,
+                                'hora'     => $f->hora,
+                                'progreso' => 0,
+                            ]);
+                        });
+                }
+                return $t;        // <- devolver la nueva tarea
+            });
+
+            return response()->json($nueva,201);
+
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -60,11 +81,24 @@ class TareaController extends Controller
         return response()->json($tarea);
     }
 
-    public function destroy($id) {
-        $tarea = Tarea::findOrFail($id);
-        $tarea->delete();
+    public function destroy($id)
+    {
+        $t = Tarea::findOrFail($id);
 
-        return response()->json(['message' => 'Tarea eliminada'], 200);
+        DB::transaction(function () use ($t) {
+
+            $hoy = now()->toDateString();
+
+            /* 1. borrar sus filas futuras en tareas_fechas */
+            TareaFecha::where('tarea_id', $t->id)
+                    ->where('fecha', '>=', $hoy)
+                    ->delete();
+
+            /* 2. borrar la fila de tasks (sin CASCADE)      */
+            $t->delete();   // ⚠️ quita el ON DELETE CASCADE de la FK o pon RESTRICT
+        });
+
+        return response()->json(['ok' => true]);
     }
 
     public function eventosProximos(Request $request)
@@ -77,9 +111,12 @@ class TareaController extends Controller
         $desde = $request->input('desde');
         $hasta = $request->input('hasta');
 
-        $tareasFechas = TareaFecha::with(['tarea' => function ($query) {
-            $query->with('subtareas'); // ✅ Cargar subtareas dentro de cada tarea
-        }])
+        $tareasFechas = TareaFecha::with([
+            'tarea' => function ($q) {
+                $q->withTrashed()        // 👈  añade esto
+                    ->with('subtareas');   //     y sigue cargando subtareas
+            }
+        ])
         ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
         ->get();
 
@@ -94,9 +131,12 @@ class TareaController extends Controller
 
         $fecha = $request->input('fecha');
 
-        $tareasFechas = TareaFecha::with(['tarea' => function ($query) {
-            $query->with('subtareas'); // ✅ Incluir subtareas
-        }])
+        $tareasFechas = TareaFecha::with([
+            'tarea' => function ($q) {
+                $q->withTrashed()        // 👈  añade esto
+                    ->with('subtareas');   //     y sigue cargando subtareas
+            }
+        ])
         ->whereDate('fecha', $fecha)
         ->get();
 
@@ -202,73 +242,44 @@ class TareaController extends Controller
 
     public function editarProgreso(Request $request)
     {
-        // TareaController.php  (dentro de editarProgreso)
-        Log::info('REQ editarProgreso', [
-            'id'      => $request->tarea_id,
-            'prog'    => $request->progreso,
-            'fecha'   => $request->fecha,
-            'usuario' => auth()->id()
-        ]);
-
-
-        /* 1️⃣  Validación */
         $data = $request->validate([
             'tarea_id' => 'required|exists:tasks,id',
             'progreso' => 'required|integer|min:0|max:100',
-            'fecha'    => 'nullable|date',   // null  ⇒  lista individual
+            'fecha'    => 'nullable|date',     // ✅  puede venir o no
         ]);
 
-        /* 2️⃣  Cargamos la tarea con toda la jerarquía (para usar descendientes) */
-        $tarea = Tarea::with('subtareas.subtareas')->findOrFail($data['tarea_id']);
+        $tarea   = Tarea::withTrashed()->findOrFail($data['tarea_id']);
+        $hoy     = today()->toDateString();
+        $p       = $data['progreso'];
+        $fecha   = $data['fecha'] ?? null;     // 👈  NUNCA accedas directo
 
-        /* 3️⃣  Transacción */
-        DB::transaction(function () use ($tarea, $data) {
+        DB::transaction(function () use ($tarea, $p, $fecha, $hoy) {
 
-            $progreso = $data['progreso'];
-            $hoy      = now()->toDateString();
-
-            /* ────── 1. SI viene fecha  → siempre actualizamos ambas cosas ────── */
-            if (!empty($data['fecha'])) {
-
-                // 1-a  tareas_fechas  (throw si no existe)
-                $fila = TareaFecha::where('tarea_id', $tarea->id)
-                                ->where('fecha',   $data['fecha'])
-                                ->firstOrFail();
-
-                $fila->progreso = $progreso;
-                $fila->save();
-
-                // 1-b  tasks
-                $tarea->progreso = $progreso;
-                $tarea->save();
-
-                return;                    // ⬅️  FIN caso con fecha
-            }
-
-            /* ─────────── 2. SIN fecha  (lista individual) ─────────── */
-
-            $tarea->progreso = $progreso;
-            $tarea->save();
-
-            /* 2-a  Si la tarea es RUTINARIA → ya lo tenemos cubierto    */
-            if ($tarea->rutinario) {
-                TareaFecha::where('tarea_id', $tarea->id)
-                        ->where('fecha', $hoy)
-                        ->update(['progreso' => $progreso]);
+            /* ❶ -------- lista diaria (viene fecha) -------------------- */
+            if ($fecha) {
+                TareaFecha::updateOrCreate(
+                    ['tarea_id' => $tarea->id, 'fecha' => $fecha],
+                    ['progreso' => $p]
+                );
+                /*  NO toques tasks.progreso aquí  */
                 return;
             }
 
-            /* 2-b  Si es PUNTUAL → sincronizar todas las fechas ≥ hoy   */
-            TareaFecha::where('tarea_id', $tarea->id)
-                    ->where('fecha', '>=', $hoy)    // incluye la de hoy si existe
-                    ->update(['progreso' => $progreso]);
+            /* ❷ -------- lista individual / “hoy” --------------------- */
+            $tarea->update(['progreso' => $p]);
 
+            /* sólo puntuales se propagan al futuro */
+            if (!$tarea->rutinario) {
+                TareaFecha::where('tarea_id',$tarea->id)
+                        ->where('fecha','>=',$hoy)
+                        ->update(['progreso'=>$p]);
+            }
         });
 
-
-        /* 4️⃣  Respuesta */
-        return response()->json(['message' => 'Progreso actualizado correctamente'], 200);
+        return response()->json(['ok'=>true]);
     }
+
+
 
 
 
