@@ -138,15 +138,24 @@ export class TareaComponent implements OnInit, OnDestroy {
 
 
   guardarFecha(fechasJson: string) {
-    const fechas = new Map(JSON.parse(fechasJson));
+    // 1) Reconstruir el map de fechas→hora
+    const fechasMap = new Map(JSON.parse(fechasJson));
 
-    const tareasFechas = Array.from(fechas.entries()).map(([fecha, hora]) => ({
-      tarea_id: this.id,
-      fecha,
-      hora: hora === '--:--' ? null : hora
-    }));
+    // 2) Convertir a array de asignaciones
+    const asignaciones: { fecha: string; hora: string | null }[] =
+    (JSON.parse(fechasJson) as [string, string][])
+      .map(([fecha, hora]) => ({
+        fecha,
+        hora: hora === '--:--' ? null : hora
+      }));
 
-    this.listasService.asignarTareaFechas(tareasFechas).subscribe(/* … */);
+
+    // 3) Llamar al endpoint de editarAsignaciones
+    this.listasService.editarAsignacionesTarea(this.id, asignaciones)
+      .subscribe({
+        next: () => console.log('🔄 Asignaciones actualizadas correctamente'),
+        error: err => console.error('❌ Error actualizando asignaciones:', err)
+      });
   }
 
 
