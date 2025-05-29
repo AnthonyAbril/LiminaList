@@ -34,47 +34,44 @@ export class PanelComponent {
   
   /** Convierte el array de tareas_fechas en una jerarquía única
    *  y recalcula el progreso de cada nodo               */
-  buildTree(tfArray: any[]): any[] {
+  buildTree(tfArray: any[], esDiaria: boolean = false): any[] {
 
-    /* ---------- 1) mapear cada fila a un nodo plano ---------- */
     const map = new Map<number, any>();
 
     tfArray.forEach(tf => {
+      const horaFinal = esDiaria && (tf.hora === null || tf.hora === undefined) ? '--:--' : tf.hora;
+
       const nodo = {
         ...tf.tarea,
-        progreso : tf.progreso ?? 0,    // valor REAL de la fila
+        progreso : tf.progreso ?? 0,
         fecha    : tf.fecha,
-        hora     : tf.hora,
+        hora     : horaFinal,
         subtareas: [] as any[]
       };
+      console.log("<>"+tf.hora);
       map.set(nodo.id, nodo);
     });
 
-    /* ---------- 2) enlazar padre-hijo ------------------------ */
     map.forEach(nodo => {
       if (nodo.padre && map.has(nodo.padre)) {
         map.get(nodo.padre)!.subtareas.push(nodo);
       }
     });
 
-    /* ---------- 3)   bottom-up: progreso = media de hijos ---- */
     const calcular = (n: any): number => {
-      if (n.subtareas.length === 0) {           // hoja
-        return n.progreso;
-      }
-      const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0)
-                  / n.subtareas.length;
-      n.progreso = Math.floor(media);           // o Math.floor … como prefieras
+      if (n.subtareas.length === 0) return n.progreso;
+      const media = n.subtareas.reduce((s: number, h: any) => s + calcular(h), 0) / n.subtareas.length;
+      n.progreso = Math.floor(media);
       return n.progreso;
     };
 
     Array.from(map.values())
-        .filter(n => !n.padre)                 // sólo raíces
-        .forEach(calcular);
+      .filter(n => !n.padre)
+      .forEach(calcular);
 
-    /* ---------- 4)   devolver raíces ------------------------- */
     return Array.from(map.values()).filter(n => !n.padre);
   }
+
 
 
 
@@ -141,7 +138,7 @@ export class PanelComponent {
         this.listasService.getTareasPorFecha(listaId.substring(1)).subscribe({
           next: rows => {
             //console.log('📌 Datos de la fecha específica:', response);
-            this.tareas = this.buildTree(rows);
+            this.tareas = this.buildTree(rows,true);
           },
           error: err => console.error('Error cargando tareas de la fecha:', err)
         });
@@ -164,7 +161,7 @@ export class PanelComponent {
 
         this.listasService.getTareasPorFecha(listaId.slice(1)).subscribe({
           next: rows => {
-            this.tareas = this.buildTree(rows);   // 👈  usar helper
+            this.tareas = this.buildTree(rows, true);   // 👈  usar helper
           },
           error: err => console.error('Error cargando tareas de la fecha:', err)
         });

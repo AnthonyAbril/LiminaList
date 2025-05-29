@@ -12,7 +12,7 @@
     <ul>
        <li *ngFor="let tarea of tareasPuntuales; let i = index"  class="tarea">
         <input 
-        *ngIf="tarea.hora"
+        *ngIf="tarea.hora !== undefined"
         readonly 
         [value]="tarea.hora"
         (click)="openPicker(i)"
@@ -41,7 +41,7 @@
     <ul>
       <li *ngFor="let tarea of tareasRutinarias; let i = index" class="tarea">
         <input 
-        *ngIf="tarea.hora"
+        *ngIf="tarea.hora !== undefined"
         readonly 
         [value]="tarea.hora"
         (click)="openPicker(i)"

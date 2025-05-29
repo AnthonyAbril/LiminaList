@@ -143,9 +143,9 @@ class TareaController extends Controller
             ->get();
 
         // 3) ordena en PHP por [padre, tarea_id]
-        $tareasFechas = $tareasFechas
-            ->sortBy(fn($tf) => [ $tf->tarea->padre ?? 0, $tf->tarea_id ])
-            ->values();
+        $tareasFechas = $tareasFechas->filter(fn($tf) => $tf->tarea !== null)
+        ->sortBy(fn($tf) => [ $tf->tarea->padre ?? 0, $tf->tarea_id ])
+        ->values();
 
         return response()->json($tareasFechas);
     }
@@ -240,7 +240,9 @@ class TareaController extends Controller
                 $todos->each(function ($t) use ($row) {
                     TareaFecha::updateOrCreate(
                         ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
-                        ['hora' => $row['hora'] ?: null]        // mantén progreso tal cual
+                        [
+                            'hora' => ($row['hora'] === null || $row['hora'] === '--:--' || $row['hora'] === '') ? null : $row['hora']
+                        ]
                     );
                 });
             });

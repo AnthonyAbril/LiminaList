@@ -15,13 +15,19 @@ class TareaFecha extends Model
 
     public function setHoraAttribute($value)
     {
-        $this->attributes['hora'] = Carbon::parse($value)->format('H:i');
+        if (is_null($value) || $value === '' || $value === '--:--') {
+            $this->attributes['hora'] = null;
+        } else {
+            $this->attributes['hora'] = Carbon::parse($value)->format('H:i');
+        }
     }
+
 
     public function getHoraAttribute($value)
     {
-        return Carbon::parse($value)->format('H:i');
+        return $value ? Carbon::parse($value)->format('H:i') : null;
     }
+
 
     public function tarea()
     {

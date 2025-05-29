@@ -146,9 +146,8 @@ export class TareaComponent implements OnInit, OnDestroy {
     (JSON.parse(fechasJson) as [string, string][])
       .map(([fecha, hora]) => ({
         fecha,
-        hora: hora === '--:--' ? null : hora
+        hora: (!hora || hora === '--:--') ? null : hora
       }));
-
 
     // 3) Llamar al endpoint de editarAsignaciones
     this.listasService.editarAsignacionesTarea(this.id, asignaciones)

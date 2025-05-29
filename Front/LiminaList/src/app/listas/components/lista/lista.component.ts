@@ -54,6 +54,9 @@ export class ListaComponent {
   openPicker(index: number) {
     this.selectedIndex = index;
     this.picker.open(); // ✅ Esto SÍ funciona
+    this.tareas.forEach(element => {
+      console.log("holi"+element.hora);
+    });
   }
 
   onTimeChange(newTime: string) {
@@ -83,9 +86,7 @@ export class ListaComponent {
     }
   }
 
-
-
-
+  
   /** Convierte el array de tareas_fechas en una jerarquía única
    *  y recalcula el progreso de cada nodo               */
   buildTree(tfArray: any[]): any[] {
@@ -101,6 +102,7 @@ export class ListaComponent {
         hora     : tf.hora,
         subtareas: [] as any[]
       };
+      console.log( "< < "+tf.hora);
       map.set(nodo.id, nodo);
     });
 
@@ -142,11 +144,19 @@ export class ListaComponent {
 
 
   get tareasPuntuales() {
-    return this.tareas.filter(t => !t.rutinario);
+    const pts = this.tareas
+      .filter(t => !t.rutinario)
+      .sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''));
+
+    console.log('🟡 tareasPuntuales:', pts);
+    return pts;
   }
 
+
   get tareasRutinarias() {
-    return this.tareas.filter(t => !!t.rutinario);
+    return this.tareas
+      .filter(t => t.rutinario)
+      .sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''));
   }
 
   constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef, private listasService: ListasService) {

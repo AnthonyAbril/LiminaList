@@ -63,10 +63,19 @@ export class AsignaTareaComponent {
   }
 
   guardarTarea() {
-    console.log(`✅ Guardando tarea con asignaciones:`, this.diasAsignados);
-    this.fechaSeleccionada.emit(JSON.stringify(Array.from(this.diasAsignados.entries()))); // 🔹 Convertir a JSON string
+    // 1️⃣ Convertir y limpiar asignaciones
+    const asignacionesLimpias = Array.from(this.diasAsignados.entries())
+      .map(([fecha, hora]) => [fecha, (hora === '--:--' || !hora) ? null : hora]);
+
+    console.log(`✅ Guardando tarea con asignaciones (limpias):`, asignacionesLimpias);
+
+    // 2️⃣ Emitir como JSON string
+    this.fechaSeleccionada.emit(JSON.stringify(asignacionesLimpias));
+
+    // 3️⃣ Cerrar overlay
     this.cerrarVentana.emit();
   }
+
 
   generarCalendario(): void {
       const año = Number(this.anioSeleccionado); // Conversión explícita
