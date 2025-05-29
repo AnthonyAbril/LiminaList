@@ -57,7 +57,8 @@ class ListaController extends Controller
             'id' => 'required|string',
             'name' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id',
-            'tipo' => 'required|in:diaria,individual' // 🔹 Validación de tipo
+            'tipo' => 'required|in:diaria,individual', // 🔹 Validación de tipo
+            'descripcion' => 'nullable|string|max:1000'
         ]);
 
         // 🔹 Verificar si ya existe la lista ANTES de crearla

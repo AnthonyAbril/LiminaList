@@ -7,5 +7,6 @@ export interface Lista {
     tipo: 'individual' | 'diaria'; // 🔹 Ahora se define el tipo de lista
     created_at?: string | null;
     updated_at?: string | null;
+    descripcion: string;
     tareas: Tarea[];
 }

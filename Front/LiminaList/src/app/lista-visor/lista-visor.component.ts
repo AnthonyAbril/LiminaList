@@ -16,6 +16,8 @@ export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
   filtro: string = '';
 
+  editando = false;
+
   constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {}
 
   leftCollapsed = false;
@@ -78,8 +80,8 @@ export class ListaVisorComponent implements OnInit {
   creandoLista:boolean = false;
 
   listaStandar = {
-    nombre: "nombre principal",
-    descripcion: "abasbasdswdb"
+    nombre: "Nueva lista",
+    descripcion: "Esta es mi nueva lista"
   }
 
   mostrarBorrarModal = false;
@@ -108,7 +110,8 @@ export class ListaVisorComponent implements OnInit {
       name: this.listaStandar.nombre, 
       user_id: userId, 
       tipo: 'individual', // 🔹 Agregar tipo 'individual'
-      tareas: [] 
+      tareas: [] ,
+      descripcion: this.listaStandar.descripcion
     };
 
     this.listasService.crearLista(listaData).subscribe({
@@ -120,6 +123,16 @@ export class ListaVisorComponent implements OnInit {
 
     this.cargarListas();
 
+    this.listaStandar.nombre = 'Nueva lista';
+    this.listaStandar.descripcion = 'Esta es mi nueva lista';
   }
+
+  guardarCambiosLista() {
+    if (this.editando && this.listaSeleccionada) {
+      this.actualizarLista(this.listaSeleccionada);
+    }
+    this.editando = !this.editando;
+  }
+
 
 }

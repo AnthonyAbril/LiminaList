@@ -18,7 +18,7 @@ export class PrincipalComponent implements OnInit {
   meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
   anioSeleccionado: number = new Date().getFullYear();
-mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
+  mesSeleccionado: number = new Date().getMonth(); // Asegurar tipo number
   fechas: (Date | null)[] = [];
 
   listas: any[] = [];
@@ -133,6 +133,7 @@ generarCalendario(): void {
       name: nombreLista, 
       user_id: userId, 
       tipo: 'diaria', // 🔹 Agregar tipo 'diaria'
+      descripcion: 'Lista diaria',
       tareas: [] 
     };
 

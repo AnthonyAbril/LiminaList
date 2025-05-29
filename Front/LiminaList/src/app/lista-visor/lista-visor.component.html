@@ -109,13 +109,27 @@
           <h4>Selecciona una lista</h4>
         </div>
         <div class="right-sidebar-content" *ngIf="this.listaSeleccionada!=null">
-          <h1>{{this.listaSeleccionada.name}}</h1>
-          
+          <div class="nombreTarea">
+            <h1 *ngIf="!editando">{{this.listaSeleccionada.name}}</h1>
+            <input *ngIf="editando" (keydown.enter)="crearListaIndividual()" [(ngModel)]="this.listaSeleccionada.name">
+            <img 
+              (click)="guardarCambiosLista()" 
+              src="assets/icons/pen-solid.svg" 
+              alt="Editar"
+            >
+
+          </div>
           <div class="sidebar-info">
 
             <div class="sidebar-descripcion">
               <p>Descripcion:</p>
-              <textarea name="descripcion" id="descripcion">{{this.listaSeleccionada.id}}</textarea>
+              <textarea 
+                name="descripcion" 
+                id="descripcion" 
+                [(ngModel)]="this.listaSeleccionada.descripcion"
+                [readonly]="!editando">
+              </textarea>
+
             </div>
             <div class="lista-creador">
               <h3 style="margin-bottom:0;">Autor: tu</h3>
@@ -149,7 +163,7 @@
 
             <div class="sidebar-descripcion">
               <p>Descripcion:</p>
-              <textarea name="descripcion" id="descripcion">{{this.listaStandar.descripcion}}</textarea>
+              <textarea name="descripcion" id="descripcion" [(ngModel)]="listaStandar.descripcion"></textarea>
             </div>
             <div class="lista-creador">
               <h3 style="margin-bottom:0;">Autor: tu</h3>

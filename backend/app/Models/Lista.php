@@ -18,7 +18,7 @@ class Lista extends Model
 
 
     
-    protected $fillable = ['id', 'name', 'user_id' , 'tipo'];
+    protected $fillable = ['id', 'name', 'user_id' , 'tipo', 'descripcion'];
 
     public function tareas() {
         //return $this->hasMany(Tarea::class, 'list_id');
