@@ -67,4 +67,20 @@ export class TareasService {
     );
   }
 
+  editarAsignacion(data: {
+    tarea_id: number;
+    asignaciones: { fecha: string; hora: string | null }[];
+  }): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post('http://localhost:8000/api/editar-asignaciones-tarea', data, { headers }).pipe(
+      tap(r => console.log('⏰ Asignación actualizada', r)),
+      catchError(err => {
+        console.error('❌ Error al actualizar asignación:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+  
 }

@@ -58,9 +58,33 @@ export class ListaComponent {
 
   onTimeChange(newTime: string) {
     if (this.selectedIndex >= 0) {
-      this.tareasPuntuales[this.selectedIndex].hora = newTime;
+      const tarea = this.tareasPuntuales[this.selectedIndex];
+      tarea.hora = newTime;
+
+      if (!tarea.fecha) {
+        console.warn('⚠ No se puede actualizar la hora: tarea sin fecha asignada');
+        return;
+      }
+
+      const asignacion = {
+        tarea_id: tarea.id,
+        asignaciones: [
+          {
+            fecha: tarea.fecha,   // ahora garantizado como string
+            hora: newTime
+          }
+        ]
+      };
+
+      this.tareasService.editarAsignacion(asignacion).subscribe({
+        next: () => console.log('⏰ Hora de la asignación actualizada'),
+        error: err => console.error('❌ Error al guardar hora:', err)
+      });
     }
   }
+
+
+
 
   /** Convierte el array de tareas_fechas en una jerarquía única
    *  y recalcula el progreso de cada nodo               */
