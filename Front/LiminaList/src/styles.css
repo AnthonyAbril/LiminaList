@@ -79,3 +79,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .cdk-overlay-container{
   z-index: 0;
 }
+
+:root {
+  --color-primario: #FF9E16;
+  --color-secundario: #FFBA5A;
+  --color-terciario: #ffca81;
+  --color-texto: #ffffff;
+}

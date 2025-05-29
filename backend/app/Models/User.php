@@ -51,5 +51,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'theme_colors' => 'array', // 👈 necesario
     ];
 }

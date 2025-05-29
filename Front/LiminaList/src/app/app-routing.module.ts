@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './services/auth.guard';
+import { AjustesUsuarioComponent } from './ajustes-usuario/ajustes-usuario.component';
 
 
 const routes: Routes = [
@@ -23,6 +24,11 @@ const routes: Routes = [
     path: 'panel/:id',
     loadChildren: () => import('./panel/panel.module').then(m => m.PanelModule),
     canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'ajustes',
+    loadComponent: () => import('./ajustes-usuario/ajustes-usuario.component').then(m => m.AjustesUsuarioComponent),
     canActivate: [AuthGuard]
   },
   { path: 'historico', loadChildren: () => import('./historico/historico.module').then(m => m.HistoricoModule), canActivate: [AuthGuard] },

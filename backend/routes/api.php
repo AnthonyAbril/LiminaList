@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListaController;
 use App\Http\Controllers\TareaController;
+use App\Http\Controllers\UserController;
 
 // 🔹 Rutas públicas
 Route::post('/register', [AuthController::class, 'register']);
@@ -23,6 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
     Route::post('/editar-progreso', [TareaController::class, 'editarProgreso']);
     
+    Route::get('/ajustes', [UserController::class, 'getAjustes']);
+    Route::put('/ajustes', [UserController::class, 'guardarAjustes']);
     
     Route::get('/historial-progreso/{tareaId?}', [TareaController::class, 'historialProgresoGeneral']);
 

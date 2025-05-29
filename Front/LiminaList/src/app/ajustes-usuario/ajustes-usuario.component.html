@@ -1,0 +1,22 @@
+<div class="ajustes-container">
+  <h2>Ajustes de usuario</h2>
+
+  <div class="color-selector">
+    <label>
+      Color Primario:
+      <input type="color" [value]="colores.primario" (input)="cambiarColor('primario', $event)" />
+    </label>
+    <label>
+      Color Secundario:
+      <input type="color" [value]="colores.secundario" (input)="cambiarColor('secundario', $event)" />
+    </label>
+    <label>
+      Color Terciario:
+      <input type="color" [value]="colores.terciario" (input)="cambiarColor('terciario', $event)" />
+    </label>
+    <label>
+      Color Cuartario:
+        <input type="color" [value]="colores.texto" (input)="cambiarColor('texto', $event)" />
+    </label>
+  </div>
+</div>

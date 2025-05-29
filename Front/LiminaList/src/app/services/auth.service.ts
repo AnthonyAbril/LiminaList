@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { ThemeService } from './theme.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class AuthService {
   //private usuarioAutenticado = false; // Estado del login
   private apiUrl = 'http://localhost:8000/api'; // URL del backend
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private theme: ThemeService) {}
 
   register(nombre: string, email: string, password: string) {
     return this.http.post(`${this.apiUrl}/register`, { 
@@ -34,6 +35,18 @@ export class AuthService {
           sessionStorage.setItem('token', response.access_token);
           sessionStorage.setItem('user_id', response.user.id.toString()); // 🔹 Guardar como string
           console.log(response.user.id.toString());
+
+          // ⬇️ Justo después del login, aplicar los colores del usuario
+          const headers = new HttpHeaders().set('Authorization', `Bearer ${response.access_token}`);
+          this.http.get<any>(`${this.apiUrl}/ajustes`, { headers }).subscribe({
+            next: (colores) => {
+              if (colores && Object.keys(colores).length) {
+                this.theme.aplicarColores(colores);
+                localStorage.setItem('colores', JSON.stringify(colores));
+              }
+            },
+            error: (err) => console.warn('No se pudieron cargar colores tras login:', err)
+          });
         }
       })
     );
@@ -49,6 +62,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');     // token en localStorage
+    localStorage.removeItem('colores'); // 🔸 limpiar colores personalizados
     sessionStorage.removeItem('token');   // token en sessionStorage
     sessionStorage.removeItem('user_id'); // también limpiar user_id
     this.router.navigate(['/login']);     // redirigir al login

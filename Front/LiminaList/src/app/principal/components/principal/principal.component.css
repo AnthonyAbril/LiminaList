@@ -1,12 +1,13 @@
 *{
     margin: 0;
+    color: var(--color-texto);
 }
 
 .container {
     display: flex;
     justify-content: space-between;
     height: 100vh;
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
 }
 
 .lista-lateral {
@@ -42,7 +43,7 @@
     transform: translate(-50%);
     font-size: 3rem;
     font-weight: bold;
-    background-color: #FFBA5A;
+    background-color: var(--color-secundario);
     
     border-radius: 0 0 20px 20px;
 
@@ -70,7 +71,7 @@
 }
 
 .main-content > div {
-    background-color: #FFBA5A;
+    background-color: var(--color-secundario);
     width: 90%;
     height: 90%;
 
@@ -95,7 +96,7 @@
 }
 
 .main-resum { 
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     height: 75%;
 
     border-radius:20px;
@@ -128,7 +129,7 @@
 }
 
 .main-resum > ul > li > div {
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     display: inline;
     padding: 5%;
     width: 100%;
@@ -168,7 +169,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #FFBA5A;
+    background-color: var(--color-secundario);
 }
 
 .lista-lateral > h2{
@@ -223,7 +224,7 @@
 
 .calendar-mini {
   justify-content: space-between;
-  background: #f8f9fa;
+  background: var(--color-texto);
 }
 
 .fechas {
@@ -237,7 +238,7 @@
     align-items: center;
     justify-items: center;
     
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     border-radius: 20px
 }
 
@@ -245,8 +246,8 @@
   width: 90%;
   height: 90%;
   border: none;
-  background-color: #FF9E16;
-  color: white;
+  background-color: var(--color-primario);
+  color: var(--color-texto);
   font-size: 2.5em;
   border-radius: 20px;
   cursor: pointer;
@@ -267,18 +268,13 @@ select, option{
 
 
 .fechas button:hover {
-  background-color: white;
-  color: #FF9E16;
-}
-
-.fechas button.selected {
-  background-color: #28a745;
-  color: white;
+  background-color: var(--color-texto);
+  color: var(--color-primario);
 }
 
 .header-resum select{
-    background-color: #ffca81;
-    color: white;
+    background-color: var(--color-terciario);
+    color: var(--color-texto);
 
     border-radius: 20px;
     border: none;
@@ -286,13 +282,13 @@ select, option{
 }
 
 .fechas button.hoy{
-    background-color: white;
-    color: #FF9E16;
+    background-color: var(--color-texto);
+    color: var(--color-primario);
 }
 
 .header-resum option{
-    background-color: #FFBA5A;
-    color: white;
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
     border: none;
 }
 
