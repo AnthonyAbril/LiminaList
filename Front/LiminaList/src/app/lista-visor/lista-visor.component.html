@@ -1,199 +1,168 @@
-<!--
-    
-<div class="listas-container">
-    <h2>📌 Listas disponibles</h2>
-    
-    <input 
-    type="text" 
-    [(ngModel)]="filtro" 
-    placeholder="🔍 Filtrar listas..." 
-    (input)="filtrarListas()" 
-    class="search-bar"
-    />
-    
-    
-    <ul class="listas">
-        <li *ngFor="let lista of listas" class="lista-item">
-            
-            <input [(ngModel)]="lista.name" (change)="actualizarLista(lista)" class="lista-nombre" />
-            
-            
-            <button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>
-        </li>
-    </ul>
-</div>
-
---><!-- En tu template principal -->
 <div class="container-fluid">
+  <!-- BARRA LATERAL IZQUIERDA -->
   <div class="sidebar left-sidebar" [class.left-collapsed]="leftCollapsed">
     <div class="sidebar-header">
-      <h3 *ngIf="!leftCollapsed ">Filtros</h3>
-      <button class="toggle-btn" (click)="toggleLeft()">
-        {{ leftCollapsed  ? '☰' : '×' }}
-      </button>
+      <h3 *ngIf="!leftCollapsed">Filtros</h3>
+      <button class="toggle-btn" (click)="toggleLeft()">{{ leftCollapsed ? '☰' : '×' }}</button>
     </div>
-    
-    <div class="sidebar-content" *ngIf="!leftCollapsed ">
-      
-      <input 
-        type="text" 
-        [(ngModel)]="filtro" 
-        placeholder=" Filtrar listas..." 
-        (input)="filtrarListas()" 
+
+    <div class="sidebar-content" *ngIf="!leftCollapsed">
+      <input
+        type="text"
+        [(ngModel)]="filtro"
+        placeholder=" Filtrar listas..."
+        (input)="filtrarListas()"
         class="search-bar"
       />
-      
+
       <div class="filter-section">
         <h5>Categorías</h5>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox">
+          <input class="form-check-input" type="checkbox" />
           <label class="form-check-label">Categoría 1</label>
         </div>
-        <!-- Repetir para otras categorías -->
       </div>
     </div>
 
-    
-    <img src="assets\icons\dedo.png" [routerLink]="'/home'" alt="Icono de Pluma" class="boton-atras">
+    <img src="assets/icons/dedo.png" [routerLink]="'/home'" alt="Icono de Pluma" class="boton-atras" />
   </div>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <div class="main-content">
-    
     <div class="listas-container">
-      <!-- Tu contenido existente aquí -->
-
       <div class="listas-header">
         <h2>Listas</h2>
-        <button (click)="creandoLista=true">+</button>
-        <button (click)="borrar = !borrar">
-          <ng-container *ngIf="!borrar; else conLupa">-</ng-container>
+        <button (click)="abrirCrearLista()">+</button>
+        <button (click)="activarBorrado()">
+          <ng-container *ngIf="modo !== 'borrar'; else conLupa">-</ng-container>
           <ng-template #conLupa>
-            <img src="assets/icons/lupa.svg" style="height: 70%;" alt="">
+            <img src="assets/icons/lupa.svg" style="height: 70%;" alt="" />
           </ng-template>
         </button>
-
       </div>
-    
-    <ul class="listas">
+
+      <ul class="listas">
         <li *ngFor="let lista of listas" class="lista-item">
-            
-              <div (click)="abrirLista(lista.id)" class="lista-nombre">
-                <h3>{{lista.name}}</h3>
-              </div>
-              
-              <div (click)="(borrar)?abrirBorrarModal(lista):(lista != listaSeleccionada)?listaSeleccionada=lista:abrirModal(lista.id);creandoLista=false;" class="opciones">
-                <ng-container *ngIf="borrar">
-                  <a class="opcion">-</a>
-                </ng-container>
+          <div class="lista-nombre">
+            <h3>{{ lista.name }}</h3>
+          </div>
 
-                <ng-container *ngIf="lista != listaSeleccionada && borrar==false">
-                  <img class="opcion" src="assets/icons/lupa.svg" style="height: 70%;" alt="">
-                </ng-container>
-
-                <ng-container *ngIf="(lista == listaSeleccionada) && borrar==false">
-                  <img class="opcion" src="assets/icons/qr.svg" style="height: 100%;" alt="codigo qr" (click)="abrirModal(lista.id)">
-                </ng-container>
-              </div>
-
-
-            <!--button (click)="actualizarLista(lista)" class="btn-editar">✏️ Guardar</button>-->
+          <div class="opciones" (click)="modo === 'borrar' ? abrirBorrarModal(lista) : abrirVistaLista(lista)">
+            <ng-container *ngIf="modo === 'borrar'">
+              <a class="opcion">-</a>
+            </ng-container>
+            <ng-container *ngIf="modo !== 'borrar' && lista !== listaSeleccionada">
+              <img class="opcion" src="assets/icons/lupa.svg" style="height: 70%;" alt="" />
+            </ng-container>
+            <ng-container *ngIf="modo !== 'borrar' && lista === listaSeleccionada">
+              <img
+                class="opcion"
+                src="assets/icons/qr.svg"
+                style="height: 100%;"
+                alt="codigo qr"
+                (click)="abrirModal(lista.id)"
+              />
+            </ng-container>
+          </div>
         </li>
-    </ul>
+      </ul>
     </div>
 
-     
-     <!-- Barra lateral derecha -->
+    <!-- SIDEBAR DERECHA -->
     <div class="sidebar right-sidebar">
-      <ng-container *ngIf="!creandoLista && listaSeleccionada != null && borrar==false">
-        <div *ngIf="this.listaSeleccionada==null">
-          <h4>Selecciona una lista</h4>
-        </div>
-        <div class="right-sidebar-content" *ngIf="this.listaSeleccionada!=null">
+      <!-- MODO VER -->
+      <ng-container *ngIf="modo === 'ver' && listaSeleccionada">
+        <div class="right-sidebar-content">
           <div class="nombreTarea">
-            <h1 *ngIf="!editando">{{this.listaSeleccionada.name}}</h1>
-            <input *ngIf="editando" (keydown.enter)="crearListaIndividual()" [(ngModel)]="this.listaSeleccionada.name">
-            <img 
-              (click)="guardarCambiosLista()" 
-              src="assets/icons/pen-solid.svg" 
+            <h1>{{ listaSeleccionada.name }}</h1>
+            <img
+              (click)="activarEdicion()"
+              src="assets/icons/pen-solid.svg"
               alt="Editar"
-            >
-
+            />
           </div>
-          <div class="sidebar-info">
 
+          <div class="sidebar-info">
             <div class="sidebar-descripcion">
               <p>Descripcion:</p>
-              <textarea 
-                name="descripcion" 
-                id="descripcion" 
-                [(ngModel)]="this.listaSeleccionada.descripcion"
-                [readonly]="!editando">
-              </textarea>
+              <textarea name="descripcion" [readonly]="true" [(ngModel)]="listaSeleccionada.descripcion"></textarea>
+            </div>
 
-            </div>
-            <div class="lista-creador">
-              <h3 style="margin-bottom:0;">Autor: tu</h3>
-            </div>
+            <div class="lista-creador"><h3 style="margin-bottom: 0;">Autor: tu</h3></div>
             <div class="lista-compartidos">
               <h3>Compartido con:</h3>
-              <ul>
-                <li>Jony</li>
-                <li>Kelly</li>
-              </ul>
+              <ul><li>Jony</li><li>Kelly</li></ul>
             </div>
+
             <div class="lista-acciones">
-              <button (click)="abrirModal(this.listaSeleccionada.id)">Compartir</button>
+              <button (click)="abrirModal(listaSeleccionada.id)">Compartir</button>
               <button>Eliminar</button>
-              
             </div>
+
             <div class="lista-fechas">
-              <h3>Creado el:<br>{{listaSeleccionada.created_at}}</h3>
-              <h3>Ultima actualizacion:<br>{{listaSeleccionada.updated_at}}</h3>
+              <h3>Creado el:<br />{{ listaSeleccionada.created_at }}</h3>
+              <h3>Última actualización:<br />{{ listaSeleccionada.updated_at }}</h3>
             </div>
           </div>
         </div>
       </ng-container>
 
-      
-      <ng-container *ngIf="creandoLista && listaSeleccionada == null">
+      <!-- MODO EDITAR -->
+      <ng-container *ngIf="modo === 'editar' && listaSeleccionada">
         <div class="right-sidebar-content">
-          <input (keydown.enter)="crearListaIndividual()" [(ngModel)]="listaStandar.nombre">
-          
-          <div class="sidebar-info">
+          <input [(ngModel)]="listaSeleccionada.name" />
 
+          <div class="sidebar-info">
             <div class="sidebar-descripcion">
               <p>Descripcion:</p>
-              <textarea name="descripcion" id="descripcion" [(ngModel)]="listaStandar.descripcion"></textarea>
+              <textarea [(ngModel)]="listaSeleccionada.descripcion"></textarea>
             </div>
-            <div class="lista-creador">
-              <h3 style="margin-bottom:0;">Autor: tu</h3>
+
+            <div class="lista-creador"><h3>Autor: tu</h3></div>
+            <div class="lista-compartidos"><h3>Compartido con:</h3><ul><li>Jony</li><li>Kelly</li></ul></div>
+
+            <div class="lista-acciones">
+              <button (click)="guardarCambiosLista()">Guardar</button>
             </div>
-            <div class="lista-compartidos">
-              <h3>Compartido con:</h3>
-              <ul>
-                <li>Jony</li>
-                <li>Kelly</li>
-              </ul>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- MODO CREAR -->
+      <ng-container *ngIf="modo === 'crear'">
+        <div class="right-sidebar-content">
+          <input [(ngModel)]="listaStandar.nombre" (keydown.enter)="crearListaIndividual()" />
+
+          <div class="sidebar-info">
+            <div class="sidebar-descripcion">
+              <p>Descripcion:</p>
+              <textarea [(ngModel)]="listaStandar.descripcion"></textarea>
             </div>
+
+            <div class="lista-creador"><h3>Autor: tu</h3></div>
+            <div class="lista-compartidos"><h3>Compartido con:</h3><ul><li>Jony</li><li>Kelly</li></ul></div>
+
             <div class="lista-acciones">
               <button (click)="crearListaIndividual()">Crear</button>
             </div>
           </div>
         </div>
-
       </ng-container>
 
-      <ng-container *ngIf="!creandoLista && listaSeleccionada == null && borrar==false">
-        <div>Selecciona una lista para verla</div>
-      </ng-container>
-      <ng-container *ngIf="borrar==true">
+      <!-- MODO BORRAR -->
+      <ng-container *ngIf="modo === 'borrar'">
         <div>Selecciona una lista para borrar</div>
       </ng-container>
 
+      <!-- MODO NULO -->
+      <ng-container *ngIf="modo === null">
+        <div>Selecciona una lista</div>
+      </ng-container>
     </div>
   </div>
 </div>
 
+<!-- MODALES -->
 <app-compartir-modal
   *ngIf="mostrarModal"
   [listaId]="listaSeleccionadaId"

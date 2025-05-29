@@ -20,6 +20,8 @@ export class ListaVisorComponent implements OnInit {
 
   constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {}
 
+  modo: 'ver' | 'editar' | 'crear' | 'borrar' | null = null;
+
   leftCollapsed = false;
   rightCollapsed = false;
   listaSeleccionada:Lista|null = null;
@@ -49,15 +51,46 @@ export class ListaVisorComponent implements OnInit {
     this.mostrarModal = false;
   }
 
+  
+
+  abrirLista(listaId: any) {
+    this.router.navigate(['/panel', listaId]);
+  }
+
+  abrirVistaLista(lista: Lista) {
+    this.listaSeleccionada = lista;
+    this.modo = 'ver';
+  }
+
+  activarEdicion() {
+    this.modo = 'editar';
+    this.editando = true;
+  }
+
+  guardarCambiosLista() {
+    if (this.modo === 'editar' && this.listaSeleccionada) {
+      this.actualizarLista(this.listaSeleccionada);
+    }
+    this.editando = false;
+    this.modo = 'ver';
+  }
+
+  abrirCrearLista() {
+    this.listaSeleccionada = null;
+    this.modo = 'crear';
+  }
+
+  activarBorrado() {
+    this.modo = this.modo === 'borrar' ? null : 'borrar';
+    this.listaSeleccionada = null;
+  }
+
+
 
   cargarListas() {
     this.listasService.getListas().subscribe(data => {
       this.listas = data;
     });
-  }
-
-  abrirLista(listaId:any){
-    this.router.navigate(['/panel', listaId]);
   }
 
   filtrarListas() {
@@ -123,15 +156,9 @@ export class ListaVisorComponent implements OnInit {
 
     this.cargarListas();
 
+    this.modo = null;
     this.listaStandar.nombre = 'Nueva lista';
     this.listaStandar.descripcion = 'Esta es mi nueva lista';
-  }
-
-  guardarCambiosLista() {
-    if (this.editando && this.listaSeleccionada) {
-      this.actualizarLista(this.listaSeleccionada);
-    }
-    this.editando = !this.editando;
   }
 
 
