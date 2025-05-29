@@ -11,7 +11,7 @@
 
 body{
     /*background-color: #c9d6ff;  #ffca81', '#FF9E16', '#ffba5a*/
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     background: linear-gradient(to right, #e2e2e2, #c9d6ff);
     display: flex;
     align-items: center;
@@ -23,7 +23,7 @@ body{
 
 
 .container{
-    background-color: #FFBA5A;
+    background-color: var(--color-secundario);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
     position: relative;
     overflow: hidden;
@@ -51,7 +51,7 @@ body{
 }
 
 .container button{
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     color: #fff;
     font-size: 12px;
     padding: 10px 45px;
@@ -70,7 +70,7 @@ body{
 }
 
 .container form{
-    background-color: #FFBA5A;
+    background-color: var(--color-secundario);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -166,10 +166,10 @@ body{
 }
 
 .toggle{
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     height: 100%;
     /*background: linear-gradient(to right, #ffba5a, #FF9E16);*/
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     color: #fff;
     position: relative;
     left: -100%;
@@ -218,7 +218,7 @@ body{
 
 
   .error-container {
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     color: #d32f2f;
     padding: 10px;
     border-radius: 5px;

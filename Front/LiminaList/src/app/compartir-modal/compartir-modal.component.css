@@ -10,8 +10,12 @@
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px); /* Aquí se aplica el desenfoque */
     -webkit-backdrop-filter: blur(10px); /* Soporte para Safari */
-    color: white; font-size: 1.2rem;
+    color: var(--color-texto); font-size: 1.2rem;
     z-index: 9999;
+}
+
+*{
+    color: var(--color-texto);
 }
 
 .modal-container {
@@ -19,7 +23,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffca81;
+  background: var(--color-terciario);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -63,7 +67,7 @@ button {
 
   .botones > button{
     border: none;
-    background-color:#FF9E16;
+    background-color:var(--color-primario);
     padding: 10px;
     width: 40%;
     font-size: larger;

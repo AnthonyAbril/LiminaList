@@ -7,7 +7,8 @@ import { ProgresoDia } from '../progreso-dia.model';
 @Component({
   selector: 'app-historico-drill',
   standalone: false,
-  templateUrl: './historico-drill.component.html'
+  templateUrl: './historico-drill.component.html',
+  styleUrls: ['./historico-drill.component.css']
 })
 export class HistoricoDrillComponent implements OnInit {
   @Input() historico!: ProgresoDia[];
@@ -109,9 +110,10 @@ export class HistoricoDrillComponent implements OnInit {
         title: {
           display: true,
           text: title,
+          color: 'var(--color-text)', // ✅ color del título
           font: {
             size: this.getFontSize(18),
-            weight: 'bold'
+            weight: 'bold',
           }
         },
         legend: {
@@ -119,6 +121,7 @@ export class HistoricoDrillComponent implements OnInit {
           position: 'bottom',
           labels: {
             boxWidth: 12,
+            color: 'var(--color-text)', // ✅ color de las etiquetas de leyenda
             font: {
               size: this.getFontSize(14)
             }
@@ -129,29 +132,34 @@ export class HistoricoDrillComponent implements OnInit {
         x: {
           stacked: true,
           ticks: {
+            color: 'var(--color-text)', // ✅ color de los valores en eje X
             font: {
               size: this.getFontSize(12)
             }
           },
           title: {
             display: true,
-            text: 'Progreso (%)'
+            text: 'Progreso (%)',
+            color: 'var(--color-text)' // ✅ color del título del eje X
           }
         },
         y: {
           stacked: true,
           ticks: {
+            color: 'var(--color-text)', // ✅ color de los valores en eje Y
             font: {
               size: this.getFontSize(12)
             }
           },
           title: {
             display: true,
-            text: 'Fecha'
+            text: 'Fecha',
+            color: 'var(--color-text)' // ✅ color del título del eje Y
           }
         }
       }
     };
+
 
     this.chart?.update();
   }

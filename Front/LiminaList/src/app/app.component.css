@@ -6,5 +6,5 @@
 
 app-panel{
   
-    background: #FF9E16;
+    background: var(--color-primario);
 }

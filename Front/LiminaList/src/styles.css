@@ -2,14 +2,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 * {
-    color: white;
+    color: var(--color-texto);
     font-family: 'Montserrat', sans-serif;
     /*font-family: Arial, Helvetica, sans-serif;*/                
 }
 
 body{
     /*background-color: rgb(69, 69, 69);*/
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     margin: 0;
 }
 
@@ -25,7 +25,7 @@ body{
 ngx-material-timepicker {
   --timepicker-background-color: #ffffff; /* fondo blanco */
   --timepicker-text-color: #000000;       /* texto negro */
-  --timepicker-accent-color: #ffca81 !important;     /* color principal (azul por ejemplo)*/
+  --timepicker-accent-color: var(--color-terciario) !important;     /* color principal (azul por ejemplo)*/
 }
 
 .timepicker__content {

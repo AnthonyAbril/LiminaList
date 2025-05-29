@@ -73,4 +73,5 @@
 
   p{
     transform: translateY(-40px);
+    color: var(--color-texto);
   }

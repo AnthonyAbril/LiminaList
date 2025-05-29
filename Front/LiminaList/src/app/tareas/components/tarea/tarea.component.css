@@ -43,9 +43,9 @@ li {
   transition: background-color 0.2s ease;
 }
 
-.color-0 { background-color: #ffca81; }
-.color-1 { background-color: #FF9E16; }
-.color-2 { background-color: #ffba5a; }
+.color-0 { background-color: var(--color-terciario); }
+.color-1 { background-color: var(--color-primario); }
+.color-2 { background-color: var(--color-secundario); }
 
 .estado-boton {
   width: 36px;
