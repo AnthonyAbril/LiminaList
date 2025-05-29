@@ -330,32 +330,31 @@ class TareaController extends Controller
     // en TareaController.php
     public function historialProgresoGeneral($tareaId = null)
     {
-    $userId = Auth::id();
+        $userId = Auth::id();
 
-    $query = TareaFecha::with('tarea')
-        ->whereIn('tarea_id', function($q) use($userId, $tareaId){
-        $q->select('id')
-            ->from('tasks')
-            ->where('user_id', $userId)
-            // si me pasan tareaId, filtro por sus hijos; si no, por raíces
-            ->when($tareaId, fn($q) => $q->where('padre', $tareaId))
-            ->when(!$tareaId, fn($q) => $q->whereNull('padre'));
-        })
-        ->orderBy('fecha');
+        $query = TareaFecha::with('tarea')
+            ->whereIn('tarea_id', function($q) use($userId, $tareaId){
+                $q->select('id')->from('tasks')
+                ->where('user_id', $userId)
+                ->when($tareaId, fn($q) => $q->where('padre', $tareaId))
+                ->when(!$tareaId, fn($q) => $q->whereNull('padre'));
+            })
+            ->orderBy('fecha');
 
-    $rows = $query->get();
+        $rows = $query->get();
 
-    $grouped = $rows->groupBy('fecha')->map(fn($dayRows, $fecha) => [
-        'fecha'  => $fecha,
-        'tareas' => $dayRows->map(fn($tf) => [
-        'id'       => $tf->tarea->id,
-        'titulo'   => $tf->tarea->title,
-        'progreso' => $tf->progreso,
-        ])->values(),
-    ])->values();
+        $grouped = $rows->groupBy('fecha')->map(fn($dayRows, $fecha) => [
+            'fecha'  => $fecha,
+            'tareas' => $dayRows->map(fn($tf) => [
+                'id'       => $tf->tarea->id,
+                'titulo'   => $tf->tarea->title,
+                'progreso' => $tf->progreso,
+            ])->values(),
+        ])->values();
 
-    return response()->json($grouped);
+        return response()->json($grouped);
     }
+
 
     
 }

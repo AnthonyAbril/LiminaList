@@ -223,23 +223,15 @@ export class ListasService {
   
   /** Histórico raíz (tareas sin padre) */
   getHistorialProgreso(): Observable<ProgresoDia[]> {
-    const token = localStorage.getItem('token')!;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<ProgresoDia[]>('http://localhost:8000/api/historial-progreso', this.authHeaders());
+  }
+  getHistorialSubtareas(rootId: number): Observable<ProgresoDia[]> {
     return this.http.get<ProgresoDia[]>(
-      'http://localhost:8000/api/historial-progreso',
-      { headers }
+      `http://localhost:8000/api/historial-progreso/${rootId}`,
+      this.authHeaders()
     );
   }
 
-  // Y para subtareas de un rootId:
-  getHistorialSubtareas(rootId: number): Observable<ProgresoDia[]> {
-    const token = localStorage.getItem('token')!;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<ProgresoDia[]>(
-      `http://localhost:8000/api/historial-progreso/${rootId}`,
-      { headers }
-    );
-  }
 
   getHistorialProgresoPorTarea(tareaId: number): Observable<ProgresoDia[]> {
     return this.http.get<ProgresoDia[]>(
@@ -247,4 +239,8 @@ export class ListasService {
     );
   }
 
+    /** Nivel raíz */
+  getHistorialRaiz(): Observable<ProgresoDia[]> {
+    return this.http.get<ProgresoDia[]>(`http://localhost:8000/api/historial-progreso/`, this.authHeaders());
+  }
 }
