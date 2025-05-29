@@ -91,16 +91,22 @@ export class AjustesUsuarioComponent implements OnInit {
 
   guardarPatron() {
     const id = 'custom-' + Date.now();
+    const nombre = prompt('Nombre del nuevo patrón');
+
+    if (nombre === null) return; // 👈 si canceló, salimos
+
     const nuevo = {
       id,
-      nombre: prompt('Nombre del nuevo patrón') || `Patrón ${Date.now()}`,
+      nombre,
       fijo: false,
       claro: { ...this.coloresClaro },
       oscuro: { ...this.coloresOscuro }
     };
+
     this.patronesDisponibles.push(nuevo);
     this.guardarColoresEnServidor();
   }
+
 
   cargarPatron() {
     const patron = this.patronesDisponibles.find(p => p.id === this.patronSeleccionado);
