@@ -82,7 +82,7 @@ export class AjustesUsuarioComponent implements OnInit {
     const valor = (event.target as HTMLInputElement).value;
     this.coloresActivos[tipo] = valor;
     this.aplicarColores();
-
+    
     // Guarda con debounce (500ms)
     clearTimeout(this.debounceTimeout);
     this.debounceTimeout = setTimeout(() => {
@@ -117,6 +117,7 @@ export class AjustesUsuarioComponent implements OnInit {
 
   alternarModo() {
     this.aplicarColores();
+    this.guardarColoresEnServidor(); // ✅ Ahora se guarda el nuevo estado en el backend y localStorage
   }
 
   guardarPatron() {

@@ -35,7 +35,7 @@ export class AuthService {
           sessionStorage.setItem('token', response.access_token);
           sessionStorage.setItem('user_id', response.user.id.toString());
           console.log(response.user.id.toString());
-          
+
           // ✅ Pedir ajustes del usuario y aplicar sus colores activos
           const headers = new HttpHeaders().set('Authorization', `Bearer ${response.access_token}`);
           this.http.get<any>(`${this.apiUrl}/ajustes`, { headers }).subscribe({
@@ -45,7 +45,7 @@ export class AuthService {
                 const colores = modoOscuro ? ajustes.coloresOscuro : ajustes.coloresClaro;
 
                 // ✅ Guardar solo los colores activos en localStorage
-                localStorage.setItem('colores-activos', JSON.stringify(colores));
+                localStorage.setItem('ajustes', ajustes);
 
                 // ✅ Aplicar
                 this.theme.aplicarColores(colores);
