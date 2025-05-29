@@ -160,9 +160,11 @@ export class AjustesUsuarioComponent implements OnInit {
       modoOscuro: this.modoOscuro,
       coloresClaro: this.coloresClaro,
       coloresOscuro: this.coloresOscuro,
-      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo)
+      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo),
+      patronActivo: this.patronSeleccionado // ✅ nuevo campo
     };
 
+    console.log(this.patronesDisponibles)
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
     this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe({
       next: () => {
@@ -214,6 +216,7 @@ export class AjustesUsuarioComponent implements OnInit {
             this.modoOscuro = ajustes.modoOscuro ?? false;
             this.coloresClaro = ajustes.coloresClaro ?? this.getDefaultColors();
             this.coloresOscuro = ajustes.coloresOscuro ?? this.getDarkDefaultColors();
+            this.patronSeleccionado = ajustes.patronActivo ?? '';
             const custom = ajustes.patronesGuardados ?? [];
 
             // combina los predefinidos con los guardados

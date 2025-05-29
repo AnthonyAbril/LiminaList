@@ -38,7 +38,7 @@
   <section>
     <h2>Patrones guardados</h2>
     <select [(ngModel)]="patronSeleccionado" (change)="cargarPatron()">
-      <option *ngFor="let p of patronesDisponibles" [value]="p.id" [disabled]="p.fijo">{{ p.nombre }}</option>
+      <option *ngFor="let p of patronesDisponibles" [value]="p.id">{{ p.nombre }}</option>
     </select>
     <button (click)="guardarPatron()">Guardar patrón actual</button>
   </section>

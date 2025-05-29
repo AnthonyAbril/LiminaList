@@ -20,6 +20,7 @@ class UserController extends Controller
             'coloresClaro' => 'required|array',
             'coloresOscuro' => 'required|array',
             'patronesGuardados' => 'nullable|array',
+            'patronActivo' => 'nullable|string'
         ]);
 
         $user = $request->user();
