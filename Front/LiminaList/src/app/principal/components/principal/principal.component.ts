@@ -13,6 +13,7 @@ import { Lista } from '../../../listas/lista';
   styleUrls: ['./principal.component.css']
 })
 export class PrincipalComponent implements OnInit {
+  nombreUsuario: string = '...'; // valor por defecto
 
   dias: string[] = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -48,6 +49,14 @@ export class PrincipalComponent implements OnInit {
         console.log('📌 Datos procesados:', this.tareas);
       },
       error: err => console.error('Error cargando eventos próximos:', err)
+    });
+
+    this.authService.getUserData().subscribe({
+      next: user => this.nombreUsuario = user.name,
+      error: err => {
+        console.error('Error al obtener datos del usuario', err);
+        this.nombreUsuario = 'Usuario';
+      }
     });
 
     this.generarCalendario();

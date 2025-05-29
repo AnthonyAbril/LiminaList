@@ -56,8 +56,10 @@
 
 .nav {
     display: flex;
-    gap: 15px;
     margin-left: auto;
+    align-items: center;
+    width: auto;
+    height: 100%;
 }
 
 .main-content {
@@ -305,3 +307,17 @@ select, option{
   .icono:hover {
     transform: translate(2px,-2px); /* Aumenta ligeramente el tamaño al hacer hover */
   }
+
+  .perfil{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-secundario);
+    padding: 5px 5px 0 15px;
+    border-radius: 25px;
+    margin-right: 10px;
+  }
+
+  .perfil img{
+    margin-left: 10px;
+  } 

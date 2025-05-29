@@ -21,6 +21,10 @@
     <h1 class="titulo">Liminalist</h1>
     <div class="header">
         <div class="nav">
+            <div class="perfil">
+                <h2 *ngIf="nombreUsuario">{{ nombreUsuario }}</h2>
+                <img src="assets/icons/cara.png" [routerLink]="'/ajustes'" alt="ajustes" class="icono">
+            </div>
             <img src="assets/icons/exit.svg" (click)="logout()" alt="Icono de Pluma" class="icono">
             <img src="assets/icons/calendar.svg" (click)="cambiarVista('calendar')" alt="Icono de calendario" class="icono">
             <img src="assets/icons/square-list.svg" (click)="cambiarVista('listas')" alt="Icono de listas" class="icono">
