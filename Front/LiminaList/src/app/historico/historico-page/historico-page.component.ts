@@ -7,7 +7,10 @@ import { ProgresoDia } from '../progreso-dia.model';
   selector: 'app-historico-page',
   standalone:false,
   template: `
-    <h1>Histórico (Drill-down)</h1>
+    <h1 style="font-size: 1.5rem; line-height: 1.2; word-break: break-word;">
+      Histórico (Drill-down)
+    </h1>
+
     <app-historico-drill [historico]="historico"></app-historico-drill>
   `
 })

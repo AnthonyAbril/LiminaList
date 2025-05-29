@@ -3,3 +3,57 @@
 canvas {
   cursor: pointer;    /* El cursor se convierte en mano al pasar por el canvas */
 }
+
+.estilo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: #f4f4f4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-volver {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-volver:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.titulo-toolbar {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  word-break: break-word;
+}
+
+.chart-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
+  max-height: 70vh; /* Ajusta a lo que prefieras */
+  overflow: auto;
+}
+
+canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
+

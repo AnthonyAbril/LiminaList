@@ -1,7 +1,10 @@
-<div class="toolbar">
-    <button (click)="volver()" [disabled]="nivel===0">← Volver</button>
-  <span>{{ barChartOptions.plugins?.title?.text }}</span>
+<div class="toolbar estilo-toolbar">
+  <button (click)="volver()" [disabled]="nivel === 0" class="btn-volver">
+    ← Volver
+  </button>
+  <span class="titulo-toolbar">{{ barChartOptions.plugins?.title?.text }}</span>
 </div>
+
 <canvas
   baseChart
   [data]="barChartData"
@@ -10,3 +13,36 @@
   chartType="bar"
   (chartClick)="onChartClick($event)">
 </canvas>
+
+<div class="legend-sticky" style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10vh;
+  background: rgba(255, 140, 0, 0.95);
+  padding: 0.5rem 1rem;
+  display: flex;
+  overflow-x: auto;     /* 👈 scroll horizontal */
+  overflow-y: hidden;
+  gap: 1rem;
+  z-index: 1000;
+  font-size: 0.9rem;
+  align-items: center;
+  white-space: nowrap;  /* 👈 evita que se vayan a nueva línea */
+  border: none;
+  -webkit-overflow-scrolling: touch; /* 👈 suaviza en iOS */
+">
+  <div *ngFor="let ds of barChartData.datasets" class="legend-item" style="
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;">
+    <span class="color-box" style="  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+  border: none;" [style.background]="ds.backgroundColor"></span>
+    {{ ds.label }}
+  </div>
+</div>
+
