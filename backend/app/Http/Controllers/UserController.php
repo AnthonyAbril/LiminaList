@@ -9,18 +9,108 @@ class UserController extends Controller
     public function getAjustes(Request $request)
     {
         $user = $request->user();
-        return response()->json($user->theme_colors ?? []);
+        $ajustes = $user->theme_colors ?? [];
+
+        // 🔹 Agrega patrones por defecto dinámicamente
+        $ajustes['patronesDefault'] = [
+            [
+                'id' => 'default',
+                'nombre' => 'Estándar',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#FF9E16',
+                    'secundario' => '#FFBA5A',
+                    'terciario' => '#ffca81',
+                    'texto' => '#ffffff'
+                ],
+                'oscuro' => [
+                    'primario' => '#402201',
+                    'secundario' => '#70410b',
+                    'terciario' => '#b26a14',
+                    'texto' => '#f0d9c2'
+                ]
+            ],
+            [
+                'id' => 'minimalista',
+                'nombre' => 'Minimalista',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#ffffff',
+                    'secundario' => '#f0f0f0',
+                    'terciario' => '#dcdcdc',
+                    'texto' => '#000000'
+                ],
+                'oscuro' => [
+                    'primario' => '#1c1c1c',
+                    'secundario' => '#2a2a2a',
+                    'terciario' => '#444444',
+                    'texto' => '#ffffff'
+                ]
+            ],
+            [
+                'id' => 'azul-pastel',
+                'nombre' => 'Azul Pastel',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#b3e5fc',
+                    'secundario' => '#81d4fa',
+                    'terciario' => '#4fc3f7',
+                    'texto' => '#eefaff'
+                ],
+                'oscuro' => [
+                    'primario' => '#1e3345',
+                    'secundario' => '#1d5a77',
+                    'terciario' => '#3e95be',
+                    'texto' => '#aed5e0'
+                ]
+            ],
+            [
+                'id' => 'verde-menta',
+                'nombre' => 'Verde Menta',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#a8f0c6',
+                    'secundario' => '#6de3b4',
+                    'terciario' => '#36c7a7',
+                    'texto' => '#003d32'
+                ],
+                'oscuro' => [
+                    'primario' => '#0e3b30',
+                    'secundario' => '#146c54',
+                    'terciario' => '#1fa187',
+                    'texto' => '#b9f3de'
+                ]
+            ],
+            [
+                'id' => 'rosa-pastel',
+                'nombre' => 'Rosa Pastel',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#f8bbd0',
+                    'secundario' => '#f48fb1',
+                    'terciario' => '#f06292',
+                    'texto' => '#3b0d1a'
+                ],
+                'oscuro' => [
+                    'primario' => '#4a2230',
+                    'secundario' => '#7a2f4b',
+                    'terciario' => '#a03a61',
+                    'texto' => '#ffcfe4'
+                ]
+            ]
+        ];
+
+        return response()->json($ajustes);
     }
+
 
 
     public function guardarAjustes(Request $request)
     {
         $data = $request->validate([
             'modoOscuro' => 'required|boolean',
-            'coloresClaro' => 'required|array',
-            'coloresOscuro' => 'required|array',
-            'patronesGuardados' => 'nullable|array',
-            'patronActivo' => 'nullable|string'
+            'patronActivo' => 'required|string',
+            'patronesGuardados' => 'nullable|array'
         ]);
 
         $user = $request->user();
@@ -29,6 +119,7 @@ class UserController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 
 
     // en UserController

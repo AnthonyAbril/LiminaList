@@ -19,36 +19,10 @@ export class AjustesUsuarioComponent implements OnInit {
 
   modoOscuro = false;
 
-  coloresClaro: Record<string, string> = {
-    primario: '#FF9E16',
-    secundario: '#FFBA5A',
-    terciario: '#ffca81',
-    texto: '#000000'
-  };
+  coloresClaro: Record<string, string> = this.getDefaultColors();
+  coloresOscuro: Record<string, string> = this.getDarkDefaultColors();
 
-  coloresOscuro: Record<string, string> = {
-    primario: '#1e1e1e',
-    secundario: '#2e2e2e',
-    terciario: '#3e3e3e',
-    texto: '#ffffff'
-  };
-
-  patronesDisponibles = [
-    {
-      id: 'default',
-      nombre: 'Estándar',
-      fijo: true,
-      claro: { primario: '#FF9E16', secundario: '#FFBA5A', terciario: '#ffca81', texto: '#000000' },
-      oscuro: { primario: '#1e1e1e', secundario: '#2e2e2e', terciario: '#3e3e3e', texto: '#ffffff' }
-    },
-    {
-      id: 'minimalista',
-      nombre: 'Minimalista',
-      fijo: true,
-      claro: { primario: '#ffffff', secundario: '#f0f0f0', terciario: '#d0d0d0', texto: '#000000' },
-      oscuro: { primario: '#1c1c1c', secundario: '#2a2a2a', terciario: '#444', texto: '#ffffff' }
-    }
-  ];
+  patronesDisponibles: any[] = [];
 
   get coloresActivos(): Record<string, string> {
     return this.modoOscuro ? this.coloresOscuro : this.coloresClaro;
@@ -71,8 +45,7 @@ export class AjustesUsuarioComponent implements OnInit {
         this.nombreUsuario = user.name;
         this.nuevoNombre = user.name;
       },
-      error: err => {
-        console.error('Error al obtener datos del usuario', err);
+      error: () => {
         this.nombreUsuario = 'Usuario';
       }
     });
@@ -82,15 +55,17 @@ export class AjustesUsuarioComponent implements OnInit {
     const valor = (event.target as HTMLInputElement).value;
     this.coloresActivos[tipo] = valor;
     this.aplicarColores();
-    
-    // Guarda con debounce (500ms)
+
     clearTimeout(this.debounceTimeout);
     this.debounceTimeout = setTimeout(() => {
       this.guardarColoresEnServidor();
     }, 500);
   }
 
-
+  alternarModo() {
+    this.aplicarColores();
+    this.guardarColoresEnServidor();
+  }
 
   cambiarNombre() {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
@@ -106,7 +81,6 @@ export class AjustesUsuarioComponent implements OnInit {
 
   eliminarCuenta() {
     if (!confirm('¿Estás seguro? Esta acción no se puede deshacer.')) return;
-
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
     this.http.delete('http://localhost:8000/api/user/delete', { headers })
       .subscribe(() => {
@@ -115,36 +89,18 @@ export class AjustesUsuarioComponent implements OnInit {
       });
   }
 
-  alternarModo() {
-    this.aplicarColores();
-    this.guardarColoresEnServidor(); // ✅ Ahora se guarda el nuevo estado en el backend y localStorage
-  }
-
   guardarPatron() {
     const id = 'custom-' + Date.now();
-    const nuevoPatron = {
+    const nuevo = {
       id,
       nombre: prompt('Nombre del nuevo patrón') || `Patrón ${Date.now()}`,
       fijo: false,
-      claro: {
-        primario: this.coloresClaro['primario'],
-        secundario: this.coloresClaro['secundario'],
-        terciario: this.coloresClaro['terciario'],
-        texto: this.coloresClaro['texto']
-      },
-      oscuro: {
-        primario: this.coloresOscuro['primario'],
-        secundario: this.coloresOscuro['secundario'],
-        terciario: this.coloresOscuro['terciario'],
-        texto: this.coloresOscuro['texto']
-      }
+      claro: { ...this.coloresClaro },
+      oscuro: { ...this.coloresOscuro }
     };
-
-    this.patronesDisponibles.push(nuevoPatron);
-    localStorage.setItem('patronesUsuario', JSON.stringify(this.patronesDisponibles));
+    this.patronesDisponibles.push(nuevo);
+    this.guardarColoresEnServidor();
   }
-
-
 
   cargarPatron() {
     const patron = this.patronesDisponibles.find(p => p.id === this.patronSeleccionado);
@@ -152,105 +108,53 @@ export class AjustesUsuarioComponent implements OnInit {
       this.coloresClaro = patron.claro;
       this.coloresOscuro = patron.oscuro;
       this.aplicarColores();
+      this.guardarColoresEnServidor();
     }
   }
 
   guardarColoresEnServidor(): void {
     const payload = {
       modoOscuro: this.modoOscuro,
-      coloresClaro: this.coloresClaro,
-      coloresOscuro: this.coloresOscuro,
-      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo),
-      patronActivo: this.patronSeleccionado // ✅ nuevo campo
+      patronActivo: this.patronSeleccionado,
+      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo)
     };
 
-    console.log(this.patronesDisponibles)
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
-    this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe({
-      next: () => {
-        console.log('🎨 Ajustes guardados en backend');
-        localStorage.setItem('colores', JSON.stringify(this.coloresActivos)); // ✅ también local
-      },
-      error: err => console.error('❌ Error al guardar ajustes:', err)
+    this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe(() => {
+      localStorage.setItem('colores', JSON.stringify(this.coloresActivos));
     });
   }
 
-
-
-
-  getPatronesPredefinidos() {
-    return [
-      {
-        id: 'default',
-        nombre: 'Estándar',
-        fijo: true,
-        claro: this.getDefaultColors(),
-        oscuro: this.getDarkDefaultColors()
-      },
-      {
-        id: 'minimalista',
-        nombre: 'Minimalista',
-        fijo: true,
-        claro: { primario: '#ffffff', secundario: '#f0f0f0', terciario: '#d0d0d0', texto: '#000000' },
-        oscuro: { primario: '#1c1c1c', secundario: '#2a2a2a', terciario: '#444', texto: '#ffffff' }
-      }
-    ];
-  }
-
-  getDarkDefaultColors(): Record<string, string> {
-    return {
-      primario: '#1e1e1e',
-      secundario: '#2e2e2e',
-      terciario: '#3e3e3e',
-      texto: '#ffffff'
-    };
-  }
-
-
   obtenerColoresDelServidor(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
-    this.http.get<any>('http://localhost:8000/api/ajustes', { headers })
-      .subscribe({
-        next: ajustes => {
-          if (ajustes && Object.keys(ajustes).length) {
-            this.modoOscuro = ajustes.modoOscuro ?? false;
-            this.coloresClaro = ajustes.coloresClaro ?? this.getDefaultColors();
-            this.coloresOscuro = ajustes.coloresOscuro ?? this.getDarkDefaultColors();
-            this.patronSeleccionado = ajustes.patronActivo ?? '';
-            const custom = ajustes.patronesGuardados ?? [];
+    this.http.get<any>('http://localhost:8000/api/ajustes', { headers }).subscribe({
+      next: ajustes => {
+        this.modoOscuro = ajustes.modoOscuro ?? false;
+        this.patronSeleccionado = ajustes.patronActivo ?? 'default';
 
-            // combina los predefinidos con los guardados
-            this.patronesDisponibles = [
-              ...this.getPatronesPredefinidos(),
-              ...custom
-            ];
+        const predefinidos = ajustes.patronesDefault ?? [];
+        const personalizados = ajustes.patronesGuardados ?? [];
 
-            localStorage.setItem('ajustes', JSON.stringify(ajustes)); // ✅
+        this.patronesDisponibles = [...predefinidos, ...personalizados];
 
-          } else {
-            this.coloresClaro = this.getDefaultColors();
-            this.coloresOscuro = this.getDarkDefaultColors();
-            localStorage.setItem('ajustes', JSON.stringify(ajustes)); // ✅
-          }
-
-          this.aplicarColores();
-        },
-        error: err => {
-          console.error('❌ Error al cargar ajustes:', err);
-          this.coloresClaro = this.getDefaultColors();
-          this.coloresOscuro = this.getDarkDefaultColors();
-          this.aplicarColores();
-        }
-      });
+        this.cargarPatron();
+        localStorage.setItem('ajustes', JSON.stringify(ajustes));
+        this.aplicarColores();
+      },
+      error: () => {
+        this.coloresClaro = this.getDefaultColors();
+        this.coloresOscuro = this.getDarkDefaultColors();
+        this.aplicarColores();
+      }
+    });
   }
-
 
   aplicarColores() {
     const activos = this.coloresActivos;
     Object.entries(activos).forEach(([key, valor]) => {
       document.documentElement.style.setProperty(`--color-${key}`, valor);
     });
-    localStorage.setItem('colores', JSON.stringify(activos)); // ✅ solo guardamos los usados
+    localStorage.setItem('colores', JSON.stringify(activos));
   }
 
   getDefaultColors(): Record<string, string> {
@@ -258,7 +162,16 @@ export class AjustesUsuarioComponent implements OnInit {
       primario: '#FF9E16',
       secundario: '#FFBA5A',
       terciario: '#ffca81',
-      texto: '#ffffff'
+      texto: '#000000'
+    };
+  }
+
+  getDarkDefaultColors(): Record<string, string> {
+    return {
+      primario: '#402201',
+      secundario: '#70410b',
+      terciario: '#b26a14',
+      texto: '#f0d9c2'
     };
   }
 }
