@@ -20,7 +20,7 @@ canvas {
 }
 
 .btn-volver {
-  background-color: #4a90e2;
+  background-color: var(--color-primario);
   color: var(--color-texto);
   border: none;
   padding: 0.4rem 0.8rem;
@@ -92,5 +92,5 @@ canvas {
   height: 16px;
   border-radius: 4px;
   display: inline-block;
-  border: none;
+  border: 2px solid var(--color-texto);
 }
