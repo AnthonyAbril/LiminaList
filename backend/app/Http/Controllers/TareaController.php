@@ -312,6 +312,7 @@ class TareaController extends Controller
 
 
 
+    
 
 
 
@@ -326,30 +327,35 @@ class TareaController extends Controller
         return response()->json($historial);
     }
 
-    public function historialProgresoGeneral(Request $request)
+    // en TareaController.php
+    public function historialProgresoGeneral($tareaId = null)
     {
-        $userId = $request->user()->id;
+    $userId = Auth::id();
 
-        $rows = TareaFecha::with('tarea')
-            ->whereIn('tarea_id', function($q) use($userId){
-                $q->select('id')
-                ->from('tasks')
-                ->whereNull('padre')
-                ->where('user_id', $userId);
-            })
-            ->orderBy('fecha')
-            ->get();
+    $query = TareaFecha::with('tarea')
+        ->whereIn('tarea_id', function($q) use($userId, $tareaId){
+        $q->select('id')
+            ->from('tasks')
+            ->where('user_id', $userId)
+            // si me pasan tareaId, filtro por sus hijos; si no, por raíces
+            ->when($tareaId, fn($q) => $q->where('padre', $tareaId))
+            ->when(!$tareaId, fn($q) => $q->whereNull('padre'));
+        })
+        ->orderBy('fecha');
 
-        $hist = $rows->groupBy('fecha')
-            ->map(fn($colecc, $fecha) => [
-                'fecha'  => $fecha,
-                'tareas' => $colecc->map(fn($tf) => [
-                    'titulo'   => $tf->tarea->title,
-                    'progreso' => $tf->progreso,
-                ])->values(),
-            ])->values();
+    $rows = $query->get();
 
-        return response()->json($hist);
+    $grouped = $rows->groupBy('fecha')->map(fn($dayRows, $fecha) => [
+        'fecha'  => $fecha,
+        'tareas' => $dayRows->map(fn($tf) => [
+        'id'       => $tf->tarea->id,
+        'titulo'   => $tf->tarea->title,
+        'progreso' => $tf->progreso,
+        ])->values(),
+    ])->values();
+
+    return response()->json($grouped);
     }
 
+    
 }

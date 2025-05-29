@@ -1,11 +1,11 @@
-// src/app/historico/historico.module.ts
-import { NgModule }    from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes }   from '@angular/router';
-import { NgChartsModule }         from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
+import { RouterModule, Routes } from '@angular/router';
 
 import { HistoricoPageComponent }  from './historico-page/historico-page.component';
 import { HistoricoVisorComponent } from './historico-visor/historico-visor.component';
+import { HistoricoDrillComponent } from './historico-drill/historico-drill.component';
 
 const routes: Routes = [
   { path: '', component: HistoricoPageComponent }
@@ -14,7 +14,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     HistoricoPageComponent,
-    HistoricoVisorComponent
+    HistoricoVisorComponent,
+    HistoricoDrillComponent
   ],
   imports: [
     CommonModule,

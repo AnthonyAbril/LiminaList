@@ -1,0 +1,12 @@
+<div class="toolbar">
+    <button (click)="volver()" [disabled]="nivel===0">← Volver</button>
+  <span>{{ barChartOptions.plugins?.title?.text }}</span>
+</div>
+<canvas
+  baseChart
+  [data]="barChartData"
+  [labels]="barChartLabels"
+  [options]="barChartOptions"
+  chartType="bar"
+  (chartClick)="onChartClick($event)">
+</canvas>

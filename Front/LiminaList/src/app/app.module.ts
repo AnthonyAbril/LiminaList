@@ -16,6 +16,7 @@ import { ListaVisorComponent } from './lista-visor/lista-visor.component';
 import { BorrarListaComponent } from './borrar-lista/borrar-lista.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgChartsModule }      from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule, // ✅ Agregar aquí para habilitar [(ngModel)]
     ReactiveFormsModule,  // ✅ Esto permitirá el uso de formularios reactivos en la aplicación.
     AppRoutingModule,
+    NgChartsModule,
     NgxMaterialTimepickerModule,
   ],
   providers: [],

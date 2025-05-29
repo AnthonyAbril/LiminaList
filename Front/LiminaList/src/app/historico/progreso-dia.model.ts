@@ -1,4 +1,10 @@
+export interface ProgresoItem {
+  id: number;
+  titulo: string;
+  progreso: number;
+}
+
 export interface ProgresoDia {
   fecha: string;
-  tareas: { titulo: string; progreso: number }[];
+  tareas: ProgresoItem[];
 }

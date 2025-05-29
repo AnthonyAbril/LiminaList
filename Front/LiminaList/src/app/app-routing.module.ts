@@ -25,12 +25,7 @@ const routes: Routes = [
     canLoad: [AuthGuard],
     canActivate: [AuthGuard]
   },
-  {
-    path: 'historico',
-    loadChildren: () =>
-      import('./historico/historico.module')
-        .then(m => m.HistoricoModule)
-  },
+  { path: 'historico', loadChildren: () => import('./historico/historico.module').then(m => m.HistoricoModule), canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }
 ];
 

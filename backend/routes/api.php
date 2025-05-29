@@ -23,7 +23,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
     Route::post('/editar-progreso', [TareaController::class, 'editarProgreso']);
     
-    Route::get('/historial-progreso', [TareaController::class, 'historialProgresoGeneral']);
+    
+    Route::get('/historial-progreso/{tareaId?}', [TareaController::class, 'historialProgresoGeneral']);
+
     Route::get('/eventos-proximos', [TareaController::class, 'eventosProximos']);
     Route::get('/eventos-por-fecha', [TareaController::class, 'eventosPorFecha']);
     Route::post('/asignar-tarea-fechas', [TareaController::class, 'asignarTareaFechas']);

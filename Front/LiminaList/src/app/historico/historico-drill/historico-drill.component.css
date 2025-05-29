@@ -1,0 +1,5 @@
+.toolbar { display:flex; align-items:center; margin-bottom:1rem; }
+.toolbar .title { margin-left:1rem; font-weight:bold; }
+canvas {
+  cursor: pointer;    /* El cursor se convierte en mano al pasar por el canvas */
+}
