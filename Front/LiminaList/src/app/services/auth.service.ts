@@ -33,19 +33,26 @@ export class AuthService {
       tap(response => {
         if (response.access_token && response.user.id) {
           sessionStorage.setItem('token', response.access_token);
-          sessionStorage.setItem('user_id', response.user.id.toString()); // 🔹 Guardar como string
+          sessionStorage.setItem('user_id', response.user.id.toString());
           console.log(response.user.id.toString());
-
-          // ⬇️ Justo después del login, aplicar los colores del usuario
+          
+          // ✅ Pedir ajustes del usuario y aplicar sus colores activos
           const headers = new HttpHeaders().set('Authorization', `Bearer ${response.access_token}`);
           this.http.get<any>(`${this.apiUrl}/ajustes`, { headers }).subscribe({
-            next: (colores) => {
-              if (colores && Object.keys(colores).length) {
+            next: (ajustes) => {
+              if (ajustes) {
+                const modoOscuro = ajustes.modoOscuro ?? false;
+                const colores = modoOscuro ? ajustes.coloresOscuro : ajustes.coloresClaro;
+
+                // ✅ Guardar solo los colores activos en localStorage
+                localStorage.setItem('colores-activos', JSON.stringify(colores));
+
+                // ✅ Aplicar
                 this.theme.aplicarColores(colores);
-                localStorage.setItem('colores', JSON.stringify(colores));
+
               }
             },
-            error: (err) => console.warn('No se pudieron cargar colores tras login:', err)
+            error: (err) => console.warn('⚠️ No se pudieron cargar los colores tras login:', err)
           });
         }
       })
@@ -62,10 +69,17 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');     // token en localStorage
-    localStorage.removeItem('colores'); // 🔸 limpiar colores personalizados
+    localStorage.removeItem('colores-activos'); // ✅
+    localStorage.removeItem('ajustes');
     sessionStorage.removeItem('token');   // token en sessionStorage
     sessionStorage.removeItem('user_id'); // también limpiar user_id
-    this.router.navigate(['/login']);     // redirigir al login
+    
+    // ✅ limpiar estilos aplicados del usuario anterior
+    ['primario', 'secundario', 'terciario', 'texto'].forEach(key => {
+      document.documentElement.style.removeProperty(`--color-${key}`);
+    });
+    
+    this.router.navigate(['/login']);     // redirigir al login\
   }
 
 

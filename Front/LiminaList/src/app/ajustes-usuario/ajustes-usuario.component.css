@@ -17,3 +17,7 @@
 label {
   font-weight: bold;
 }
+
+input, select, option{
+    color: black;
+}

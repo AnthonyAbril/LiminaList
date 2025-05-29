@@ -45,6 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return response()->json($request->user()); // Información del usuario autenticado
     });
+    Route::put('/user/update', [UserController::class, 'update']);
+    Route::post('/user/password', [UserController::class, 'updatePassword']);
+    Route::delete('/user/delete', [UserController::class, 'destroy']);
 
     Route::put('/lists/{id}', [ListaController::class, 'update']); // 🔹 Ruta para actualizar listas
 });

@@ -1,22 +1,52 @@
 <div class="ajustes-container">
-  <h2>Ajustes de usuario</h2>
 
-  <div class="color-selector">
+  <h1>Ajustes de usuario</h1>
+
+  <!-- 👤 Datos del usuario -->
+  <section>
+    <h2>Nombre: {{ nombreUsuario }}</h2>
+    <input [(ngModel)]="nuevoNombre" placeholder="Nuevo nombre" />
+    <button (click)="cambiarNombre()">Cambiar nombre</button>
+  </section>
+
+  <!-- 🔐 Cambiar contraseña -->
+  <section>
+    <h2>Cambiar contraseña</h2>
+    <input [(ngModel)]="nuevaPass" type="password" placeholder="Nueva contraseña" />
+    <button (click)="cambiarPassword()">Guardar</button>
+  </section>
+
+  <!-- ☯️ Modo claro/oscuro -->
+  <section>
+    <h2>Modo de color</h2>
     <label>
-      Color Primario:
-      <input type="color" [value]="colores.primario" (input)="cambiarColor('primario', $event)" />
+      <input type="checkbox" [(ngModel)]="modoOscuro" (change)="alternarModo()" />
+      Modo oscuro
     </label>
-    <label>
-      Color Secundario:
-      <input type="color" [value]="colores.secundario" (input)="cambiarColor('secundario', $event)" />
+  </section>
+
+  <!-- 🎨 Selector de colores -->
+  <section>
+    <h2>Apariencia - {{ modoOscuro ? 'Oscuro' : 'Claro' }}</h2>
+    <label *ngFor="let key of ['primario', 'secundario', 'terciario', 'texto']">
+      Color {{ key }}:
+      <input type="color" [value]="coloresActivos[key]" (input)="cambiarColor(key, $event)" />
     </label>
-    <label>
-      Color Terciario:
-      <input type="color" [value]="colores.terciario" (input)="cambiarColor('terciario', $event)" />
-    </label>
-    <label>
-      Color Cuartario:
-        <input type="color" [value]="colores.texto" (input)="cambiarColor('texto', $event)" />
-    </label>
-  </div>
+  </section>
+
+  <!-- 📁 Selección de patrón -->
+  <section>
+    <h2>Patrones guardados</h2>
+    <select [(ngModel)]="patronSeleccionado" (change)="cargarPatron()">
+      <option *ngFor="let p of patronesDisponibles" [value]="p.id" [disabled]="p.fijo">{{ p.nombre }}</option>
+    </select>
+    <button (click)="guardarPatron()">Guardar patrón actual</button>
+  </section>
+
+  <!-- ⚠️ Eliminar cuenta -->
+  <section>
+    <h2>Eliminar cuenta</h2>
+    <button (click)="eliminarCuenta()" style="color: red;">Eliminar permanentemente</button>
+  </section>
+
 </div>
