@@ -1,5 +1,5 @@
 #tareas {
-    background: #ffba5a;
+    background: var(--color-secundario);
     border-top-left-radius: 52px;
     border-top-right-radius: 52px;
 }
@@ -18,7 +18,7 @@ ul{
 }
 
 .lista li {
-    background: #ffca81;
+    background: var(--color-terciario);
 }
 
 *{
@@ -33,7 +33,7 @@ ul{
 }
 
 .boton-agregar > button{
-    background: #ffca81;
+    background: var(--color-terciario);
     padding: 0 5vw;
     border: none;
     border-radius: 52px;
@@ -43,7 +43,7 @@ ul{
 }
 
 .custom-class .timepicker-button:hover {
-  background-color: #ff9800 !important;
+  background-color: var(--color-primario) !important;
 }
 
 img{
@@ -51,7 +51,7 @@ img{
 }
 
 .boton-agregar > button:hover{
-    background: #FF9E16;
+    background: var(--color-primario);
 }
 
 .tarea{
@@ -81,7 +81,7 @@ img{
 
 .tarea > input:hover{
 
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     border-radius: 20px;
     padding: 10px;
 }
@@ -92,7 +92,7 @@ img{
 }
 
 .subtareas li {
-    background: #FF9E16;
+    background: var(--color-primario);
 }
 
 ul>li {
