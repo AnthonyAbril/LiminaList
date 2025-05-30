@@ -38,22 +38,14 @@ export class RelojComponent implements OnInit, OnDestroy {
     this.subscripcionSync = this.relojSync.tareasActualizadas$.subscribe(() => {
       this.cargarTareasDelDia();
     });
+
+    this.recuperarEstadoPomodoro(); // ⬅️ Esto es esencial
   }
+
 
   ngOnDestroy(): void {
     clearInterval(this.intervalo);
     this.subscripcionSync?.unsubscribe();
-  }
-
-
-  iniciarPomodoro(): void {
-    this.pomodoroActivo = true;
-    this.estaDescansando = false;
-    this.tiempoRestante = this.pomodoroDuracion;
-  }
-
-  detenerPomodoro(): void {
-    this.pomodoroActivo = false;
   }
 
   actualizarHora(): void {
@@ -136,5 +128,57 @@ export class RelojComponent implements OnInit, OnDestroy {
     const h = Math.floor(minutos / 60);
     const m = minutos % 60;
     return `${h}:${m.toString().padStart(2, '0')}`;
+  }
+
+  // ───────────────────────────── Pomodoro ─────────────────────────────
+
+  iniciarPomodoro(desdeRecuperacion = false): void {
+    if (!desdeRecuperacion) {
+      this.estaDescansando = false;
+      this.tiempoRestante = this.pomodoroDuracion;
+    }
+
+    this.pomodoroActivo = true;
+
+    this.temporizadorPomodoro = setInterval(() => {
+      this.tiempoRestante--;
+
+      localStorage.setItem('pomodoro', JSON.stringify({
+        tiempoRestante: this.tiempoRestante,
+        estaDescansando: this.estaDescansando,
+        pomodoroActivo: this.pomodoroActivo,
+        timestampInicio: Date.now()
+      }));
+
+      if (this.tiempoRestante <= 0) {
+        this.estaDescansando = !this.estaDescansando;
+        this.tiempoRestante = this.estaDescansando ? this.descansoDuracion : this.pomodoroDuracion;
+        console.log(this.estaDescansando ? '🍵 Descanso' : '💼 Trabajo');
+      }
+    }, 1000);
+  }
+
+  detenerPomodoro(): void {
+    clearInterval(this.temporizadorPomodoro);
+    this.pomodoroActivo = false;
+    localStorage.removeItem('pomodoro');
+  }
+
+  recuperarEstadoPomodoro(): void {
+    const saved = localStorage.getItem('pomodoro');
+    if (!saved) return;
+
+    const { tiempoRestante, estaDescansando, pomodoroActivo, timestampInicio } = JSON.parse(saved);
+    const elapsed = Math.floor((Date.now() - timestampInicio) / 1000);
+    const nuevoTiempo = tiempoRestante - elapsed;
+
+    if (pomodoroActivo && nuevoTiempo > 0) {
+      this.estaDescansando = estaDescansando;
+      this.pomodoroActivo = pomodoroActivo;
+      this.tiempoRestante = nuevoTiempo;
+      this.iniciarPomodoro(true);
+    } else {
+      this.detenerPomodoro();
+    }
   }
 }
