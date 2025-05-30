@@ -43,7 +43,7 @@
 
       <ul class="listas">
         <li *ngFor="let lista of listas" class="lista-item">
-          <div class="lista-nombre">
+          <div class="lista-nombre" (click)="abrirLista(lista.id)">
             <h3>{{ lista.name }}</h3>
           </div>
 
@@ -96,7 +96,7 @@
 
             <div class="lista-acciones">
               <button (click)="abrirModal(listaSeleccionada.id)">Compartir</button>
-              <button>Eliminar</button>
+              <button (click)="abrirBorrarModal(listaSeleccionada)">Eliminar</button>
             </div>
 
             <div class="lista-fechas">
