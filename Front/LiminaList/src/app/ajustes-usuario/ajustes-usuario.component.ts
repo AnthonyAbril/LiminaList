@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -33,9 +34,13 @@ export class AjustesUsuarioComponent implements OnInit {
     else this.coloresClaro = valor;
   }
 
+  irAInicio() {
+    this.router.navigate(['/home']);
+  }
+
   private debounceTimeout: any = null;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService, private router:Router) {}
 
   ngOnInit(): void {
     this.obtenerColoresDelServidor();
