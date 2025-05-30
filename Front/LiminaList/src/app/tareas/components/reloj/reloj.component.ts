@@ -21,6 +21,7 @@ export class RelojComponent implements OnInit, OnDestroy {
   tiempoRestante = this.pomodoroDuracion;
   estaDescansando = false;
   temporizadorPomodoro: any;
+  pomodoroActivo = false;
 
   modo: 'productivo' | 'hora' | 'pomodoro' = 'productivo';
 
@@ -45,20 +46,26 @@ export class RelojComponent implements OnInit, OnDestroy {
   }
 
 
+  iniciarPomodoro(): void {
+    this.pomodoroActivo = true;
+    this.estaDescansando = false;
+    this.tiempoRestante = this.pomodoroDuracion;
+  }
+
+  detenerPomodoro(): void {
+    this.pomodoroActivo = false;
+  }
+
   actualizarHora(): void {
     this.horaActual = new Date();
 
-    if (this.modo === 'pomodoro') {
+    if (this.modo === 'pomodoro' && this.pomodoroActivo) {
       this.tiempoRestante--;
 
       if (this.tiempoRestante <= 0) {
         this.estaDescansando = !this.estaDescansando;
-        this.tiempoRestante = this.estaDescansando
-          ? this.descansoDuracion
-          : this.pomodoroDuracion;
-
-        // Opcional: reproducir sonido o notificación
-        console.log(this.estaDescansando ? '🍵 Descanso iniciado' : '💼 Trabajo iniciado');
+        this.tiempoRestante = this.estaDescansando ? this.descansoDuracion : this.pomodoroDuracion;
+        console.log(this.estaDescansando ? '🍵 Descanso' : '💼 Trabajo');
       }
     }
   }

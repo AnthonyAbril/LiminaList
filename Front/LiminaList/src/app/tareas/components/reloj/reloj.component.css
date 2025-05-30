@@ -29,3 +29,13 @@
 .modo-contenido {
   margin-top: 10px;
 }
+
+.modo-contenido button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #94a3b8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
