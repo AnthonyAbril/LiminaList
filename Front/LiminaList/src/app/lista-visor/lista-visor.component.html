@@ -71,7 +71,7 @@
     <!-- SIDEBAR DERECHA -->
      <div 
         class="mobile-sidebar-overlay" 
-        *ngIf="modo !== null"
+        *ngIf="modo !== null && modo !== 'borrar'"
         (click)="cerrarSidebarSiEsMovil($event)"
       >
     <div class="sidebar right-sidebar">

@@ -400,6 +400,34 @@ textarea {
     width: 90vw !important;
     max-width: 100% !important;
   }
+
+  
+  .lista-acciones{
+    display: flex;
+    justify-content: space-around;
+    
+  }
+
+  .boton-atras{
+    height: 50px;
+
+    align-self: flex-start; /* o stretch si quieres que ocupe todo el ancho */
+    margin-top: auto;
+    padding: 10px;
+    cursor:pointer;
+  }
+
+  .lista-acciones > button{
+    border: none;
+    background-color:var(--color-primario);
+    padding: 10px;
+    width: fit-content;
+    font-size: larger;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease; /* Transición suave */
+  }
 }
 
 /* Animaciones */

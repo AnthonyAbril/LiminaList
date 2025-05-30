@@ -20,7 +20,7 @@ export class ListaVisorComponent implements OnInit {
 
   constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {}
 
-  modo: 'ver' | 'editar' | 'crear' | 'borrar' | null = null;
+  modo: string | null = null;
 
   leftCollapsed = false;
   rightCollapsed = false;
