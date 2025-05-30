@@ -33,11 +33,11 @@ export class ListaComponent {
 
   myTheme = {
     container: { 
-      bodyBackgroundColor: "#ffca81",
-      buttonColor: "#fff",
+      bodyBackgroundColor: "var(--color-terciario)",
+      buttonColor: "var(--color-texto)",
     },
-    dial: { dialBackgroundColor: "#FF9E16" },
-    clockFace: { clockFaceInnerTimeInactiveColor:"white",clockFaceBackgroundColor: "#ffca81", clockHandColor: "#FF9E16", clockFaceTimeInactiveColor: "white" }
+    dial: { dialBackgroundColor: "var(--color-primario)" },
+    clockFace: { clockFaceInnerTimeInactiveColor:"var(--color-texto)",clockFaceBackgroundColor: "var(--color-terciario)", clockHandColor: "var(--color-primario)", clockFaceTimeInactiveColor: "var(--color-texto)" }
   };
 
   @Input() estados: { nombre: string; color: string }[] = [

@@ -7,13 +7,13 @@
     align-items: center; 
     justify-content: center;
 
-    background: #FFBA5A;
-    color: white; font-size: 1.5rem;
+    background: var(--color-secundario);
+    color: var(--color-texto); font-size: 1.5rem;
     z-index: 9999;
   }
 
 .container > div{
-    background-color: #FF9E16;
+    background-color: var(--color-primario);
     border-radius: 8vh;
     
 
@@ -46,7 +46,8 @@
 .formulario button{
   height: 100%;
   width: 40%;
-  background-color: #ffca81;
+  background-color: var(--color-terciario);
+  color: var(--color-texto);
   border: none;
   border-radius: 25px;
   font-size: 0.8em;
@@ -54,15 +55,15 @@
 }
 
 .formulario button:hover{
-  background-color: white;
-  color: #FF9E16;
+  background-color: var(--color-texto);
+  color: var(--color-primario);
 }
 
 .formulario input{
-  color: white;
+  color: var(--color-texto);
   border-radius: 25px;
   border: none;
-  background-color: #FFBA5A;
+  background-color: var(--color-secundario);
   text-align: center;
   width: 100%;
   font-size: 1.5em;
@@ -109,7 +110,7 @@
     align-items: center;
     justify-items: center;
     
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     border-radius: 20px
 }
 
@@ -131,7 +132,7 @@ select, option{
   height: 90%;
   min-height: 50px; /* Ajusta el tamaño mínimo para evitar cambios */
   border: none;
-  background-color: #FF9E16;
+  background-color: var(--color-primario);
   color: white;
   font-size: 1em;
   border-radius: 20px;
@@ -146,17 +147,17 @@ select, option{
 }
 
 .fechas button.asignado {
-  background-color: white;
-  color: #FF9E16;
+  background-color: var(--color-texto);
+  color: var(--color-primario);
 }
 
 .fechas button:hover{
-  border: 2px solid white;
+  border: 2px solid var(--color-texto);
 }
 
 .header-resum select{
-    background-color: #ffca81;
-    color: white;
+    background-color: var(--color-terciario);
+    color: var(--color-texto);
 
     border-radius: 20px;
     border: none;
@@ -164,13 +165,13 @@ select, option{
 }
 
 .fechas button.hoy{
-    background-color: #FFBA5A;
-    color: white;
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
 }
 
 .header-resum option{
-    background-color: #FFBA5A;
-    color: white;
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
     border: none;
 }
 
@@ -181,11 +182,11 @@ select, option{
 }
 
 .seleccionado {
-  border: 2px solid white !important; /* 🔹 Borde azul */
+  border: 2px solid var(--color-texto) !important; /* 🔹 Borde azul */
 }
 
 .hora-establecida {
-  color: white; /* Color por defecto */
+  color: var(--color-texto); /* Color por defecto */
   font-size: 0.5em;
   min-height: 15px; /* 🔹 Fija un tamaño mínimo */
   visibility: hidden; /* 🔹 Oculta sin eliminar el espacio */
@@ -193,24 +194,24 @@ select, option{
 
 .fechas button:hover > .hora-establecida,
 .fechas button.asignado > .hora-establecida {
-  color: #FF9E16; /* 🔹 Color más oscuro cuando el fondo es blanco */
+  color: var(--color-primario); /* 🔹 Color más oscuro cuando el fondo es blanco */
   text-shadow: none;
 }
 
 .fechas button.hoy > .hora-establecida{
-  color: white;
+  color: var(--color-texto);
 }
 
 .fechas button.asignado > .hora-establecida {
   visibility: visible; /* 🔹 Muestra el texto cuando hay una asignación */
 }
 .fechas button.hoy.asignado > .hora-establecida{
-  color: #FF9E16;
+  color: var(--color-primario);
 }
 
 .fechas button.hoy.asignado{
   background-color: white;
-  color: #FF9E16;
+  color: var(--color-primario);
 }
 
 /* HORA */
@@ -220,7 +221,7 @@ select, option{
 
     text-align: center;
 
-    background-color: #ffca81;
+    background-color: var(--color-terciario);
     border-radius: 20px;
     padding: 10px;
     border: none;
