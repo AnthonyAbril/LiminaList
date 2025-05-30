@@ -26,7 +26,6 @@
         <ng-container *ngSwitchCase="'pomodoro'">
             <h2>{{ estaDescansando ? 'Descanso 💤' : 'Trabajo 💼' }}</h2>
             <p>Tiempo restante: {{ formatearTiempo(tiempoRestante) }}</p>
-            <input type="time" [value]="tiempoRestante">
             <button (click)="pomodoroActivo ? detenerPomodoro() : iniciarPomodoro()">
                 {{ pomodoroActivo ? '⏹️ Detener' : '▶️ Iniciar' }}
             </button>
