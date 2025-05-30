@@ -1,14 +1,31 @@
-<div class="reloj">
-  <h2>{{ tareaActual?.title || 'Sin tarea actual' }}</h2>
+<div class="modo-selector">
+  <button (click)="modo = 'productivo'">🧠 Productivo</button>
+  <button (click)="modo = 'hora'">🕒 Reloj</button>
+  <button (click)="modo = 'pomodoro'">🍅 Pomodoro</button>
+</div>
 
-  <p *ngIf="tareaActual?.hora">
-    Tiempo transcurrido:
-    {{ formatearTiempo(horaActual.getHours() * 60 + horaActual.getMinutes() - minutosDeHora(tareaActual?.hora!)) }}
-  </p>
+<div class="modo-contenido">
+  <ng-container [ngSwitch]="modo">
+    <ng-container *ngSwitchCase="'productivo'">
+      <h2>{{ tareaActual?.title || 'Sin tarea actual' }}</h2>
+      <p *ngIf="tareaActual?.hora">
+        Tiempo transcurrido:
+        {{ formatearTiempo(horaActual.getHours() * 60 + horaActual.getMinutes() - minutosDeHora(tareaActual?.hora!)) }}
+      </p>
+      <p *ngIf="tareaSiguiente?.hora">
+        Tiempo restante:
+        {{ formatearTiempo(minutosDeHora(tareaSiguiente?.hora!) - (horaActual.getHours() * 60 + horaActual.getMinutes())) }}
+      </p>
+      <h2 *ngIf="tareaSiguiente?.hora">{{ tareaSiguiente?.title }}</h2>
+    </ng-container>
 
-  <p *ngIf="tareaSiguiente?.hora">
-    Tiempo restante:
-    {{ formatearTiempo(minutosDeHora(tareaSiguiente?.hora!) - (horaActual.getHours() * 60 + horaActual.getMinutes())) }}
-  </p>
-  <h2 *ngIf="tareaSiguiente?.hora">{{ tareaSiguiente?.title }}</h2>
+    <ng-container *ngSwitchCase="'hora'">
+      <h2>{{ horaActual | date: 'HH:mm:ss' }}</h2>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'pomodoro'">
+      <h2>{{ estaDescansando ? 'Descanso' : 'Trabajando' }}</h2>
+      <p>Tiempo restante: {{ formatearTiempo(tiempoRestante) }}</p>
+    </ng-container>
+  </ng-container>
 </div>

@@ -16,6 +16,14 @@ export class RelojComponent implements OnInit, OnDestroy {
   intervalo: any;
   subscripcionSync!: Subscription;
 
+  pomodoroDuracion = 25 * 60; // en segundos
+  descansoDuracion = 5 * 60;
+  tiempoRestante = this.pomodoroDuracion;
+  estaDescansando = false;
+  temporizadorPomodoro: any;
+
+  modo: 'productivo' | 'hora' | 'pomodoro' = 'productivo';
+
   constructor(
     private listasService: ListasService,
     private relojSync: RelojSyncService
@@ -39,6 +47,20 @@ export class RelojComponent implements OnInit, OnDestroy {
 
   actualizarHora(): void {
     this.horaActual = new Date();
+
+    if (this.modo === 'pomodoro') {
+      this.tiempoRestante--;
+
+      if (this.tiempoRestante <= 0) {
+        this.estaDescansando = !this.estaDescansando;
+        this.tiempoRestante = this.estaDescansando
+          ? this.descansoDuracion
+          : this.pomodoroDuracion;
+
+        // Opcional: reproducir sonido o notificación
+        console.log(this.estaDescansando ? '🍵 Descanso iniciado' : '💼 Trabajo iniciado');
+      }
+    }
   }
 
   cargarTareasDelDia(): void {
