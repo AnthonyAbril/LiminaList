@@ -170,7 +170,6 @@ select, option{
   height: 90%;
 }
 
-
 .fechas button {
   width: 90%;
   height: 90%;
@@ -213,6 +212,25 @@ select, option{
 }
 
 @media (max-width: 1161px) {
+
+  #placa{
+    position: relative;
+    padding: 0;
+    background: none;
+    width: 100vw;
+    max-width: none;
+    display: flex;
+    justify-content: center;
+  }
+
+    #placa h1{
+    margin: 0;
+    
+  }
+
+  .scroll-interno{
+    padding-left: 5vw;
+  }
 
   #barra-tareas {
     position: fixed;              /* Fija en la pantalla */
