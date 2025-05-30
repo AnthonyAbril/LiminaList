@@ -417,15 +417,6 @@ textarea {
     
   }
 
-  .boton-atras{
-    height: 50px;
-
-    align-self: flex-start; /* o stretch si quieres que ocupe todo el ancho */
-    margin-top: auto;
-    padding: 10px;
-    cursor:pointer;
-  }
-
   .lista-acciones > button{
     border: none;
     background-color:var(--color-primario);
