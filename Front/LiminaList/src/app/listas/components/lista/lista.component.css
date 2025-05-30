@@ -46,6 +46,10 @@ ul{
     background: none;
 }
 
+.boton-agregar > .elegida:hover{
+    background: none;
+}
+
 .custom-class .timepicker-button:hover {
   background-color: var(--color-primario) !important;
 }

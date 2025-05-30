@@ -6,7 +6,7 @@
       <a *ngIf="editar">+</a>
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
-    <button [class.elegida]="this.tipoTarea" (click)="this.tipoTarea = false">Tareas Rutinarias</button>
+    <button [class.elegida]="this.tipoTarea" (click)="this.tipoTarea = true">Tareas Rutinarias</button>
   </li>
   <li [hidden]="tipoTarea" *ngIf="tareasPuntuales.length>0">
     <ul>
