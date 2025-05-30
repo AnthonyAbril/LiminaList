@@ -83,20 +83,27 @@ class TareaController extends Controller
 
     public function destroy($id)
     {
-        $t = Tarea::findOrFail($id);
+        $t = Tarea::with('subtareas')->findOrFail($id);
+        $todas = $t->descendientesRecursivos(); // 👈 si ya tienes esta función
+        $todas->push($t); // incluye la raíz también
 
-        DB::transaction(function () use ($t) {
 
+        DB::transaction(function () use ($todas, $t) {
             $hoy = now()->toDateString();
 
-            /* 1. borrar sus filas futuras en tareas_fechas */
-            TareaFecha::where('tarea_id', $t->id)
-                    ->where('fecha', '>=', $hoy)
-                    ->delete();
+            // 🔥 borrar asignaciones futuras de todas las tareas (raíz + subtareas)
+            foreach ($todas as $tt) {
+                TareaFecha::where('tarea_id', $tt->id)
+                        ->where('fecha', '>=', $hoy)
+                        ->delete();
+            }
 
-            /* 2. borrar la fila de tasks (sin CASCADE)      */
-            $t->delete();   // ⚠️ quita el ON DELETE CASCADE de la FK o pon RESTRICT
+            // 🔥 borrar todas las tareas (eliminar primero subtareas si no tienes onDeleteCascade)
+            foreach ($todas as $tt) {
+                $tt->delete();
+            }
         });
+
 
         return response()->json(['ok' => true]);
     }
