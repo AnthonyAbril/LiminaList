@@ -51,6 +51,46 @@ export class AjustesUsuarioComponent implements OnInit {
     });
   }
 
+  evaluarModoAutomatico(): void {
+    if (!this.modoOscuroAutomatico) return;
+
+    const ahora = new Date();
+    const horaActual = ahora.getHours() + ahora.getMinutes() / 60;
+
+    const [inicioH, inicioM] = this.horaInicioAuto.split(':').map(Number);
+    const [finH, finM] = this.horaFinAuto.split(':').map(Number);
+    const horaInicio = inicioH + inicioM / 60;
+    const horaFin = finH + finM / 60;
+
+    let activar = false;
+    if (horaInicio < horaFin) {
+      activar = horaActual >= horaInicio && horaActual < horaFin;
+    } else {
+      activar = horaActual >= horaInicio || horaActual < horaFin;
+    }
+
+    console.log(horaActual,horaInicio,horaFin);
+    if (this.modoOscuro !== activar) {
+      this.modoOscuro = activar;
+      this.aplicarColores();
+      this.guardarColoresEnServidor();
+    }
+  }
+
+  modoOscuroAutomatico: boolean = false;
+  horaInicioAuto: string = '21:00';
+  horaFinAuto: string = '07:00';
+
+  onAutoModeToggle(): void {
+    this.evaluarModoAutomatico();
+    this.guardarColoresEnServidor();
+  }
+
+  onAutoModeChange(): void {
+    this.evaluarModoAutomatico();
+    this.guardarColoresEnServidor();
+  }
+
   cambiarColor(tipo: string, event: Event) {
     const valor = (event.target as HTMLInputElement).value;
     this.coloresActivos[tipo] = valor;
@@ -65,6 +105,7 @@ export class AjustesUsuarioComponent implements OnInit {
   alternarModo() {
     this.aplicarColores();
     this.guardarColoresEnServidor();
+    this.modoOscuroAutomatico = false;
   }
 
   cambiarNombre() {
@@ -122,7 +163,10 @@ export class AjustesUsuarioComponent implements OnInit {
     const payload = {
       modoOscuro: this.modoOscuro,
       patronActivo: this.patronSeleccionado,
-      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo)
+      patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo),
+      modoOscuroAutomatico: this.modoOscuroAutomatico,
+      horaInicioAuto: this.horaInicioAuto,
+      horaFinAuto: this.horaFinAuto
     };
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
@@ -137,6 +181,10 @@ export class AjustesUsuarioComponent implements OnInit {
       next: ajustes => {
         this.modoOscuro = ajustes.modoOscuro ?? false;
         this.patronSeleccionado = ajustes.patronActivo ?? 'default';
+        this.modoOscuroAutomatico = ajustes.modoOscuroAutomatico ?? false;
+        console.log(this.modoOscuro,this.modoOscuroAutomatico);
+        this.horaInicioAuto = ajustes.horaInicioAuto ?? '21:00';
+        this.horaFinAuto = ajustes.horaFinAuto ?? '07:00';
 
         const predefinidos = ajustes.patronesDefault ?? [];
         const personalizados = ajustes.patronesGuardados ?? [];

@@ -4,12 +4,46 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado
 class UserController extends Controller
 {
+    private function horaAminutos($hora)
+    {
+        [$h, $m] = explode(':', $hora);
+        return (int)$h * 60 + (int)$m;
+    }
+
+
     public function getAjustes(Request $request)
     {
         $user = $request->user();
         $ajustes = $user->theme_colors ?? [];
+
+        // ✅ Evaluar modo oscuro automático
+        $modoOscuro = $ajustes['modoOscuro'] ?? false;
+
+        if (!empty($ajustes['modoOscuroAutomatico']) && !empty($ajustes['horaInicioAuto']) && !empty($ajustes['horaFinAuto'])) {
+            $minAhora = now()->hour * 60 + now()->minute;
+            $minInicio = $this->horaAminutos($ajustes['horaInicioAuto']);
+            $minFin = $this->horaAminutos($ajustes['horaFinAuto']);
+
+            if ($minInicio < $minFin) {
+                $modoOscuro = $minAhora >= $minInicio && $minAhora < $minFin;
+            } else {
+                $modoOscuro = $minAhora >= $minInicio || $minAhora < $minFin;
+            }
+        }
+
+        \Log::info('⏰ Evaluando modo oscuro automático', [
+            'ahora' => now()->format('H:i'),
+            'minAhora' => $minAhora ?? null,
+            'minInicio' => $minInicio ?? null,
+            'minFin' => $minFin ?? null,
+            'resultado' => $modoOscuro ?? null
+        ]);
+
+        
+        $ajustes['modoOscuro'] = $modoOscuro;
 
         // 🔹 Agrega patrones por defecto dinámicamente
         $ajustes['patronesDefault'] = [
@@ -110,7 +144,10 @@ class UserController extends Controller
         $data = $request->validate([
             'modoOscuro' => 'required|boolean',
             'patronActivo' => 'required|string',
-            'patronesGuardados' => 'nullable|array'
+            'patronesGuardados' => 'nullable|array',
+            'modoOscuroAutomatico' => 'nullable|boolean',
+            'horaInicioAuto' => 'nullable|string',
+            'horaFinAuto' => 'nullable|string'
         ]);
 
         $user = $request->user();
@@ -119,6 +156,7 @@ class UserController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 
 
 

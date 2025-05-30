@@ -25,6 +25,26 @@
     </label>
   </section>
 
+  
+    <section>
+        <label>
+            <input type="checkbox" [(ngModel)]="modoOscuroAutomatico" (change)="onAutoModeToggle()" />
+            Activar modo oscuro automáticamente
+        </label>
+        <div *ngIf="modoOscuroAutomatico" style="margin-left: 1em;">
+            <label>
+            Desde:
+            <input type="time" [(ngModel)]="horaInicioAuto" (change)="onAutoModeChange()" />
+            </label>
+            <label>
+            Hasta:
+            <input type="time" [(ngModel)]="horaFinAuto" (change)="onAutoModeChange()" />
+            </label>
+        </div>
+    </section>
+
+
+
   <!-- 🎨 Selector de colores -->
   <section>
     <h2>Apariencia - {{ modoOscuro ? 'Oscuro' : 'Claro' }}</h2>
@@ -48,5 +68,4 @@
     <h2>Eliminar cuenta</h2>
     <button (click)="eliminarCuenta()" style="color: red;">Eliminar permanentemente</button>
   </section>
-
 </div>
