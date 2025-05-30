@@ -33,6 +33,17 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    localStorage.removeItem('token');     // token en localStorage
+    localStorage.removeItem('colores-activos'); // ✅
+    localStorage.removeItem('ajustes');
+    sessionStorage.removeItem('token');   // token en sessionStorage
+    sessionStorage.removeItem('user_id'); // también limpiar user_id
+    
+    // ✅ limpiar estilos aplicados del usuario anterior
+    ['primario', 'secundario', 'terciario', 'texto'].forEach(key => {
+      document.documentElement.style.removeProperty(`--color-${key}`);
+    });
   }
 
   toggleRegister() {
@@ -52,14 +63,6 @@ export class LoginComponent {
         next: (response) => {
           if (response.access_token) {
             this.authService.saveToken(response.access_token);
-            
-             if (response.user?.id) { // 🔹 Usar `response.user.id`
-                sessionStorage.setItem('user_id', String(response.user.id)); 
-              } else {
-                console.error('❌ user_id no recibido en la respuesta del backend');
-              }
-
-
             
             // Recuperamos la URL original
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
@@ -93,13 +96,7 @@ export class LoginComponent {
             next: (response) => {
               if (response.access_token) {
                 this.authService.saveToken(response.access_token);
-                
-                // 🔹 Guardar `user_id` al registrarse y autenticarse
-                if (response.user?.id) { // 🔹 Usar `response.user.id`
-                    sessionStorage.setItem('user_id', String(response.user.id)); 
-                  } else {
-                    console.error('❌ user_id no recibido en la respuesta del backend');
-                  }
+
                 
                 this.router.navigate(['/home']);
               } else {

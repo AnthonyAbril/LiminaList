@@ -8,13 +8,16 @@ const stored = localStorage.getItem('colores');
 if (stored) {
   try {
     const parsed = JSON.parse(stored);
-    Object.entries(parsed).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(`--color-${key}`, value as string);
-    });
+    if (parsed && typeof parsed === 'object') {
+      Object.entries(parsed).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(`--color-${key}`, value as string);
+      });
+    }
   } catch (e) {
     console.warn('❌ Colores inválidos', e);
   }
 }
+
 
 
 platformBrowserDynamic().bootstrapModule(AppModule, {

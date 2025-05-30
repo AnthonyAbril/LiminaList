@@ -42,13 +42,29 @@ export class AuthService {
             next: (ajustes) => {
               if (ajustes) {
                 const modoOscuro = ajustes.modoOscuro ?? false;
-                const colores = modoOscuro ? ajustes.coloresOscuro : ajustes.coloresClaro;
+                const patronActivo = ajustes.patronActivo;
+
+                // Unir todos los patrones en una sola lista
+                const todosLosPatrones = [...ajustes.patronesDefault, ...(ajustes.patronesGuardados || [])];
+
+                // Buscar el patrón activo
+                const patron = todosLosPatrones.find((p: any) => p.id === patronActivo);
+
+                if (patron) {
+                  const colores = modoOscuro ? patron.oscuro : patron.claro;
+                  if (colores && typeof colores === 'object') {
+                    this.theme.aplicarColores(colores);
+                  } else {
+                    console.warn('⚠️ El patrón activo no contiene colores válidos');
+                  }
+                } else {
+                  console.warn(`⚠️ No se encontró el patrón activo con id: ${patronActivo}`);
+                }
+
+
 
                 // ✅ Guardar solo los colores activos en localStorage
-                localStorage.setItem('ajustes', ajustes);
-
-                // ✅ Aplicar
-                this.theme.aplicarColores(colores);
+                localStorage.setItem('ajustes', JSON.stringify(ajustes));
 
               }
             },
@@ -68,17 +84,6 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');     // token en localStorage
-    localStorage.removeItem('colores-activos'); // ✅
-    localStorage.removeItem('ajustes');
-    sessionStorage.removeItem('token');   // token en sessionStorage
-    sessionStorage.removeItem('user_id'); // también limpiar user_id
-    
-    // ✅ limpiar estilos aplicados del usuario anterior
-    ['primario', 'secundario', 'terciario', 'texto'].forEach(key => {
-      document.documentElement.style.removeProperty(`--color-${key}`);
-    });
-    
     this.router.navigate(['/login']);     // redirigir al login\
   }
 

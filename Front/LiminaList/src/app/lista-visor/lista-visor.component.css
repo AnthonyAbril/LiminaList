@@ -384,6 +384,10 @@ textarea {
   animation: fadeIn 0.3s ease;
 }
 
+.cerrar-btn{
+  display: none;
+}
+
 /* Sidebar dentro del overlay */
 @media (max-width: 580px) {
   .right-sidebar {
@@ -394,6 +398,10 @@ textarea {
     box-shadow: 0 0 10px black;
     overflow-y: auto;
     animation: slideIn 0.3s ease;
+  }
+
+  .cerrar-btn {
+    display: block;
   }
 
   .listas-container {
