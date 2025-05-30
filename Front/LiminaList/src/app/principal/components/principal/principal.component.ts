@@ -163,7 +163,7 @@ generarCalendario(): void {
 
   crearListaDelDia(listaId: string, fecha: Date): void {
     const nombreLista = `${fecha.getUTCDate()}/${fecha.getUTCMonth() + 1}/${fecha.getUTCFullYear()}`;
-    const token = sessionStorage.getItem('token');
+    const token = this.authService.getToken();
     const userId = Number(this.authService.getUserId());
 
     if (!token || !userId) {

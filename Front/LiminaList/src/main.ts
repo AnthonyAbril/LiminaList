@@ -4,10 +4,8 @@ import { AppModule } from './app/app.module';
 
 // ✅ Aplicar colores del usuario antes de arrancar Angular
 // src/main.ts
-console.log("A");
 const stored = localStorage.getItem('colores');
 if (stored) {
-  console.log("B");
   try {
     const parsed = JSON.parse(stored);
     Object.entries(parsed).forEach(([key, value]) => {

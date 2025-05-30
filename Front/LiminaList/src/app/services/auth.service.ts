@@ -32,8 +32,8 @@ export class AuthService {
     return this.http.post<{ access_token: string; user: { id: number } }>(`${this.apiUrl}/login`, { email, password }).pipe(
       tap(response => {
         if (response.access_token && response.user.id) {
-          sessionStorage.setItem('token', response.access_token);
-          sessionStorage.setItem('user_id', response.user.id.toString());
+          localStorage.setItem('token', response.access_token);
+          localStorage.setItem('user_id', response.user.id.toString());
           console.log(response.user.id.toString());
 
           // ✅ Pedir ajustes del usuario y aplicar sus colores activos
@@ -94,10 +94,8 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/user`, { headers });
   }
 
-  
   getUserId(): number {
-    return Number(sessionStorage.getItem('user_id')) || 0; // 🔹 Si `null`, asigna 0 como valor por defecto
+    return Number(localStorage.getItem('user_id')) || 0;
   }
-
   
 }
