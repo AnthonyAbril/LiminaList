@@ -149,14 +149,14 @@ export class PanelComponent {
 
     // por ejemplo:
     resumenChanged() {
-      if (window.innerWidth <= 715) {
+      if (window.innerWidth <= 1161) {
         this.mostrarMiniSidebar = true;
       }
     }
 
     abrirResumen(tipo: string) {
       this.resumen = tipo;
-      if (window.innerWidth <= 715) {
+      if (window.innerWidth <= 1161) {
         this.mostrarMiniSidebar = true;
       }
     }
@@ -168,7 +168,7 @@ export class PanelComponent {
 
 
     get esMovil(): boolean {
-      return window.innerWidth <= 715;
+      return window.innerWidth <= 1161;
     }
 
 

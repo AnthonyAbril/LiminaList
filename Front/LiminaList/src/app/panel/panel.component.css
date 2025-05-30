@@ -208,7 +208,11 @@ select, option{
     border: none;
 }
 
-@media (max-width: 715px) {
+.mini-sidebar-overlay{
+  display: flex;
+}
+
+@media (max-width: 1161px) {
 
   #barra-tareas {
     position: fixed;              /* Fija en la pantalla */
