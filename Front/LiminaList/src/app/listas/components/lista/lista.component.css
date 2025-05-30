@@ -26,7 +26,6 @@ ul{
 }
 
 .boton-agregar{
-    height: 50px;
     margin: 0 0 2vh 0;
     display: flex;
     justify-content:space-evenly;
@@ -34,7 +33,7 @@ ul{
 
 .boton-agregar > button{
     background: var(--color-terciario);
-    padding: 0 1vw;
+    padding: 1vw 1vw;
     border: none;
     border-radius: 52px;
     font-size: 1.8em;

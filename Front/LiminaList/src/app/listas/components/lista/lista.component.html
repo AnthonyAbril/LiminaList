@@ -2,9 +2,8 @@
 <ul>
   <li class="boton-agregar">
     <button [class.elegida]="!this.tipoTarea" (click)="this.tipoTarea = false">Tareas Puntuales</button>
-    <button (click)="agregarTarea()">
-      <a *ngIf="editar">+</a>
-      <img [hidden]="editar" src="assets/icons/switch.svg">
+    <button *ngIf="editar" (click)="agregarTarea()">
+      <a>+</a>
     </button>
     <button [class.elegida]="this.tipoTarea" (click)="this.tipoTarea = true">Tareas Rutinarias</button>
   </li>

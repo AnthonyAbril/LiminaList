@@ -12,6 +12,10 @@
   margin-top: 20px;
   display: flex;
   gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .modo-selector button {

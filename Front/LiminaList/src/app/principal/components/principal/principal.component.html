@@ -11,6 +11,12 @@
                     [subtareas]="tarea.subtareas"
                     (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
                     [nivel]="1"
+                    [listaid]="tarea.list_id"
+                    [rutinario]="tarea.rutinario"
+                    (progresoActualizado)="onProgresoActualizado($event)"
+                    [progreso]="tarea.progreso"
+                    [fecha]="tarea.fecha"
+                    [nivel]="0"
                     ></app-tarea>
                 </div>
             </li>

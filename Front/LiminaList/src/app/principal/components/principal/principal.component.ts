@@ -5,6 +5,8 @@ import { Tarea } from '../../../tareas/components/tarea/tarea';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { Lista } from '../../../listas/lista';
+import { updateNodeProgress  } from '../../../listas/helpers/list-utils';
+import { TareasService } from '../../../services/tareas.service';
 
 @Component({
   selector: 'app-principal',
@@ -26,7 +28,7 @@ export class PrincipalComponent implements OnInit {
   tareas: any[] = [];
   resumen: string = 'listas';
 
-  constructor(private authService:AuthService, private listasService: ListasService, private router: Router) {}
+  constructor(private authService:AuthService, private listasService: ListasService, private tareasService: TareasService, private router: Router) {}
 
   ngOnInit(): void {
     this.listasService.getListas().subscribe({
@@ -38,13 +40,8 @@ export class PrincipalComponent implements OnInit {
       next: response => {
         console.log('📌 Datos recibidos:', response); 
 
-        // 🔹 Transformar datos para incluir fecha y hora en cada tarea
-        this.tareas = response.map((tareaFecha) => ({
-          ...tareaFecha.tarea, // ✅ Extraer la tarea dentro de `tareas_fechas`
-          subtareas: tareaFecha.tarea.subtareas ?? [], // ✅ Mantener subtareas si existen
-          fecha: tareaFecha.fecha, // ✅ Agregar fecha desde `tareas_fechas`
-          hora: tareaFecha.hora // ✅ Agregar hora desde `tareas_fechas`
-        }));
+        // 🔹 Transformar datos para incluir fecha y hora en cada tarea (sin duplicacion de subtareas)
+        this.tareas = this.buildTree(response);
         
         console.log('📌 Datos procesados:', this.tareas);
       },
@@ -61,6 +58,41 @@ export class PrincipalComponent implements OnInit {
 
     this.generarCalendario();
   }
+
+  onProgresoActualizado(event: { id: number; progreso: number }) {
+    updateNodeProgress(this.tareas, event.id, event.progreso);
+
+    this.tareasService.editarProgreso(event.id, event.progreso, null).subscribe({
+      next: () => console.log(`✅ Progreso de tarea ${event.id} actualizado a ${event.progreso}`),
+      error: err => console.error(`❌ Error al guardar progreso de tarea ${event.id}:`, err)
+    });
+  }
+
+
+  buildTree(tfArray: any[]): any[] {
+    const map = new Map<number, any>();
+
+    tfArray.forEach(tf => {
+      const tarea = tf.tarea;
+      const nodo = {
+        ...tarea,
+        subtareas: [],
+        progreso: tf.progreso ?? 0,
+        fecha: tf.fecha,
+        hora: tf.hora
+      };
+      map.set(nodo.id, nodo);
+    });
+
+    map.forEach(nodo => {
+      if (nodo.padre && map.has(nodo.padre)) {
+        map.get(nodo.padre)!.subtareas.push(nodo);
+      }
+    });
+
+    return Array.from(map.values()).filter(n => !n.padre);
+  }
+
 
   esHoy(fecha: Date): boolean {
     const hoy = new Date();
