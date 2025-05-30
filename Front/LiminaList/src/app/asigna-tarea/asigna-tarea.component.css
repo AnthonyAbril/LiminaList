@@ -238,3 +238,20 @@ select, option{
   /* Sube el timepicker justo por encima */
   z-index: 10050 !important;
 }
+
+@media (max-width:600px){
+  .formulario{
+    width: auto;
+  }
+
+  .formulario .botones{
+    height: auto;
+    flex-direction: column;
+    width: 100%;
+  }
+  .formulario button{
+    width: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+}

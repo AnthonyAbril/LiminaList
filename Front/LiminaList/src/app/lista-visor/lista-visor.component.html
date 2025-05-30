@@ -69,12 +69,7 @@
     </div>
 
     <!-- SIDEBAR DERECHA -->
-     <div 
-        class="mobile-sidebar-overlay" 
-        *ngIf="modo !== null && modo !== 'borrar'"
-        (click)="cerrarSidebarSiEsMovil($event)"
-      >
-    <div class="sidebar right-sidebar">
+    <div *ngIf="modo !== null && modo !== 'borrar'" class="sidebar right-sidebar">
       <!-- MODO VER -->
       <ng-container *ngIf="modo === 'ver' && listaSeleccionada">
         <button class="cerrar-btn" (click)="cerrarSidebarSiEsMovil($event)">×</button>
@@ -107,8 +102,8 @@
             </div>
 
             <div class="lista-fechas">
-              <h3>Creado el:<br />{{ listaSeleccionada.created_at }}</h3>
-              <h3>Última actualización:<br />{{ listaSeleccionada.updated_at }}</h3>
+              <h3>Creado el:<br />{{ listaSeleccionada.created_at | date:'dd/MM/yyyy HH:mm' }}</h3>
+              <h3>Última actualización:<br />{{ listaSeleccionada.updated_at | date:'dd/MM/yyyy HH:mm' }}</h3>
             </div>
           </div>
         </div>
@@ -168,7 +163,6 @@
         <div>Selecciona una lista</div>
       </ng-container>
     </div>
-  </div>
   </div>
 </div>
 

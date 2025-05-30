@@ -204,4 +204,10 @@ select, option{
     color: var(--color-texto);
     border: none;
 }
+.lista-container{
+  min-width: none;
+}
 
+.mini-container{
+  width: fit-content;
+}

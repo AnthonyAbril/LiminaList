@@ -399,6 +399,7 @@ textarea {
   .listas-container {
     width: 90vw !important;
     max-width: 100% !important;
+    padding: 0;
   }
 
   
