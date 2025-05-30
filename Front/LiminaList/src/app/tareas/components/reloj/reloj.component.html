@@ -1,1 +1,14 @@
-<div id="reloj">00:00</div>
+<div class="reloj">
+  <h2>{{ tareaActual?.title || 'Sin tarea actual' }}</h2>
+
+  <p *ngIf="tareaActual?.hora">
+    Tiempo transcurrido:
+    {{ formatearTiempo(horaActual.getHours() * 60 + horaActual.getMinutes() - minutosDeHora(tareaActual?.hora!)) }}
+  </p>
+
+  <p *ngIf="tareaSiguiente?.hora">
+    Tiempo restante:
+    {{ formatearTiempo(minutosDeHora(tareaSiguiente?.hora!) - (horaActual.getHours() * 60 + horaActual.getMinutes())) }}
+  </p>
+  <h2 *ngIf="tareaSiguiente?.hora">{{ tareaSiguiente?.title }}</h2>
+</div>
