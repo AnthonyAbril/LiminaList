@@ -11,6 +11,7 @@ body{
     /*background-color: rgb(69, 69, 69);*/
     background-color: var(--color-primario);
     margin: 0;
+    overflow: hidden;
 }
 
 *{

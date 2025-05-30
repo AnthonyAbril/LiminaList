@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListasService } from '../../../services/listas.service';
 import { Tarea } from '../../../tareas/components/tarea/tarea';
@@ -27,6 +27,8 @@ export class PrincipalComponent implements OnInit {
   listas: any[] = [];
   tareas: any[] = [];
   resumen: string = 'listas';
+
+  menuAbierto = false;
 
   constructor(private authService:AuthService, private listasService: ListasService, private tareasService: TareasService, private router: Router) {}
 

@@ -7,6 +7,7 @@
                 <div>
                     <a>{{tarea.hora}}</a>
                     <app-tarea
+                    [id]="tarea.id"
                     [title]="tarea.title"
                     [subtareas]="tarea.subtareas"
                     (eliminar)="tareas.splice(tareas.indexOf(tarea), 1)"
@@ -26,7 +27,11 @@
 <div class="main">
     <h1 class="titulo">Liminalist</h1>
     <div class="header">
-        <div class="nav">
+        <!-- Botón hamburguesa solo visible en móviles -->
+        <button class="menu-toggle" (click)="menuAbierto = !menuAbierto">
+            <img src="assets/icons/bars.svg" alt="Menu" />
+        </button>
+        <div class="nav" [class.abierto]="menuAbierto">
             <div class="perfil">
                 <h2 *ngIf="nombreUsuario">{{ nombreUsuario }}</h2>
                 <img src="assets/icons/cara.png" [routerLink]="'/ajustes'" alt="ajustes" class="icono">
