@@ -167,12 +167,16 @@ export class PanelComponent {
     }
 
 
-    get esMovil(): boolean {
-      return window.innerWidth <= 1161;
-    }
+    
+
+  esMovil = window.innerWidth <= 1161;
 
 
   ngOnInit(): void {
+
+  window.addEventListener('resize', () => {
+    this.esMovil = window.innerWidth <= 1161;
+  });
     
     this.generarCalendario();
 

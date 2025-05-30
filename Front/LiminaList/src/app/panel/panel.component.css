@@ -223,7 +223,7 @@ select, option{
     justify-content: center;
   }
 
-    #placa h1{
+  #placa h1{
     margin: 0;
     
   }
@@ -292,10 +292,19 @@ select, option{
     z-index: 1000 !important; /* contenido por encima del fondo */
   }
 
+  .boton-agregar > button {
+    font-size: small;
+  }
+
 }
 
 @media (max-width: 376px){
   .fechas button{
     font-size: 1.1em;
   }
+
+  .boton-agregar > button {
+    font-size: small;
+  }
+
 }
