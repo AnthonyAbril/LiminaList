@@ -1,52 +1,56 @@
 <div id="placa">
-    <h1>{{this.title}}</h1>
+  <h1>{{ this.title }}</h1>
 </div>
 
+<!-- Overlay + mini-container JUNTOS -->
 <div class="contenedor">
-  <div class="mini-container" *ngIf="mostrarMiniSidebar" (click)="$event.stopPropagation()">
-    <app-reloj *ngIf="resumen=='reloj'"></app-reloj>
-    <div *ngIf="resumen=='calendar'"  class="calendar-mini">
-            <div class="header-resum">
-                <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
-                    <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
-                </select>
-                <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
-                    <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
-                </select>
-            </div>
+    <div *ngIf="mostrarMiniSidebar && esMovil || !esMovil" class="mini-sidebar-overlay" (click)="mostrarMiniSidebar = false">
+  <div class="mini-container" (click)="$event.stopPropagation()">
+    <app-reloj *ngIf="resumen === 'reloj'"></app-reloj>
 
-            <div class="fechas">
-                <ng-container *ngFor="let fecha of fechas">
-                    <!-- Cambia fecha.getDate() por fecha.getUTCDate() -->
-                    <button *ngIf="fecha; else emptyCell" 
-                            (click)="abrirListaDelDia(fecha)"
-                            [class.hoy]="esHoy(fecha)">
-                        {{ fecha.getUTCDate() }} <!-- Mostrar día UTC -->
-                    </button>
-                    <ng-template #emptyCell>
-                        <div class="empty-cell"></div>
-                    </ng-template>
-                </ng-container>
-            </div>
+    <div *ngIf="resumen === 'calendar'" class="calendar-mini">
+      <div class="header-resum">
+        <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
+          <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
+        </select>
+        <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
+          <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
+        </select>
+      </div>
 
-            <div class="dias-semana footer-resum">
-                <span *ngFor="let dia of dias">{{ dia }}</span>
-            </div>
-        </div>
-  </div>
-  <div class="lista-container">
-    <div class="scroll-interno">
-      <app-lista [tareas]="this.tareas" [editar]="editar"></app-lista>
+      <div class="fechas">
+        <ng-container *ngFor="let fecha of fechas">
+          <button *ngIf="fecha; else emptyCell" 
+                  (click)="abrirListaDelDia(fecha)"
+                  [class.hoy]="esHoy(fecha)">
+            {{ fecha.getUTCDate() }}
+          </button>
+          <ng-template #emptyCell>
+            <div class="empty-cell"></div>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <div class="dias-semana footer-resum">
+        <span *ngFor="let dia of dias">{{ dia }}</span>
+      </div>
     </div>
   </div>
 </div>
-  
+  <div class="lista-container">
+    <div class="scroll-interno">
+      <app-lista [tareas]="tareas" [editar]="editar"></app-lista>
+    </div>
+  </div>
+</div>
+
+<!-- Barra inferior -->
 <div id="barra-tareas">
-  <img [routerLink]="'/lists'" src="assets\icons\dedo.png" alt="Icono de Pluma" class="icono">
-  <img src="assets\icons\cara.png" alt="Icono de Pluma" class="icono">
-  <img [routerLink]="'/home'" src="assets\icons\house.svg" alt="" class="icono">
-  <img (click)="resumen='reloj'" src="assets\icons\clock.svg" alt="Icono de Pluma" class="icono">
-  <img src="assets\icons\ajustes.svg" alt="Icono de Pluma" class="icono">
-  <img (click)="abrirResumen('calendar')" src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
-  <img (click)="toggleEdicion()" src="assets\icons\square-pen-solid.svg" alt="Icono de Pluma" class="icono">
+  <img [routerLink]="'/lists'" src="assets/icons/dedo.png" alt="Listas" class="icono">
+  <img src="assets/icons/cara.png" alt="Perfil" class="icono">
+  <img [routerLink]="'/home'" src="assets/icons/house.svg" alt="Inicio" class="icono">
+  <img (click)="abrirResumen('reloj')" src="assets/icons/clock.svg" alt="Reloj" class="icono">
+  <img src="assets/icons/ajustes.svg" alt="Ajustes" class="icono">
+  <img (click)="abrirResumen('calendar')" src="assets/icons/calendar.svg" alt="Calendario" class="icono" style="padding-bottom: 5px">
+  <img (click)="toggleEdicion()" src="assets/icons/square-pen-solid.svg" alt="Editar" class="icono">
 </div>

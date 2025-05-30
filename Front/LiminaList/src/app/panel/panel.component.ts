@@ -126,6 +126,7 @@ export class PanelComponent {
     }
 
     abrirListaDelDia(fecha: Date | null): void {
+      this.mostrarMiniSidebar = false;
       if (!fecha) return;
 
       const listaId = `D${fecha.getUTCFullYear()}${(fecha.getUTCMonth() + 1).toString().padStart(2, '0')}${fecha.getUTCDate().toString().padStart(2, '0')}`;
@@ -144,7 +145,7 @@ export class PanelComponent {
         });
     }
 
-    mostrarMiniSidebar = true;
+    mostrarMiniSidebar = false;
 
     // por ejemplo:
     resumenChanged() {
@@ -153,19 +154,22 @@ export class PanelComponent {
       }
     }
 
-    abrirResumen(tipo: string): void {
+    abrirResumen(tipo: string) {
       this.resumen = tipo;
-
       if (window.innerWidth <= 715) {
         this.mostrarMiniSidebar = true;
       }
     }
+
 
     cerrarMiniSidebar(event: MouseEvent): void {
       this.mostrarMiniSidebar = false;
     }
 
 
+    get esMovil(): boolean {
+      return window.innerWidth <= 715;
+    }
 
 
   ngOnInit(): void {

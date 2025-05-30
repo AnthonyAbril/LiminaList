@@ -11,6 +11,7 @@
     /*5abdff*/
     border-bottom-right-radius: 52px;
     font-size:larger;
+  z-index: 10; /* menor que 999 */
 }
 
 #barra-tareas{
@@ -25,12 +26,14 @@
   font-size:larger;
   border-right: 10px solid var(--color-primario);
   border-top: 10px solid var(--color-primario);
+  z-index: 20; /* menor que 999 */
 }
 
 .contenedor {
     display: flex;
     height: 100vh; /* Ocupa toda la pantalla */
     background: var(--color-primario);
+  z-index: 5; /* solo si tiene position fixed/absolute (si no, puedes omitirlo) */
   }
   
   .mini-container {
@@ -204,36 +207,10 @@ select, option{
     color: var(--color-texto);
     border: none;
 }
-  .lista-container{
-    min-width: auto;
-    max-width: none;
-    width: 100vw;
-  }
-
-  .mini-container{
-    width: fit-content;
-  }
-
-  .mini-sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999;
-  background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-}
 
 @media (max-width: 715px) {
-  .contenedor .mini-container {
-    display: none;
-  }
 
-    #barra-tareas {
+  #barra-tareas {
     position: fixed;              /* Fija en la pantalla */
     bottom: 0;                    /* Parte inferior */
     left: 50%;                    /* Centrado horizontalmente */
@@ -252,6 +229,51 @@ select, option{
     border-top: 10px solid var(--color-primario);
     border-left: 10px solid var(--color-primario);
     z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+
+    width: 80vw;
   }
 
+  .icono{
+    height: 9vw;
+  }
+
+  .mini-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .mini-container{
+    z-index: 10000 !important; /* Asegúrate de que esté por encima de otros elementos */
+    width: 20vw;
+  }
+
+  .lista-container{
+    min-width: auto;
+    max-width: none;
+    width: 100vw;
+  }
+
+  .mini-sidebar-overlay {
+    z-index: 999; /* fondo oscuro */
+  }
+
+  .mini-sidebar-overlay .mini-container {
+    z-index: 1000 !important; /* contenido por encima del fondo */
+  }
+
+}
+
+@media (max-width: 376px){
+  .fechas button{
+    font-size: 1.1em;
+  }
 }
