@@ -11,13 +11,17 @@ body{
     /*background-color: rgb(69, 69, 69);*/
     background-color: var(--color-primario);
     margin: 0;
-    overflow: hidden;
+    width: 100%;
+    overflow-x:hidden;
 }
 
 *{
   color: var(--color-texto);
 }
 
+html, body {
+  overflow-x: hidden;
+}
 
 
 /* Ajustes de modulo de reloj */

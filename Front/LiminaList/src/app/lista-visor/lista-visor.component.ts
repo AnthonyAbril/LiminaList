@@ -130,6 +130,13 @@ export class ListaVisorComponent implements OnInit {
     this.listaABorrarId = '';
   }
 
+  cerrarSidebarSiEsMovil(event: MouseEvent) {
+    if (window.innerWidth <= 580) {
+      this.modo = null;
+      this.listaSeleccionada = null;
+    }
+  }
+
   crearListaIndividual() {
     // Genera un número aleatorio de hasta 8 dígitos…
     const rawId = Math.floor(Math.random() * 99999999).toString();

@@ -69,9 +69,16 @@
     </div>
 
     <!-- SIDEBAR DERECHA -->
+     <div 
+        class="mobile-sidebar-overlay" 
+        *ngIf="modo !== null"
+        (click)="cerrarSidebarSiEsMovil($event)"
+      >
     <div class="sidebar right-sidebar">
       <!-- MODO VER -->
       <ng-container *ngIf="modo === 'ver' && listaSeleccionada">
+        <button class="cerrar-btn" (click)="cerrarSidebarSiEsMovil($event)">×</button>
+
         <div class="right-sidebar-content">
           <div class="nombreTarea">
             <h1>{{ listaSeleccionada.name }}</h1>
@@ -109,6 +116,7 @@
 
       <!-- MODO EDITAR -->
       <ng-container *ngIf="modo === 'editar' && listaSeleccionada">
+        <button class="cerrar-btn" (click)="cerrarSidebarSiEsMovil($event)">×</button>
         <div class="right-sidebar-content">
           <input [(ngModel)]="listaSeleccionada.name" />
 
@@ -130,6 +138,7 @@
 
       <!-- MODO CREAR -->
       <ng-container *ngIf="modo === 'crear'">
+        <button class="cerrar-btn" (click)="cerrarSidebarSiEsMovil($event)">×</button>
         <div class="right-sidebar-content">
           <input [(ngModel)]="listaStandar.nombre" (keydown.enter)="crearListaIndividual()" />
 
@@ -159,6 +168,7 @@
         <div>Selecciona una lista</div>
       </ng-container>
     </div>
+  </div>
   </div>
 </div>
 
