@@ -25,6 +25,31 @@ export class RelojComponent implements OnInit, OnDestroy {
 
   modo: 'productivo' | 'hora' | 'pomodoro' = 'productivo';
 
+  duracionEditable = 25;
+
+  actualizarDuracionPomodoro(): void {
+    this.pomodoroDuracion = this.duracionEditable * 60;
+    if (!this.estaDescansando) {
+      this.tiempoRestante = this.pomodoroDuracion;
+    }
+  }
+
+  duracionTiempo: string = '00:25';  // Valor por defecto
+
+  actualizarDuracionPomodoroDesdeTime(): void {
+    const [h, m] = this.duracionTiempo.split(':').map(Number);
+    const totalSegundos = h * 3600 + m * 60;
+
+    this.pomodoroDuracion = totalSegundos;
+    if (!this.estaDescansando) {
+      this.tiempoRestante = totalSegundos;
+    }
+
+    // Guardar en localStorage si deseas persistir
+    localStorage.setItem('duracionPomodoro', this.duracionTiempo);
+  }
+
+
   constructor(
     private listasService: ListasService,
     private relojSync: RelojSyncService
@@ -39,7 +64,14 @@ export class RelojComponent implements OnInit, OnDestroy {
       this.cargarTareasDelDia();
     });
 
+    const guardado = localStorage.getItem('duracionPomodoro');
+      if (guardado) {
+        this.duracionTiempo = guardado;
+        this.actualizarDuracionPomodoroDesdeTime();
+      }
+
     this.recuperarEstadoPomodoro(); // ⬅️ Esto es esencial
+    this.duracionEditable = this.pomodoroDuracion / 60;
   }
 
 

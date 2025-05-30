@@ -2,7 +2,7 @@
 #reloj {
     min-width: 500px;
     text-align: center;
-    color: white;
+    color: var(--color-texto);
     word-wrap: break-word;
     font-size:6rem;
     font-weight: bold;
@@ -18,24 +18,36 @@
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  background-color: #e2e8f0;
+  background-color: var(--color-terciario);
   cursor: pointer;
 }
 
 .modo-selector button:hover {
-  background-color: #cbd5e1;
+  background-color: var(--color-terciario);
 }
 
 .modo-contenido {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .modo-contenido button {
   margin-top: 10px;
   padding: 6px 12px;
-  background-color: #94a3b8;
-  color: white;
+  background-color: var(--color-terciario);
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.horaActual{
+    font-size: 3em;
+}
+
+input{
+    font-size: 1.1em;
+    background-color: var(--color-secundario);
+    width: min-content;
 }
