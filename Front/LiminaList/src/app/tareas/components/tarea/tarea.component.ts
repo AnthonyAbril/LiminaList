@@ -7,6 +7,7 @@ import { AsignacionOverlayService } from '../../../services/asignacion-overlay.s
 
 import { Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
 import { AfterViewInit } from '@angular/core';
+import { RelojSyncService } from '../../../services/reloj-sync.service';
 
 
 const ESTADOS = ['No hecha', 'En proceso', 'Casi terminada', 'Hecha'] as const;
@@ -70,7 +71,8 @@ export class TareaComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private listasService: ListasService,
     private asignacionOverlayService: AsignacionOverlayService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private relojSync: RelojSyncService // 👈 AÑADIDO AQUÍ
   ) {}
 
 
@@ -115,6 +117,7 @@ export class TareaComponent implements OnInit, OnDestroy {
       this.tareasService.editarTarea(this.id, { title: this.nombreTemporal }).subscribe({
         next: (response) => {
           console.log('✅ Título actualizado:', response);
+          this.relojSync.emitirActualizacion();
         },
         error: (error) => {
           console.error('❌ Error al actualizar título:', error);
@@ -152,7 +155,7 @@ export class TareaComponent implements OnInit, OnDestroy {
     // 3) Llamar al endpoint de editarAsignaciones
     this.listasService.editarAsignacionesTarea(this.id, asignaciones)
       .subscribe({
-        next: () => console.log('🔄 Asignaciones actualizadas correctamente'),
+        next: () => {console.log('🔄 Asignaciones actualizadas correctamente'); this.relojSync.emitirActualizacion();},
         error: err => console.error('❌ Error actualizando asignaciones:', err)
       });
   }
@@ -299,6 +302,7 @@ export class TareaComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           console.log('Asignaciones eliminadas');
+          this.relojSync.emitirActualizacion();
           // refresca si hace falta…
         },
         error: err => console.error('Error al desasignar:', err)
@@ -352,6 +356,7 @@ export class TareaComponent implements OnInit, OnDestroy {
     next: (response) => {
       this.cd.markForCheck();           // ✔ avisa al motor
       console.log('✅ Subtarea guardada en el backend:', response);
+      this.relojSync.emitirActualizacion();
       // 🔹 Aquí verifica si se está duplicando
       if (!response.title || response.title.trim() === '') {
         console.warn('⚠ Subtarea sin título detectada, no se agrega al frontend.');
@@ -492,6 +497,7 @@ private postAnimarAltura(expandir: boolean, instantaneo: boolean = false): void 
       next: () => {
         this.cd.markForCheck();           // ✔ avisa al motor
         console.log('✅ Tarea eliminada correctamente');
+        this.relojSync.emitirActualizacion();
       },
       error: (error) => {
         console.error('❌ Error al eliminar tarea:', error);

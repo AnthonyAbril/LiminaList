@@ -1,12 +1,12 @@
 
 <ul>
   <li class="boton-agregar">
-    <h2 *ngIf="!tipoTarea">Tareas Puntuales</h2>
-    <h2 *ngIf="tipoTarea">Tareas Rutinarias</h2>
-    <button (click)="(editar)?agregarTarea():toggleTipoTarea()">
+    <button [class.elegida]="!this.tipoTarea" (click)="this.tipoTarea = false">Tareas Puntuales</button>
+    <button (click)="agregarTarea()">
       <a *ngIf="editar">+</a>
       <img [hidden]="editar" src="assets/icons/switch.svg">
     </button>
+    <button [class.elegida]="this.tipoTarea" (click)="this.tipoTarea = false">Tareas Rutinarias</button>
   </li>
   <li [hidden]="tipoTarea" *ngIf="tareasPuntuales.length>0">
     <ul>

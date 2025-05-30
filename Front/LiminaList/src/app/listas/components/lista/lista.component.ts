@@ -8,6 +8,7 @@ import { NgxMaterialTimepickerComponent } from 'ngx-material-timepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ListasService } from '../../../services/listas.service';
 import { updateNodeProgress  } from '../../helpers/list-utils';
+import { RelojSyncService } from '../../../services/reloj-sync.service';
 
 @Component({
   selector: 'app-lista',
@@ -80,7 +81,7 @@ export class ListaComponent {
       };
 
       this.tareasService.editarAsignacion(asignacion).subscribe({
-        next: () => console.log('⏰ Hora de la asignación actualizada'),
+        next: () => {console.log('⏰ Hora de la asignación actualizada'); this.relojSync.emitirActualizacion();},
         error: err => console.error('❌ Error al guardar hora:', err)
       });
     }
@@ -159,7 +160,7 @@ export class ListaComponent {
       .sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''));
   }
 
-  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef, private listasService: ListasService) {
+  constructor(private route: ActivatedRoute, private tareasService: TareasService, private authService: AuthService, private cd: ChangeDetectorRef, private relojSync: RelojSyncService) {
     this.listaId = this.route.snapshot.paramMap.get('id'); // Ahora listaId es string
   }
 
@@ -189,6 +190,7 @@ export class ListaComponent {
       next: (response) => {
         console.log('✅ Tarea guardada en el backend:', response);
         this.cd.markForCheck();           // 👈 en vez de detectChanges()
+        this.relojSync.emitirActualizacion();
         // 🔹 Aquí verifica si se está duplicando
         if (!response.title || response.title.trim() === '') {
           console.warn('⚠ Tarea sin título detectada, no se agrega al frontend.');
@@ -214,6 +216,7 @@ export class ListaComponent {
         
         this.cd.markForCheck();           // 👈 en vez de detectChanges()
         console.log('✅ Tarea eliminada correctamente');
+        this.relojSync.emitirActualizacion();
       },
       error: (error) => {
         console.error('❌ Error al eliminar tarea:', error);

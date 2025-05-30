@@ -34,12 +34,16 @@ ul{
 
 .boton-agregar > button{
     background: var(--color-terciario);
-    padding: 0 5vw;
+    padding: 0 1vw;
     border: none;
     border-radius: 52px;
-    font-size: 2em;
+    font-size: 1.8em;
     display: flex;
     align-items: center;
+}
+
+.boton-agregar > .elegida{
+    background: none;
 }
 
 .custom-class .timepicker-button:hover {

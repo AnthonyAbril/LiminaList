@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Tarea } from '../tarea/tarea';
 import { ListasService } from '../../../services/listas.service';
+import { RelojSyncService } from '../../../services/reloj-sync.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reloj',
@@ -12,18 +14,28 @@ export class RelojComponent implements OnInit, OnDestroy {
   tareasHoy: Tarea[] = [];
   horaActual: Date = new Date();
   intervalo: any;
+  subscripcionSync!: Subscription;
 
-  constructor(private listasService: ListasService) {}
+  constructor(
+    private listasService: ListasService,
+    private relojSync: RelojSyncService
+  ) {}
 
   ngOnInit(): void {
     this.actualizarHora();
     this.intervalo = setInterval(() => this.actualizarHora(), 1000);
     this.cargarTareasDelDia();
+
+    this.subscripcionSync = this.relojSync.tareasActualizadas$.subscribe(() => {
+      this.cargarTareasDelDia();
+    });
   }
 
   ngOnDestroy(): void {
     clearInterval(this.intervalo);
+    this.subscripcionSync?.unsubscribe();
   }
+
 
   actualizarHora(): void {
     this.horaActual = new Date();
