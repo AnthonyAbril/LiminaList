@@ -204,10 +204,54 @@ select, option{
     color: var(--color-texto);
     border: none;
 }
-.lista-container{
-  min-width: none;
+  .lista-container{
+    min-width: auto;
+    max-width: none;
+    width: 100vw;
+  }
+
+  .mini-container{
+    width: fit-content;
+  }
+
+  .mini-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
 }
 
-.mini-container{
-  width: fit-content;
+@media (max-width: 715px) {
+  .contenedor .mini-container {
+    display: none;
+  }
+
+    #barra-tareas {
+    position: fixed;              /* Fija en la pantalla */
+    bottom: 0;                    /* Parte inferior */
+    left: 50%;                    /* Centrado horizontalmente */
+    transform: translateX(-50%);  /* Ajusta al centro real */
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    background: var(--color-secundario);
+    padding: 15px;
+
+    border-top-right-radius: 52px;
+    border-top-left-radius: 52px; /* También puedes redondear ambos lados */
+    border-right: 10px solid var(--color-primario);
+    border-top: 10px solid var(--color-primario);
+    border-left: 10px solid var(--color-primario);
+    z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+  }
+
 }

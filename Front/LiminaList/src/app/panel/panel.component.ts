@@ -144,6 +144,29 @@ export class PanelComponent {
         });
     }
 
+    mostrarMiniSidebar = true;
+
+    // por ejemplo:
+    resumenChanged() {
+      if (window.innerWidth <= 715) {
+        this.mostrarMiniSidebar = true;
+      }
+    }
+
+    abrirResumen(tipo: string): void {
+      this.resumen = tipo;
+
+      if (window.innerWidth <= 715) {
+        this.mostrarMiniSidebar = true;
+      }
+    }
+
+    cerrarMiniSidebar(event: MouseEvent): void {
+      this.mostrarMiniSidebar = false;
+    }
+
+
+
 
   ngOnInit(): void {
     

@@ -3,7 +3,7 @@
 </div>
 
 <div class="contenedor">
-  <div class="mini-container">
+  <div class="mini-container" *ngIf="mostrarMiniSidebar" (click)="$event.stopPropagation()">
     <app-reloj *ngIf="resumen=='reloj'"></app-reloj>
     <div *ngIf="resumen=='calendar'"  class="calendar-mini">
             <div class="header-resum">
@@ -47,6 +47,6 @@
   <img [routerLink]="'/home'" src="assets\icons\house.svg" alt="" class="icono">
   <img (click)="resumen='reloj'" src="assets\icons\clock.svg" alt="Icono de Pluma" class="icono">
   <img src="assets\icons\ajustes.svg" alt="Icono de Pluma" class="icono">
-  <img (click)="resumen='calendar'" src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
+  <img (click)="abrirResumen('calendar')" src="assets\icons\calendar.svg" alt="Icono de Pluma" class="icono" [style]="'padding-bottom : 5px'">
   <img (click)="toggleEdicion()" src="assets\icons\square-pen-solid.svg" alt="Icono de Pluma" class="icono">
 </div>
