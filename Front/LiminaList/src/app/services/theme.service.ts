@@ -1,7 +1,37 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
+
+  
+  public modoOscuro$ = new BehaviorSubject<boolean>(false);
+  
+  private intervaloAuto: any;
+  private modoOscuroAutomatico = false;
+  private horaInicioAuto = '21:00';
+  private horaFinAuto = '07:00';
+
+  constructor(private zone: NgZone) { }
+
+  ngOnDestroy() {
+    clearInterval(this.intervaloAuto);
+  }
+
+  iniciarAutoDarkMode(modoAutomatico: boolean, horaInicio: string, horaFin: string) {
+    this.modoOscuroAutomatico = modoAutomatico;
+    this.horaInicioAuto = horaInicio;
+    this.horaFinAuto = horaFin;
+  }
+
+  detenerAutoDarkMode() {
+    clearInterval(this.intervaloAuto);
+  }
+
+  aplicarModoOscuro(activar: boolean) {
+    document.body.classList.toggle('dark-mode', activar);
+    localStorage.setItem('modoOscuro', activar ? 'true' : 'false');
+  }
   
   // Aplica colores al DOM y los guarda
   aplicarColores(colores: { [key: string]: string } | undefined | null) {
@@ -9,10 +39,12 @@ export class ThemeService {
       console.warn('⚠️ No se pudieron aplicar colores: objeto inválido');
       return;
     }
-
+  
     Object.entries(colores).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--color-${key}`, value);
     });
+
+    console.log("actualiza colores:",colores);
 
     localStorage.setItem('colores', JSON.stringify(colores));
   }

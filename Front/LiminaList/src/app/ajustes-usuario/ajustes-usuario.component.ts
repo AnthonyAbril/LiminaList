@@ -177,8 +177,18 @@ export class AjustesUsuarioComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
     this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe(() => {
       localStorage.setItem('colores', JSON.stringify(this.coloresActivos));
+
+      // ✅ Actualiza los ajustes locales con los valores actualizados
+      const ajustesActualizados = {
+        ...payload,
+        patronesDefault: this.patronesDisponibles.filter(p => p.fijo),
+        patronesGuardados: this.patronesDisponibles.filter(p => !p.fijo)
+      };
+
+      localStorage.setItem('ajustes', JSON.stringify(ajustesActualizados));
     });
   }
+
 
   obtenerColoresDelServidor(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
