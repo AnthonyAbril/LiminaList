@@ -117,6 +117,7 @@ class TareaController extends Controller
 
         $desde = $request->input('desde');
         $hasta = $request->input('hasta');
+        $userId = Auth::id();
 
         $tareasFechas = TareaFecha::with([
             'tarea' => function ($q) {
@@ -124,6 +125,11 @@ class TareaController extends Controller
                     ->with('subtareas');   //     y sigue cargando subtareas
             }
         ])
+        // Aseguramos que la tarea asociada pertenece al usuario autenticado
+        ->whereHas('tarea', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        // Filtramos por rango de fecha y hora
         ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
         ->get();
 
@@ -134,11 +140,13 @@ class TareaController extends Controller
     {
         $fecha = $request->validate(['fecha' => 'required|date'])['fecha'];
         $hoy   = today()->toDateString();
+        $userId = Auth::id();
 
         // 1) sincroniza regresivamente
         if ($fecha === $hoy) {
             TareaFecha::with('tarea')
                 ->where('fecha', $hoy)
+                ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
                 ->get()
                 ->filter(fn($tf) => $tf->tarea->rutinario)
                 ->each(fn($tf) => $tf->tarea->update(['progreso' => $tf->progreso]));
@@ -147,6 +155,7 @@ class TareaController extends Controller
         // 2) trae todo sin orden en SQL
         $tareasFechas = TareaFecha::with(['tarea' => fn($q) => $q->withTrashed()->with('subtareas')])
             ->whereDate('fecha', $fecha)
+            ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
             ->get();
 
         // 3) ordena en PHP por [padre, tarea_id]
