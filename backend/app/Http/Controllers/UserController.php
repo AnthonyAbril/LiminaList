@@ -82,6 +82,23 @@ class UserController extends Controller
                 ]
             ],
             [
+                'id' => 'prismo',
+                'nombre' => 'Prismo',
+                'fijo' => true,
+                'claro' => [
+                    'primario' => '#d0646d',
+                    'secundario' => '#e9c03b',
+                    'terciario' => '#5482bc',
+                    'texto' => '#ffffff'
+                ],
+                'oscuro' => [
+                    'primario'   => '#5D2C31',
+                    'secundario' => '#A88F14',
+                    'terciario'  => '#1D3C60',
+                    'texto'      => '#F5F5F5'
+                ],
+            ],
+            [
                 'id' => 'azul-pastel',
                 'nombre' => 'Azul Pastel',
                 'fijo' => true,

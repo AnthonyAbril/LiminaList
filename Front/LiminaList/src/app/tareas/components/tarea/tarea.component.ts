@@ -104,6 +104,19 @@ export class TareaComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  get esFechaPasada(): boolean {
+    if (!this.fecha || this.fecha === '--') return false;
+
+    const [anio, mes, dia] = this.fecha.split('-').map(Number);
+    const fechaTarea = new Date(Date.UTC(anio, mes - 1, dia));
+
+    const hoy = new Date();
+    const hoyUTC = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate()));
+
+    return fechaTarea < hoyUTC;
+  }
+
+
 
   private enviarProgreso(prog: number, fecha: string | null) {
     this.progreso$.next({ prog, fecha });
@@ -213,7 +226,7 @@ export class TareaComponent implements OnInit, OnDestroy {
   
   //metodo de tarea hoja
   cambiarEstado(): void {
-    if (this.subtareas.length > 0) return;
+    if (this.subtareas.length > 0||this.esFechaPasada) return;
 
     const progviejo = this.progreso;
     this.progreso = (this.progreso + 1) % this.estados.length;
