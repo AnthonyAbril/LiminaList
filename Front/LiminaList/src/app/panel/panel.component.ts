@@ -15,6 +15,8 @@ import { Tarea } from '../tareas/components/tarea/tarea';
 export class PanelComponent {
   editar = false; // 🔹 Estado global del modo edición
 
+  individual = false;
+
   listaSeleccionada: any;
   tareas: any[] = [];
 
@@ -125,6 +127,22 @@ export class PanelComponent {
       this.generarCalendario();
     }
 
+
+    esPasada: boolean = false;
+
+    verificarFechaPasada(listaId: string): void {
+      const año = parseInt(listaId.slice(1, 5), 10);
+      const mes = parseInt(listaId.slice(5, 7), 10) - 1; // JavaScript meses: 0-11
+      const dia = parseInt(listaId.slice(7, 9), 10);
+      
+      const fechaLista = new Date(Date.UTC(año, mes, dia));
+      const hoy = new Date();
+      const fechaHoy = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate()));
+      
+      this.esPasada = fechaLista < fechaHoy;
+    }
+
+
     abrirListaDelDia(fecha: Date | null): void {
       this.mostrarMiniSidebar = false;
       if (!fecha) return;
@@ -189,6 +207,7 @@ export class PanelComponent {
       if (listaId?.toString().startsWith('D')) {
         // ­──────── lista diaria ────────
         this.title = `${listaId.slice(1,5)}-${listaId.slice(5,7)}-${listaId.slice(7,9)}`;
+        this.verificarFechaPasada(listaId);
 
         this.listasService.getTareasPorFecha(listaId.slice(1)).subscribe({
           next: rows => {

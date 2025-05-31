@@ -51,5 +51,5 @@
   <img [routerLink]="'/home'" src="assets/icons/house.svg" alt="Inicio" class="icono">
   <img (click)="abrirResumen('reloj')" src="assets/icons/clock.svg" alt="Reloj" class="icono">
   <img (click)="abrirResumen('calendar')" src="assets/icons/calendar.svg" alt="Calendario" class="icono" style="padding-bottom: 5px">
-  <img (click)="toggleEdicion()" src="assets/icons/square-pen-solid.svg" alt="Editar" class="icono">
+  <img (click)="toggleEdicion()" src="assets/icons/square-pen-solid.svg" *ngIf="!esPasada" alt="Editar" class="icono">
 </div>

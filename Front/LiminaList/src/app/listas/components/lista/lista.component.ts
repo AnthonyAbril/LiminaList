@@ -53,6 +53,7 @@ export class ListaComponent {
   selectedIndex: number = -1;
 
   openPicker(index: number) {
+    //si es lista pasada no se puede editar
     this.selectedIndex = index;
     this.picker.open(); // ✅ Esto SÍ funciona
     this.tareas.forEach(element => {
