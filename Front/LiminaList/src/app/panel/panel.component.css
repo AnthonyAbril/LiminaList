@@ -255,9 +255,6 @@ select, option{
     width: 80vw;
   }
 
-  .icono{
-    height: 9vw;
-  }
 
   .mini-sidebar-overlay {
     position: fixed;
@@ -296,6 +293,13 @@ select, option{
     font-size: small;
   }
 
+}
+
+@media (max-width: 520px){
+  
+  .icono{
+    height: 10vw;
+  }
 }
 
 @media (max-width: 376px){
