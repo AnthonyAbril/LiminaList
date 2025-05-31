@@ -37,8 +37,6 @@ export class LoginComponent {
     localStorage.removeItem('token');     // token en localStorage
     localStorage.removeItem('colores'); // ✅
     localStorage.removeItem('ajustes');
-    sessionStorage.removeItem('token');   // token en sessionStorage
-    sessionStorage.removeItem('user_id'); // también limpiar user_id
     
     // ✅ limpiar estilos aplicados del usuario anterior
     ['primario', 'secundario', 'terciario', 'texto'].forEach(key => {
