@@ -35,6 +35,7 @@ export class AuthService {
           localStorage.setItem('token', response.access_token);
           localStorage.setItem('user_id', response.user.id.toString());
           console.log(response.user.id.toString());
+          this.getAjustes(response.access_token);
         }
       })
     );

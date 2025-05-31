@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   standalone: true,
@@ -40,7 +41,7 @@ export class AjustesUsuarioComponent implements OnInit {
 
   private debounceTimeout: any = null;
 
-  constructor(private http: HttpClient, private auth: AuthService, private router:Router) {}
+  constructor(private http: HttpClient, private auth: AuthService, private router:Router, private themeService: ThemeService) {}
 
   ngOnInit(): void {
     this.obtenerColoresDelServidor();
@@ -175,10 +176,9 @@ export class AjustesUsuarioComponent implements OnInit {
     };
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.getToken()}`);
-    this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe(() => {
+        this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe(() => {
       localStorage.setItem('colores', JSON.stringify(this.coloresActivos));
 
-      // ✅ Actualiza los ajustes locales con los valores actualizados
       const ajustesActualizados = {
         ...payload,
         patronesDefault: this.patronesDisponibles.filter(p => p.fijo),
@@ -186,6 +186,10 @@ export class AjustesUsuarioComponent implements OnInit {
       };
 
       localStorage.setItem('ajustes', JSON.stringify(ajustesActualizados));
+
+      // 🔁 Reiniciar auto dark mode con los nuevos valores
+      this.themeService.detenerAutoDarkMode();
+      this.themeService.iniciarAutoDarkMode(ajustesActualizados);
     });
   }
 

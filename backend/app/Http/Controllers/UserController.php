@@ -22,26 +22,6 @@ class UserController extends Controller
         // ✅ Evaluar modo oscuro automático
         $modoOscuro = $ajustes['modoOscuro'] ?? false;
 
-        if (!empty($ajustes['modoOscuroAutomatico']) && !empty($ajustes['horaInicioAuto']) && !empty($ajustes['horaFinAuto'])) {
-            $minAhora = now()->hour * 60 + now()->minute;
-            $minInicio = $this->horaAminutos($ajustes['horaInicioAuto']);
-            $minFin = $this->horaAminutos($ajustes['horaFinAuto']);
-
-            if ($minInicio < $minFin) {
-                $modoOscuro = $minAhora >= $minInicio && $minAhora < $minFin;
-            } else {
-                $modoOscuro = $minAhora >= $minInicio || $minAhora < $minFin;
-            }
-        }
-
-        \Log::info('⏰ Evaluando modo oscuro automático', [
-            'ahora' => now()->format('H:i'),
-            'minAhora' => $minAhora ?? null,
-            'minInicio' => $minInicio ?? null,
-            'minFin' => $minFin ?? null,
-            'resultado' => $modoOscuro ?? null
-        ]);
-
         
         $ajustes['modoOscuro'] = $modoOscuro;
 
