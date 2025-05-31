@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { LoadingService } from './services/loading.service';
+import { MidnightRefreshService } from './services/midnight-refresh.service';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { LoadingService } from './services/loading.service';
 export class AppComponent {
   title = 'LiminaList';
 
-  constructor(private router: Router, private loadingService: LoadingService) {
+  constructor(private router: Router, private loadingService: LoadingService, private midnightRefresh: MidnightRefreshService) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.loadingService.show();
@@ -23,4 +24,7 @@ export class AppComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.midnightRefresh.iniciarRefresco();
+  }
 }
