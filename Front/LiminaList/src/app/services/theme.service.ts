@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 @Injectable({
@@ -9,7 +10,10 @@ export class ThemeService {
 
   public modoOscuro$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private zone: NgZone) {}
+  constructor(
+    private zone: NgZone,
+    private http: HttpClient
+  ) {}
 
   iniciarAutoDarkMode(ajustes: any) {
     this.ajustes = ajustes;
@@ -21,7 +25,7 @@ export class ThemeService {
 
     // Evaluar cada minuto
     this.zone.runOutsideAngular(() => {
-      this.intervaloAuto = setInterval(() => this.evaluarModoOscuro(), 60000);
+      this.intervaloAuto = setInterval(() => this.evaluarModoOscuro(), 6000);
     });
   }
 
@@ -30,33 +34,63 @@ export class ThemeService {
   }
 
   evaluarModoOscuro() {
-    if (!this.ajustes || !this.ajustes.modoOscuroAutomatico) return;
+  const ajustesRaw = localStorage.getItem('ajustes');
+  if (!ajustesRaw) return;
 
-    const ahora = new Date();
-    const horaActual = ahora.getHours() + ahora.getMinutes() / 60;
+  this.ajustes = JSON.parse(ajustesRaw);
 
-    const [inicioH, inicioM] = this.ajustes.horaInicioAuto.split(':').map(Number);
-    const [finH, finM] = this.ajustes.horaFinAuto.split(':').map(Number);
+  if (!this.ajustes.modoOscuroAutomatico) return;
 
-    const horaInicio = inicioH + inicioM / 60;
-    const horaFin = finH + finM / 60;
+  const ahora = new Date();
+  const horaActual = ahora.getHours() + ahora.getMinutes() / 60;
 
-    let activar = false;
-    if (horaInicio < horaFin) {
-      activar = horaActual >= horaInicio && horaActual < horaFin;
-    } else {
-      activar = horaActual >= horaInicio || horaActual < horaFin;
-    }
+  const [inicioH, inicioM] = this.ajustes.horaInicioAuto.split(':').map(Number);
+  const [finH, finM] = this.ajustes.horaFinAuto.split(':').map(Number);
+  const horaInicio = inicioH + inicioM / 60;
+  const horaFin = finH + finM / 60;
 
-    const patron = [...(this.ajustes.patronesDefault || []), ...(this.ajustes.patronesGuardados || [])]
-      .find((p: any) => p.id === this.ajustes.patronActivo);
-
-    if (patron) {
-      const colores = activar ? patron.oscuro : patron.claro;
-      this.aplicarColores(colores);
-      this.modoOscuro$.next(activar);
-    }
+  let activar = false;
+  if (horaInicio < horaFin) {
+    activar = horaActual >= horaInicio && horaActual < horaFin;
+  } else {
+    activar = horaActual >= horaInicio || horaActual < horaFin;
   }
+
+  const patron = [...(this.ajustes.patronesDefault || []), ...(this.ajustes.patronesGuardados || [])]
+    .find((p: any) => p.id === this.ajustes.patronActivo);
+
+  if (!patron) return;
+
+  const colores = activar ? patron.oscuro : patron.claro;
+  this.aplicarColores(colores);
+  this.modoOscuro$.next(activar);
+
+  // ✅ Solo si el valor cambió, lo actualizamos en localStorage y backend
+  if (this.ajustes.modoOscuro !== activar) {
+    this.ajustes.modoOscuro = activar;
+    localStorage.setItem('ajustes', JSON.stringify(this.ajustes));
+
+    const payload = {
+      modoOscuro: activar,
+      patronActivo: this.ajustes.patronActivo,
+      patronesGuardados: this.ajustes.patronesGuardados,
+      modoOscuroAutomatico: this.ajustes.modoOscuroAutomatico,
+      horaInicioAuto: this.ajustes.horaInicioAuto,
+      horaFinAuto: this.ajustes.horaFinAuto
+    };
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.put('http://localhost:8000/api/ajustes', payload, { headers }).subscribe({
+      next: () => console.log('🌓 Modo oscuro actualizado automáticamente en backend'),
+      error: (err) => console.warn('❌ Error al actualizar modo oscuro en backend:', err)
+    });
+  }
+}
+
 
   aplicarColores(colores: Record<string, string>) {
     Object.entries(colores).forEach(([key, value]) => {

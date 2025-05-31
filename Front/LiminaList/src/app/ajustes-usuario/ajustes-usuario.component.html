@@ -27,22 +27,22 @@
   </section>
 
   
-    <section>
-        <label>
-            <input type="checkbox" [(ngModel)]="modoOscuroAutomatico" (change)="onAutoModeToggle()" />
-            Activar modo oscuro automáticamente
-        </label>
-        <div *ngIf="modoOscuroAutomatico" style="margin-left: 1em;">
-            <label>
-            Desde:
-            <input type="time" [(ngModel)]="horaInicioAuto" (change)="onAutoModeChange()" />
-            </label>
-            <label>
-            Hasta:
-            <input type="time" [(ngModel)]="horaFinAuto" (change)="onAutoModeChange()" />
-            </label>
-        </div>
-    </section>
+  <section>
+      <label>
+          <input type="checkbox" [(ngModel)]="modoOscuroAutomatico" (change)="onAutoModeToggle()" />
+          Activar modo oscuro automáticamente
+      </label>
+      <div *ngIf="modoOscuroAutomatico" style="margin-left: 1em;">
+          <label>
+          Desde:
+          <input type="time" [(ngModel)]="horaInicioAuto" (change)="onAutoModeChange()" />
+          </label>
+          <label>
+          Hasta:
+          <input type="time" [(ngModel)]="horaFinAuto" (change)="onAutoModeChange()" />
+          </label>
+      </div>
+  </section>
 
 
 

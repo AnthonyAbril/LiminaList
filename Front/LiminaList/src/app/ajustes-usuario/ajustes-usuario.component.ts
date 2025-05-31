@@ -87,15 +87,26 @@ export class AjustesUsuarioComponent implements OnInit {
   horaInicioAuto: string = '21:00';
   horaFinAuto: string = '07:00';
 
+  private debounceAutoTimeout: any = null;
+
   onAutoModeToggle(): void {
     this.evaluarModoAutomatico();
-    this.guardarColoresEnServidor();
+
+    clearTimeout(this.debounceAutoTimeout);
+    this.debounceAutoTimeout = setTimeout(() => {
+      this.guardarColoresEnServidor();
+    }, 800); // Espera 800ms después del último cambio
   }
 
   onAutoModeChange(): void {
     this.evaluarModoAutomatico();
-    this.guardarColoresEnServidor();
+
+    clearTimeout(this.debounceAutoTimeout);
+    this.debounceAutoTimeout = setTimeout(() => {
+      this.guardarColoresEnServidor();
+    }, 800); // Igual que arriba
   }
+
 
   cambiarColor(tipo: string, event: Event) {
     const valor = (event.target as HTMLInputElement).value;
