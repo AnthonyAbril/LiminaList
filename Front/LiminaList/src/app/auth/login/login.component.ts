@@ -35,7 +35,7 @@ export class LoginComponent {
     });
 
     localStorage.removeItem('token');     // token en localStorage
-    localStorage.removeItem('colores-activos'); // ✅
+    localStorage.removeItem('colores'); // ✅
     localStorage.removeItem('ajustes');
     sessionStorage.removeItem('token');   // token en sessionStorage
     sessionStorage.removeItem('user_id'); // también limpiar user_id

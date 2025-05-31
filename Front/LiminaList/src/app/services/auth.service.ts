@@ -42,6 +42,7 @@ export class AuthService {
             next: (ajustes) => {
               if (ajustes) {
                 const modoOscuro = ajustes.modoOscuro ?? false;
+                console.log("modo oscuro: ",modoOscuro);
                 const patronActivo = ajustes.patronActivo;
 
                 // Unir todos los patrones en una sola lista
@@ -65,7 +66,6 @@ export class AuthService {
 
                 // ✅ Guardar solo los colores activos en localStorage
                 localStorage.setItem('ajustes', JSON.stringify(ajustes));
-
               }
             },
             error: (err) => console.warn('⚠️ No se pudieron cargar los colores tras login:', err)
