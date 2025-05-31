@@ -1,10 +1,10 @@
 <li [class]="claseNivel">
   <div class="tarea">
     <div class="cabecera">
-      <button 
+      <button
         (click)="(this.subtareas.length==0)?cambiarEstado():null" 
         class="estado-boton" 
-        [style]="'background-color:'+this.estados[this.progreso].color"
+        [style.background-color]="(progreso != null && estados[progreso]) ? estados[progreso].color : ''"
         [attr.aria-label]="'Estado actual: ' + estados[progreso]"
       ></button>
       

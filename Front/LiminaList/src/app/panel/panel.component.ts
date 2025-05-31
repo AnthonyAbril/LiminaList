@@ -218,18 +218,20 @@ export class PanelComponent {
 
       } else {
         console.log('individual');
-
+        
         this.listasService.getListaPorId(listaId).subscribe(res => {
-        this.listaSeleccionada = res;
-        this.title = res.name;
+          this.listaSeleccionada = res;
+          this.title = res.name;
 
-        // ✅ AHORA: solo raíces; las subtareas se verán dentro del componente
-        this.tareas = res.tareas
-          .filter((t: Tarea) => !t.padre)               // ← sin padre ⇒ raíz
-          .map((t: Tarea) => ({
-            ...t,
-            subtareas: Array.isArray(t.subtareas) ? t.subtareas : []
-        }));
+          // ✅ AHORA: solo raíces; las subtareas se verán dentro del componente
+          this.tareas = res.tareas
+            .filter((t: Tarea) => !t.padre)               // ← sin padre ⇒ raíz
+            .map((t: Tarea) => ({
+              ...t,
+              subtareas: Array.isArray(t.subtareas) ? t.subtareas : []
+          }));
+          
+          console.log("1",this.tareas);
         });
       }
     }
