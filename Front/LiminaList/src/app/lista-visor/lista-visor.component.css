@@ -42,9 +42,15 @@ img{
   align-items:center;
 }
 
-.lista-compartir input,p{
+.lista-compartir input, .lista-compartir p{
   width: 40%;
   margin: 0;
+  border-radius: 20px;
+  border: none;
+  background-color: var(--color-secundario);
+  color: var(--color-texto);
+  padding-left: 10px;
+  font-size: 1em;
 }
 
 .lista-compartir button{
