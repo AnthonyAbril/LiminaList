@@ -178,26 +178,48 @@ class TareaController extends Controller
         ]);
 
         foreach ($data['tareasFechas'] as $row) {
-
-            /** 1️⃣ Confirmo que es raíz */
+            // 1️⃣ Solo raíz puede asignarse de forma masiva
             $tareaRaiz = Tarea::raiz()->find($row['tarea_id']);
-            if (!$tareaRaiz) {
-                return response()->json(['error'=>'Solo tareas raíz'], 422);
+            if (! $tareaRaiz) {
+                return response()->json(['error' => 'Solo tareas raíz pueden asignarse'], 422);
             }
 
-            /** 2️⃣ Construyo la lista de la raíz + TODAS sus subtareas */
-            $todas = $tareaRaiz->descendientesRecursivos();
+            // 2️⃣ Todos los nodos de esa raíz (raíz + subtareas recursivas)
+            $todos = $tareaRaiz->descendientesRecursivos();
 
-            /** 3️⃣ Creo/actualizo una fila por cada una */
-            foreach ($todas as $t) {
+            // 3️⃣ Calcular progreso inicial de la raíz:
+            //     – Si la raíz es puntual → hereda su propio progreso
+            //     – Si es rutinaria → arranca en 0
+            $progresoRaiz = $tareaRaiz->rutinario
+                ? 0
+                : $tareaRaiz->progreso;
+
+            // 4️⃣ Iterar sobre cada nodo (raíz + subtareas) y crear/actualizar asignación
+            foreach ($todos as $t) {
+                // – Si el nodo actual es la misma raíz Y la raíz es puntual:
+                //     usa $progresoRaiz
+                // – En cualquier otro caso (subtareas o raíz rutinaria): arranca en 0
+                $esRaizYEsPuntual = ($t->id === $tareaRaiz->id) && ! $tareaRaiz->rutinario;
+                $progresoParaEsteNodo = $esRaizYEsPuntual
+                    ? $progresoRaiz
+                    : 0;
+
                 TareaFecha::updateOrCreate(
-                    ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
-                    ['hora' => $row['hora'], 'progreso' => 0]
+                    [
+                        'tarea_id' => $t->id,
+                        'fecha'    => $row['fecha'],
+                    ],
+                    [
+                        'hora'     => $row['hora'],
+                        'progreso' => $progresoParaEsteNodo,
+                    ]
                 );
             }
         }
+
         return response()->json(['message' => 'Asignaciones guardadas'], 201);
     }
+
 
 
 
@@ -207,7 +229,7 @@ class TareaController extends Controller
         return response()->json($asignaciones);
     }
 
-    public function editarAsignaciones(Request $request)
+        public function editarAsignaciones(Request $request)
     {
         /** 1. Validación básica */
         $data = $request->validate([
@@ -224,7 +246,7 @@ class TareaController extends Controller
         }
 
         /** 3. Colección con la raíz + TODOS los descendientes */
-        $todos = $raiz->descendientesRecursivos();        // collection única
+        $todos = $raiz->descendientesRecursivos(); // collection única
 
         /** 4. Si el array está vacío ⇒ eliminar TODAS las asignaciones de todos los nodos */
         if (empty($data['asignaciones'])) {
@@ -235,32 +257,46 @@ class TareaController extends Controller
         }
 
         /** 5. Convertir a collection para búsquedas rápidas */
-        $nuevas = collect($data['asignaciones']);   // cada elem: ['fecha'=>…, 'hora'=>…]
+        $nuevas = collect($data['asignaciones']); // cada elem: ['fecha'=>…, 'hora'=>…]
 
         /** 6. Operaciones atómicas */
-        DB::transaction(function () use ($todos, $nuevas) {
+        DB::transaction(function () use ($todos, $nuevas, $raiz) {
+            // 6-a. Calcular progreso de la raíz puntual (si corresponde)
+            $progresoRaiz = $raiz->rutinario
+                ? 0
+                : $raiz->progreso;
 
-            /** 6-a. Limpiar fechas que ya no están */
+            // 6-b. Limpiar fechas que ya no están en $nuevas
             $todos->each(function ($t) use ($nuevas) {
-                $t->fechas                       // pluck fechas existentes de ese nodo
-                ->pluck('fecha')
-                ->each(function ($f) use ($t, $nuevas) {
-                    if (! $nuevas->contains('fecha', $f)) {
-                        $t->fechas()->where('fecha', $f)->delete();
-                    }
-                });
+                $t->fechas // pluck fechas existentes de ese nodo
+                  ->pluck('fecha')
+                  ->each(function ($f) use ($t, $nuevas) {
+                      if (! $nuevas->contains('fecha', $f)) {
+                          $t->fechas()->where('fecha', $f)->delete();
+                      }
+                  });
             });
 
-            /** 6-b. Crear / actualizar todas las nuevas fechas para cada nodo */
-            $nuevas->each(function ($row) use ($todos) {
-                $todos->each(function ($t) use ($row) {
+            // 6-c. Crear / actualizar todas las nuevas fechas para cada nodo
+            $nuevas->each(function ($row) use ($todos, $raiz, $progresoRaiz) {
+                foreach ($todos as $t) {
+                    // Si el nodo actual es la misma raíz Y la raíz es puntual → hereda su progreso
+                    // En cualquier otro caso, arranca en 0
+                    $esRaizYEsPuntual = ($t->id === $raiz->id) && ! $raiz->rutinario;
+                    $progresoParaEsteNodo = $esRaizYEsPuntual
+                        ? $progresoRaiz
+                        : 0;
+
                     TareaFecha::updateOrCreate(
                         ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
                         [
-                            'hora' => ($row['hora'] === null || $row['hora'] === '--:--' || $row['hora'] === '') ? null : $row['hora']
+                            'hora'     => ($row['hora'] === null || $row['hora'] === '--:--' || $row['hora'] === '')
+                                ? null
+                                : $row['hora'],
+                            'progreso' => $progresoParaEsteNodo,
                         ]
                     );
-                });
+                }
             });
         });
 
