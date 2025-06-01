@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tarea;
 use App\Models\TareaFecha;
+use App\Models\Lista;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado
@@ -17,55 +18,77 @@ class TareaController extends Controller
         return Tarea::with('subtareas')->get(); // 🔹 Carga todas las subtareas
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+        // 1) validación básica
+        $data = $request->validate([
+            // ya no pedimos 'user_id' en el payload
+            'id'        => 'required|integer|unique:tasks,id',
+            'title'     => 'required|string|max:255',
+            'list_id'   => 'required|string|size:8',
+            'padre'     => 'nullable|exists:tasks,id',
+            'rutinario' => 'required|boolean',
+            'progreso'  => 'required|integer',
+        ]);
 
-        try {
-            // 1) validación ÚNICA
-            $data = $request->validate([
-                'id'        => 'required|integer|unique:tasks,id',
-                'title'     => 'required|string|max:255',
-                'list_id'   => 'required|string|size:8',
-                'user_id'   => 'required|exists:users,id',
-                'padre'     => 'nullable|exists:tasks,id',
-                'rutinario' => 'required|boolean',
-                'progreso'  => 'required|integer',
-            ]);
+        $currentUser = Auth::id();
 
-            // 2) comprobar lista
-            $existe = \App\Models\Lista::where('id',$data['list_id'])
-                    ->where('user_id',$data['user_id'])->exists();
-            if (!$existe) {
-                return response()->json(['error'=>'La lista no existe para este usuario'],404);
+        // 2) buscar la lista y quién es su dueño
+        $lista = Lista::where('id', $data['list_id'])->first();
+        if (! $lista) {
+            return response()->json(['error' => 'Lista no encontrada'], 404);
+        }
+        $ownerId = $lista->user_id;
+        $soyDueno = ($ownerId === $currentUser);
+
+        // 3) si no soy dueño, comprobar permiso "editar"
+        if (! $soyDueno) {
+            $tieneEditar = DB::table('permisos')
+                ->where('lista_id',      $lista->id)
+                ->where('lista_user_id', $ownerId)
+                ->where('user_id',       $currentUser)
+                ->where('permiso',       'editar')
+                ->exists();
+            if (! $tieneEditar) {
+                return response()->json(['error' => 'No tienes permiso para crear tareas en esta lista'], 403);
             }
+        }
 
-            // 3) operar
-            $nueva = DB::transaction(function () use ($data) {
+        // 4) crear la tarea, **siempre apuntando al dueño de la lista** ($ownerId)
+        try {
+            $nueva = DB::transaction(function () use ($data, $ownerId) {
+                $t = Tarea::create([
+                    'id'        => $data['id'],
+                    'title'     => $data['title'],
+                    'list_id'   => $data['list_id'],
+                    'user_id'   => $ownerId,     // <-- forzamos el owner aquí
+                    'padre'     => $data['padre'] ?? null,
+                    'rutinario' => $data['rutinario'],
+                    'progreso'  => $data['progreso'],
+                ]);
 
-                /** A. crear tarea ---------------------------------- */
-                $t = Tarea::create($data);
-
-                /** B. si es subtarea ⇒ clonar asignaciones futuras -- */
+                // Si es subtarea, clonar asignaciones futuras de la tarea padre
                 if ($t->padre) {
                     $hoy = now()->toDateString();
-
                     TareaFecha::where('tarea_id', $t->padre)
-                        ->where('fecha','>=',$hoy)
+                        ->where('fecha', '>=', $hoy)
                         ->each(function ($f) use ($t) {
                             TareaFecha::create([
                                 'tarea_id' => $t->id,
+                                'user_id'  => $f->user_id,  // heredamos la columna user_id de la asignación padre
                                 'fecha'    => $f->fecha,
                                 'hora'     => $f->hora,
                                 'progreso' => 0,
                             ]);
                         });
                 }
-                return $t;        // <- devolver la nueva tarea
+
+                return $t;
             });
 
-            return response()->json($nueva,201);
-
-
-        } catch (\Exception $e) {
+            return response()->json($nueva, 201);
+        }
+        catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -144,24 +167,27 @@ class TareaController extends Controller
             'hasta' => 'required|date|after_or_equal:desde',
         ]);
 
-        $desde = $request->input('desde');
-        $hasta = $request->input('hasta');
+        $desde  = $request->input('desde');
+        $hasta  = $request->input('hasta');
         $userId = Auth::id();
 
         $tareasFechas = TareaFecha::with([
-            'tarea' => function ($q) use ($userId) {
-                $q->withTrashed()
-                ->with('subtareas')
-                ->where('user_id', $userId);
-            }
-        ])
-        ->where('user_id', $userId)
-        ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
-        ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
-        ->get();
+                // Cargamos la tarea (incluso soft-deleted) y sus subtareas,
+                // sin volver a filtrar por user_id aquí:
+                'tarea' => fn($q) => $q->withTrashed()->with('subtareas')
+            ])
+            ->where('user_id', $userId)  // solo las asignaciones de este colaborador
+            ->whereRaw(
+                "STR_TO_DATE(CONCAT(fecha, ' ', IFNULL(hora, '00:00:00')), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?",
+                [$desde, $hasta]
+            )
+            ->get()
+            ->sortBy(fn($tf) => [ $tf->tarea->padre ?? 0, $tf->tarea_id ])
+            ->values();
 
         return response()->json($tareasFechas);
     }
+
 
 
 
@@ -194,14 +220,14 @@ class TareaController extends Controller
 
             // 1️⃣ Si no es dueño, revisar permiso “asignar” en la tabla permisos:
             if (! $esDueno) {
-                $tieneAsignar = DB::table('permisos')
-                    ->where('lista_id', $listId)
+                $tieneAcceso = DB::table('permisos')
+                    ->where('lista_id',      $listId)
                     ->where('lista_user_id', $duenoId)
-                    ->where('user_id', $userId)
-                    ->where('permiso', 'asignar')
+                    ->where('user_id',       $userId)
+                    ->whereIn('permiso',    ['asignar','editar'])
                     ->exists();
 
-                if (! $tieneAsignar) {
+                if (! $tieneAcceso) {
                     return response()->json(['error' => 'No tienes permiso para asignar esta tarea'], 403);
                 }
             }
