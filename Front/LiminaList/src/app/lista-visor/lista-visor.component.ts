@@ -57,7 +57,8 @@ export class ListaVisorComponent implements OnInit {
 
   modo: string | null = null;
 
-  listaVisible = "Compartidas";
+  listaVisible = "Propias";
+  nuevoUsuarioCompartido:string = '';
 
   leftCollapsed = false;
   rightCollapsed = false;

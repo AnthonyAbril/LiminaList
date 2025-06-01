@@ -23,6 +23,42 @@ img{
   justify-content: space-between;
   padding-left: 20px;
   padding-right: 20px;
+  height: 12vh;
+}
+
+.lista-compartir {
+  width: 90%;
+}
+
+.lista-compartir ul{
+  list-style-type: none;
+  padding: 0;
+}
+
+.lista-compartir li{
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items:center;
+}
+
+.lista-compartir input,p{
+  width: 40%;
+  margin: 0;
+}
+
+.lista-compartir button{
+  background-color: var(--color-primario);
+  color: var(--color-texto);
+  font-size: large;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+
+.lista-compartir button:hover{
+  background-color: var(--color-secundario);
 }
 
 .sidebar {
@@ -172,6 +208,7 @@ img{
 
 /* Responsive para móviles */
 @media (max-width: 768px) {
+
   .sidebar {
     position: fixed;
     z-index: 1000;
@@ -218,6 +255,19 @@ img{
   .main-content {
     flex-direction: column;
   }
+
+  
+  .sidebar-info{
+    height: 88vh;
+  }
+
+  .nombreTarea{
+    height: 10vh;
+  }
+
+  .cerrar-btn{
+    height: 2vh;
+  }
 }
 
 
@@ -256,7 +306,8 @@ img{
   border: none;
   font-size: 3em;
   margin-left: 10px;
-  width: 60px;
+  min-width: 60px;
+  width: fit-content;
   border-radius: 20px;
   height: 60px;
 

@@ -6,6 +6,10 @@
       <div class="listas-header">
         <img src="assets/icons/dedo.png" [routerLink]="'/home'" alt="Icono de Pluma" class="boton-atras" />
         <h2>Listas</h2>
+        <button [style]="'font-size:1.5em'" (click)="listaVisible=(listaVisible=='Compartidas')?'Propias':'Compartidas'">
+          <ng-container *ngIf="listaVisible=='Compartidas'">Compartidas</ng-container>
+          <ng-container *ngIf="listaVisible=='Propias'">Propias</ng-container>
+        </button>
         <button (click)="abrirCrearLista()">+</button>
         <button (click)="activarBorrado()">
           <ng-container *ngIf="modo !== 'borrar'; else conLupa">-</ng-container>
@@ -93,6 +97,33 @@
             <div class="lista-acciones">
               <button (click)="abrirModal(listaSeleccionada.id)">Compartir</button>
               <button (click)="abrirBorrarModal(listaSeleccionada)">Eliminar</button>
+            </div>
+
+            <div class="lista-compartir">
+              <H2>Compartido con: </H2>
+              <ul>
+                <li>
+                  <input type="text" id="email" [(ngModel)]="nuevoUsuarioCompartido">
+                  <button>Ver</button>
+                  <button>Editar</button>
+                  <button>Usar</button>
+                  <button>+</button>
+                </li>
+                <li>
+                  <p>jonyjony</p>
+                  <button>Ver</button>
+                  <button>Editar</button>
+                  <button>Usar</button>
+                  <button>X</button>
+                </li>
+                <li>
+                  <p>jonyjony</p>
+                  <button>Ver</button>
+                  <button>Editar</button>
+                  <button>Usar</button>
+                  <button>X</button>
+                </li>
+              </ul>
             </div>
 
             <div class="lista-fechas">
