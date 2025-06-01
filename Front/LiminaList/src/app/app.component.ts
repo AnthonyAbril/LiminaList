@@ -18,8 +18,18 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private themeService: ThemeService,
     private auth: AuthService,
-    private midnightRefresh: MidnightRefreshService
-  ) {}
+    private midnightRefresh: MidnightRefreshService,
+    private router: Router, 
+    private loadingService: LoadingService
+  ) {
+     this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.loadingService.show();
+      } else if (event instanceof NavigationEnd) {
+        setTimeout(() => this.loadingService.hide(), 500); // 🔹 Pequeño retraso para suavizar la transición
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.midnightRefresh.iniciarRefresco();

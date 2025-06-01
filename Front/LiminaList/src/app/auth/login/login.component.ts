@@ -12,7 +12,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class LoginComponent {
   isActive: boolean = false; // 🔹 Alterna entre login y registro
   intentandoAcceder = false;
-  
+  mostrarPass = false;
+
   intentandoLogin = false;
   intentandoRegistro = false;
   errorLogin = ''; 
