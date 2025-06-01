@@ -52,14 +52,26 @@ class ListaController extends Controller
         return $propiasConColabs->merge($compartidas);
     }
 
-    public function quitarColaborador($listaId, $userId)
+    public function quitarColaboradorPorEmail(Request $request, $listaId)
     {
-        $lista = Lista::where('id', $listaId)->where('user_id', Auth::id())->firstOrFail();
+        // 1) Valido que venga "email"
+        $data = $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
 
-        \DB::table('permisos')->where([
-            'lista_id' => $listaId,
+        // 2) Aseguro que la lista existe y me pertenece
+        $lista = Lista::where('id', $listaId)
+                    ->where('user_id', Auth::id())
+                    ->firstOrFail();
+
+        // 3) Busco al usuario colaborador por su correo
+        $colaborador = User::where('email', $data['email'])->firstOrFail();
+
+        // 4) Borro la fila en "permisos" (lista_id + lista_user_id + user_id)
+        DB::table('permisos')->where([
+            'lista_id'      => $lista->id,
             'lista_user_id' => $lista->user_id,
-            'user_id' => $userId
+            'user_id'       => $colaborador->id
         ])->delete();
 
         return response()->json(['ok' => true]);
@@ -184,33 +196,39 @@ class ListaController extends Controller
             'permiso' => 'required|in:ver,editar,progreso,asignar'
         ]);
 
+        // 1) Verifico que $id sea de una lista mía
         $lista = Lista::where('id', $id)
                     ->where('user_id', Auth::id())
                     ->firstOrFail();
 
-        $userCompartir = User::where('email', $request->email)->firstOrFail();
+        // 2) Busco al usuario por email
+        $usuario = User::where('email', $request->email)->firstOrFail();
 
-        // No te puedes compartir a ti mismo
-        if ($userCompartir->id === Auth::id()) {
+        // 3) No permito compartir conmigo mismo
+        if ($usuario->id === Auth::id()) {
             return response()->json(['error' => 'No puedes compartir contigo mismo'], 400);
         }
 
-        // Crear o actualizar permiso
+        // 4) Inserto o actualizo el permiso en la tabla "permisos"
         \DB::table('permisos')->updateOrInsert(
             [
                 'lista_id'      => $lista->id,
                 'lista_user_id' => $lista->user_id,
-                'user_id'       => $userCompartir->id
+                'user_id'       => $usuario->id
             ],
             [
-                'permiso'       => $request->permiso,
-                'updated_at'    => now(),
-                'created_at'    => now()
+                'permiso'    => $request->permiso,
+                'updated_at' => now(),
+                'created_at' => now()
             ]
         );
 
-        return response()->json(['ok' => true, 'mensaje' => 'Lista compartida con ' . $userCompartir->name]);
+        return response()->json([
+            'ok' => true,
+            'mensaje' => "Lista compartida con {$usuario->name}"
+        ]);
     }
+
 
 
 }

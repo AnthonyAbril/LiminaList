@@ -114,7 +114,7 @@
                   <button (click)="modificarColaborador(colaborador,'ver')" [class.seleccionado]="colaborador.permiso == 'ver'">Ver</button>
                   <button (click)="modificarColaborador(colaborador,'editar')" [class.seleccionado]="colaborador.permiso == 'editar'">Editar</button>
                   <button (click)="modificarColaborador(colaborador,'progreso')" [class.seleccionado]="colaborador.permiso == 'progreso'">Usar</button>
-                  <button>Borrar</button>
+                  <button (click)="eliminarColaborador(colaborador.email)" >Borrar</button>
                 </li>
               </ul>
             </div>

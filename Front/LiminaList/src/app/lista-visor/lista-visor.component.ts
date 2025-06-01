@@ -56,7 +56,7 @@ export class ListaVisorComponent implements OnInit {
     });
 
     if(false)
-    this.listasService.eliminarPermisoColaborador('45686391', 2).subscribe({
+    this.listasService.eliminarPermisoColaborador('45686391', '2').subscribe({
       next: resp => console.log('✔️ Colaborador eliminado', resp),
       error: err => console.error('❌ Error eliminando colaborador', err)
     });
@@ -110,6 +110,14 @@ export class ListaVisorComponent implements OnInit {
 
     console.log(this.listaSeleccionadaId);
     console.log(correo);
+  }
+
+  eliminarColaborador(correo:string){
+    if(this.listaSeleccionada && correo && correo != "")
+    this.listasService.eliminarPermisoColaborador(this.listaSeleccionada.id, correo).subscribe({
+      next: resp => console.log('✔️ Colaborador eliminado', resp),
+      error: err => console.error('❌ Error eliminando colaborador', err)
+    });
   }
 
   toggleLeft() {

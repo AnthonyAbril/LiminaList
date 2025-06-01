@@ -311,16 +311,16 @@ export class ListasService {
   }
 
 
-  eliminarPermisoColaborador(listaId: string, colaboradorId: number): Observable<any> {
+  eliminarPermisoColaborador(listaId: string, colaboradorEmail: string): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) return throwError(() => new Error('Usuario no autenticado'));
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.delete(
-      `http://localhost:8000/api/lists/${listaId}/colaboradores/${colaboradorId}`,
-      { headers }
-    ).pipe(
+    // Envío el email como parámetro de consulta
+    const url = `http://localhost:8000/api/lists/${listaId}/colaboradores?email=${encodeURIComponent(colaboradorEmail)}`;
+
+    return this.http.delete(url, { headers }).pipe(
       tap(resp => console.log('✅ Permiso eliminado:', resp)),
       catchError(error => {
         console.error('❌ Error al eliminar permiso:', error);

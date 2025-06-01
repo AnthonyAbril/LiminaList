@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/lists/{id}/compartir', [ListaController::class, 'compartir']);
     Route::get('/listas-compartidas', [UserController::class, 'listasCompartidas']);
-    Route::delete('/lists/{id}/colaboradores/{userId}', [ListaController::class, 'quitarColaborador']);
+    Route::delete('/lists/{id}/colaboradores', [ListaController::class, 'quitarColaboradorPorEmail']);
 
     Route::get('/ajustes', [UserController::class, 'getAjustes']);
     Route::put('/ajustes', [UserController::class, 'guardarAjustes']);
