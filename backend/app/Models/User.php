@@ -55,12 +55,15 @@ class User extends Authenticatable
     ];
 
     public function listasCompartidas()
-    {
-        return $this->belongsToMany(
-            Lista::class,
-            'permisos',
-            'user_id',
-            'lista_id'
-        )->withPivot('permiso', 'lista_user_id')->withTimestamps();
-    }
+{
+    return $this->belongsToMany(
+        \App\Models\Lista::class,
+        'permisos',
+        'user_id',
+        'lista_id'
+    )
+    ->withPivot('permiso', 'lista_user_id')
+    ->withTimestamps();
+}
+
 }

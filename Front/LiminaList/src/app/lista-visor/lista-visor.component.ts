@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 
 export class ListaVisorComponent implements OnInit {
   listas: any[] = [];
+  compartidas: any[] = [];
   filtro: string = '';
 
   editando = false;
@@ -24,6 +25,7 @@ export class ListaVisorComponent implements OnInit {
 
     this.listasService.getListasCompartidas().subscribe(res => {
       console.log(res);
+      this.compartidas = res;
     });
 
     if(false)
@@ -36,7 +38,7 @@ export class ListaVisorComponent implements OnInit {
       error: err => console.error('❌ Error editando permiso', err)
     });
 
-    if(true)
+    if(false)
     this.listasService.getTareasListaCompartida('45686391').subscribe({
       next: tareas => {
         console.log('✅ Tareas recibidas:', tareas);
@@ -46,7 +48,7 @@ export class ListaVisorComponent implements OnInit {
       }
     });
 
-    if(true)
+    if(false)
     this.listasService.eliminarPermisoColaborador('45686391', 2).subscribe({
       next: resp => console.log('✔️ Colaborador eliminado', resp),
       error: err => console.error('❌ Error eliminando colaborador', err)
@@ -54,6 +56,8 @@ export class ListaVisorComponent implements OnInit {
   }
 
   modo: string | null = null;
+
+  listaVisible = "Compartidas";
 
   leftCollapsed = false;
   rightCollapsed = false;

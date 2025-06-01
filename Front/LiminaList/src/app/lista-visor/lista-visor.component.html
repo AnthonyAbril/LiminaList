@@ -15,8 +15,34 @@
         </button>
       </div>
 
-      <ul class="listas">
+      <ul *ngIf="listaVisible=='Propias'" class="listas">
         <li *ngFor="let lista of listas" class="lista-item">
+          <div class="lista-nombre" (click)="abrirLista(lista.id)">
+            <h3>{{ lista.name }}</h3>
+          </div>
+
+          <div class="opciones" (click)="modo === 'borrar' ? abrirBorrarModal(lista) : abrirVistaLista(lista)">
+            <ng-container *ngIf="modo === 'borrar'">
+              <a class="opcion">-</a>
+            </ng-container>
+            <ng-container *ngIf="modo !== 'borrar' && lista !== listaSeleccionada">
+              <img class="opcion" src="assets/icons/lupa.svg" style="height: 70%;" alt="" />
+            </ng-container>
+            <ng-container *ngIf="modo !== 'borrar' && lista === listaSeleccionada">
+              <img
+                class="opcion"
+                src="assets/icons/qr.svg"
+                style="height: 100%;"
+                alt="codigo qr"
+                (click)="abrirModal(lista.id)"
+              />
+            </ng-container>
+          </div>
+        </li>
+      </ul>
+
+      <ul *ngIf="listaVisible=='Compartidas'" class="compartidas">
+        <li *ngFor="let lista of compartidas" class="lista-item">
           <div class="lista-nombre" (click)="abrirLista(lista.id)">
             <h3>{{ lista.name }}</h3>
           </div>

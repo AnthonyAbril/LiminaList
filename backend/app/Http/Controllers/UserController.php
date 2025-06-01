@@ -6,16 +6,37 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado\
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;   // ⬅︎ asegúrate de tenerlo arriba del controlador
 
 class UserController extends Controller
 {
     public function listasCompartidas()
-    {
-        $user = Auth::user();
-        $listas = $user->listasCompartidas()->with('tareas')->get();
+        {
+            $user = Auth::user();
+            // Encuentra todas las filas en permisos donde el usuario es colaborador
+            $permisos = \DB::table('permisos')->where('user_id', $user->id)->get();
 
-        return response()->json($listas);
-    }
+            // Trae las listas correctamente (por id Y user_id del dueño)
+            $listas = collect();
+
+            foreach ($permisos as $permiso) {
+                $lista = \App\Models\Lista::where('id', $permiso->lista_id)
+                    ->where('user_id', $permiso->lista_user_id)
+                    ->with('tareas')
+                    ->first(); // <- AQUÍ ESTÁ EL CAMBIO
+                if ($lista) {
+                    $lista->permiso_colaborador = $permiso->permiso;
+                    $listas->push($lista);
+                }
+            }
+
+            return response()->json($listas->values());
+        }
+
+
+
+
+
 
 
 
