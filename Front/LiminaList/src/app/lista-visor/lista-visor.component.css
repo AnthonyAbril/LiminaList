@@ -63,6 +63,10 @@ img{
   margin-left: 10px;
 }
 
+.lista-compartir button.seleccionado{
+  background-color: var(--color-secundario);
+}
+
 .lista-compartir button:hover{
   background-color: var(--color-secundario);
 }

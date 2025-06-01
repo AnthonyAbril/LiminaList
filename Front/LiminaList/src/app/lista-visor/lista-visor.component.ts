@@ -17,6 +17,8 @@ export class ListaVisorComponent implements OnInit {
   compartidas: any[] = [];
   filtro: string = '';
 
+  permisos: any[] = [];
+
   editando = false;
 
   constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {
@@ -39,6 +41,11 @@ export class ListaVisorComponent implements OnInit {
     });
 
     if(false)
+    this.listasService.getColaboradoresDeLista('45686391').subscribe({
+      next: res => console.log(res)
+    });
+
+    if(false)
     this.listasService.getTareasListaCompartida('45686391').subscribe({
       next: tareas => {
         console.log('✅ Tareas recibidas:', tareas);
@@ -58,12 +65,52 @@ export class ListaVisorComponent implements OnInit {
   modo: string | null = null;
 
   listaVisible = "Propias";
-  nuevoUsuarioCompartido:string = '';
+  nuevoUsuarioCompartido = {
+    correo: "",
+    permisos: "ver",
+  }
 
   leftCollapsed = false;
   rightCollapsed = false;
   listaSeleccionada:Lista|null = null;
   borrar = false; //modo para eliminar o abrir tareas
+
+  agregarColaborador(){
+    const correo = this.nuevoUsuarioCompartido.correo;
+    const permiso = this.nuevoUsuarioCompartido.permisos;
+    console.log("asdads");
+    if(this.listaSeleccionada && correo && correo != "")
+    this.listasService.editarPermisoColaborador(
+      this.listaSeleccionada.id,       // ejemplo: '00457231'
+      correo,               // correo del colaborador
+      permiso                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+    ).subscribe({
+      next: res => console.log('✔️ Permiso editado', res),
+      error: err => console.error('❌ Error editando permiso', err)
+    });
+
+    console.log(this.listaSeleccionadaId);
+    console.log(correo);
+    
+  }
+
+  modificarColaborador(colaborador:any,permiso:string){
+    const correo = colaborador.email;
+    console.log("asdads");
+    console.log(colaborador);
+    if(this.listaSeleccionada && correo && correo != "")
+    this.listasService.editarPermisoColaborador(
+      this.listaSeleccionada.id,       // ejemplo: '00457231'
+      correo,               // correo del colaborador
+      permiso                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+    ).subscribe({
+      next: res => console.log('✔️ Permiso editado', res),
+      error: err => console.error('❌ Error editando permiso', err)
+    });
+
+    console.log(this.listaSeleccionadaId);
+    console.log(correo);
+  }
 
   toggleLeft() {
     this.leftCollapsed = !this.leftCollapsed;
@@ -128,6 +175,7 @@ export class ListaVisorComponent implements OnInit {
   cargarListas() {
     this.listasService.getListas().subscribe(data => {
       this.listas = data;
+      console.log(this.listas);
     });
   }
 

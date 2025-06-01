@@ -32,8 +32,11 @@ class Lista extends Model
             'permisos',
             'lista_id',
             'user_id'
-        )->withPivot('permiso', 'lista_user_id')->withTimestamps()
+        )
+        ->withPivot('permiso', 'lista_user_id')
+        ->withTimestamps()
         ->wherePivot('lista_user_id', $this->user_id);
     }
+
 
 }

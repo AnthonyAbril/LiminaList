@@ -10,7 +10,7 @@
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px); /* Aquí se aplica el desenfoque */
     -webkit-backdrop-filter: blur(10px); /* Soporte para Safari */
-    color: white; font-size: 1.5rem;
+    color: var(--color-texto); font-size: 1.5rem;
     z-index: 9999;
   }
   
@@ -31,7 +31,7 @@
     width: 75%;
     border-radius: 50%;
     border-bottom-right-radius: 17%;
-    background-color: white;
+    background-color: var(--color-texto);
     mask-image: radial-gradient(circle at 70% 50%, transparent 15%, black 16%);
   -webkit-mask-image: radial-gradient(circle at 70% 50%, transparent 15%, black 16%);
     
@@ -46,14 +46,14 @@
     top: 40%;
     height: 19%;
     width: 19%;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--color-texto);
     border-radius: 50%;
 }
 
 .cuello{
     height: 17%;
     width: 30%;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--color-texto);
     transform: translateY(-50%);
     z-index: -1000;
     
@@ -61,7 +61,7 @@
   
   .spinner {
     width: 60px; height: 60px;
-    border: 10px solid #f3f3f3; border-top: 10px solid #FF9E16;
+    border: 10px solid var(--color-texto); border-top: 10px solid var(--color-primario);
     border-radius: 50%; animation: spin 1s linear infinite;
   }
   

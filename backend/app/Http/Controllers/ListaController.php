@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Lista;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ListaController extends Controller
 {
@@ -14,10 +15,41 @@ class ListaController extends Controller
         $tipo = $request->query('tipo', 'individual');
         $user = Auth::user();
 
-        $propias = $user->listas()->where('tipo', $tipo)->with('tareas')->get();
-        $compartidas = $user->listasCompartidas()->where('tipo', $tipo)->with('tareas')->get();
+        // 1) Obtengo todas las listas propias (sin eager‐loading de colaboradores aún)
+        $propias = $user->listas()
+                        ->where('tipo', $tipo)
+                        ->with('tareas')
+                        ->get();
 
-        return $propias->merge($compartidas);
+        // 2) Para cada lista propia, busco en la tabla permisos los colaboradores
+        $propiasConColabs = $propias->map(function($lista) {
+            // obtengo todos los usuarios que aparecen en permisos para esta lista
+            $colabs = DB::table('permisos')
+                        ->join('users', 'users.id', '=', 'permisos.user_id')
+                        ->where('permisos.lista_id', $lista->id)
+                        ->where('permisos.lista_user_id', $lista->user_id)
+                        ->select([
+                            'users.id as id',
+                            'users.name as name',
+                            'users.email as email',
+                            'permisos.permiso as permiso'
+                        ])
+                        ->get();
+
+            // agrego esa colección directamente en la propiedad "colaboradores"
+            $lista->colaboradores = $colabs;
+            return $lista;
+        });
+
+        // 3) Ahora traigo las que el usuario es colaborador (no necesita mostrar “colaboradores”,
+        //    porque él mismo es colaborador de esas listas)
+        $compartidas = $user->listasCompartidas()
+                           ->where('tipo', $tipo)
+                           ->with('tareas')
+                           ->get();
+
+        // 4) Devuelvo el merge: primero las propias (con campo colaboradores), luego las compartidas
+        return $propiasConColabs->merge($compartidas);
     }
 
     public function quitarColaborador($listaId, $userId)
@@ -39,28 +71,39 @@ class ListaController extends Controller
     {
         $userId = Auth::id();
 
-        // Es el dueño
+        // 1) Intentamos cargarla como dueño, con tareas y con colaboradores
         $lista = Lista::where('id', $id)
             ->where('user_id', $userId)
-            ->with(['tareas' => function ($query) use ($userId) {
-                $query->where('user_id', $userId)->whereNull('padre')->with('subtareas');
-            }])->first();
+            ->with([
+                'tareas'       => function($q) use ($userId) {
+                    $q->where('user_id', $userId)
+                      ->whereNull('padre')
+                      ->with('subtareas');
+                },
+                'colaboradores'  // <--- agregamos la relación aquí
+            ])
+            ->first();
 
         if (!$lista) {
-            // ¿Es colaborador?
+            // 2) Si no eres dueño, quizá eres colaborador
             $permiso = \DB::table('permisos')
                 ->where('lista_id', $id)
                 ->where('user_id', $userId)
                 ->first();
 
             if ($permiso) {
-                // Si es colaborador, carga la lista del dueño correspondiente
+                // Cárgala desde el dueño que corresponda, pero también con colaboradores
                 $lista = Lista::where('id', $id)
                     ->where('user_id', $permiso->lista_user_id)
-                    ->with(['tareas' => function ($query) use ($userId) {
-                        // Si quieres, puedes mostrar todas las tareas, o solo las que puede ver el colaborador
-                        $query->whereNull('padre')->with('subtareas');
-                    }])->first();
+                    ->with([
+                        'tareas'       => function($q) {
+                            $q->whereNull('padre')->with('subtareas');
+                        },
+                        'colaboradores'  // <--- añadimos la relación aquí también
+                    ])
+                    ->first();
+                // (opcional) si quieres incluir el permiso que tienes sobre esta lista:
+                $lista->permiso_colaborador = $permiso->permiso;
             }
         }
 
@@ -68,14 +111,14 @@ class ListaController extends Controller
             return response()->json(['message' => 'Lista no encontrada o sin permisos'], 404);
         }
 
-        // Garantiza subtareas como array vacío
+        // Aseguramos que, si no hubo subtareas, quede como array vacío
         $lista->tareas->each(function ($tarea) {
-            if (!isset($tarea->subtareas)) {
+            if (! isset($tarea->subtareas)) {
                 $tarea->subtareas = collect([]);
             }
-            $tarea->subtareas->each(function ($subtarea) {
-                if (!isset($subtarea->subtareas)) {
-                    $subtarea->subtareas = collect([]);
+            $tarea->subtareas->each(function ($sub) {
+                if (! isset($sub->subtareas)) {
+                    $sub->subtareas = collect([]);
                 }
             });
         });

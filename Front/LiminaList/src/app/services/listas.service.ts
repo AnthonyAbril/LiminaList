@@ -265,7 +265,6 @@ export class ListasService {
     const token = localStorage.getItem('token');
     if (!token) return throwError(() => new Error('Usuario no autenticado'));
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
     // Supone que en el objeto "lista" viene un campo "colaboradores"
     return this.http.get<any>(`${this.apiUrl}/${listaId}`, { headers }).pipe(
       map(lista => lista.colaboradores || []),
