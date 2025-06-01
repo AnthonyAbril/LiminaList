@@ -25,6 +25,32 @@ export class ListaVisorComponent implements OnInit {
     this.listasService.getListasCompartidas().subscribe(res => {
       console.log(res);
     });
+
+    if(false)
+    this.listasService.editarPermisoColaborador(
+      '45686391',       // ejemplo: '00457231'
+      'jony@jony',               // correo del colaborador
+      'editar'                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+    ).subscribe({
+      next: res => console.log('✔️ Permiso editado', res),
+      error: err => console.error('❌ Error editando permiso', err)
+    });
+
+    if(true)
+    this.listasService.getTareasListaCompartida('45686391').subscribe({
+      next: tareas => {
+        console.log('✅ Tareas recibidas:', tareas);
+      },
+      error: err => {
+        console.error('❌ Error cargando tareas de lista compartida', err);
+      }
+    });
+
+    if(true)
+    this.listasService.eliminarPermisoColaborador('45686391', 2).subscribe({
+      next: resp => console.log('✔️ Colaborador eliminado', resp),
+      error: err => console.error('❌ Error eliminando colaborador', err)
+    });
   }
 
   modo: string | null = null;

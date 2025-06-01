@@ -292,17 +292,18 @@ export class ListasService {
     );
   }
 
-  editarPermisoColaborador(listaId: string, email: string, permiso: string): Observable<any> {
+  editarPermisoColaborador(listaId: string, colaboradorEmail: string, permiso: string): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) return throwError(() => new Error('Usuario no autenticado'));
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.post(
-      `${this.apiUrl}/${listaId}/compartir`,
-      { email, permiso },
+      `http://localhost:8000/api/lists/${listaId}/compartir`,
+      { email: colaboradorEmail, permiso },
       { headers }
     ).pipe(
-      tap(res => console.log('✅ Permiso editado:', res)),
+      tap(resp => console.log('✅ Permiso actualizado:', resp)),
       catchError(error => {
         console.error('❌ Error al editar permiso:', error);
         return throwError(() => error);
@@ -310,18 +311,20 @@ export class ListasService {
     );
   }
 
-  borrarColaboradorDeLista(listaId: string, userId: number): Observable<any> {
+
+  eliminarPermisoColaborador(listaId: string, colaboradorId: number): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) return throwError(() => new Error('Usuario no autenticado'));
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.delete(
-      `${this.apiUrl}/${listaId}/colaboradores/${userId}`,
+      `http://localhost:8000/api/lists/${listaId}/colaboradores/${colaboradorId}`,
       { headers }
     ).pipe(
-      tap(res => console.log('🗑️ Colaborador borrado:', res)),
+      tap(resp => console.log('✅ Permiso eliminado:', resp)),
       catchError(error => {
-        console.error('❌ Error al borrar colaborador:', error);
+        console.error('❌ Error al eliminar permiso:', error);
         return throwError(() => error);
       })
     );
