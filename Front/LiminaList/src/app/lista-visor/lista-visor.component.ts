@@ -24,7 +24,7 @@ export class ListaVisorComponent implements OnInit {
   constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {
     //pruebas
     console.log("PRUEBAS");
-
+    if(false)
     this.listasService.getListasCompartidas().subscribe(res => {
       console.log(res);
       this.compartidas = res;
@@ -209,7 +209,8 @@ export class ListaVisorComponent implements OnInit {
 
   cargarListas() {
     this.listasService.getListas().subscribe(data => {
-      this.listas = data;
+    this.listas = data.filter((lista: any) => !('pivot' in lista));
+    this.compartidas = data.filter((lista: any) => 'pivot' in lista);
       console.log(this.listas);
     });
   }
