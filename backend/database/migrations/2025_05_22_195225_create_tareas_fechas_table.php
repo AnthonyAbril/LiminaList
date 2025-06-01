@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unique(['tarea_id','fecha']);   //  ⬅️  justo antes del timestamps()
 
             // 🔹 Relaciones
-            $table->foreign('tarea_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('tarea_id')->references('id')->on('tasks');
             $table->timestamps(); // ✅ Esto agrega `created_at` y `updated_at`
 
         });
