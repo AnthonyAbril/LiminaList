@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado
+use Illuminate\Support\Facades\Log; // ✅ Asegurar que `Log` está importado\
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
-    private function horaAminutos($hora)
+    public function listasCompartidas()
     {
-        [$h, $m] = explode(':', $hora);
-        return (int)$h * 60 + (int)$m;
+        $user = Auth::user();
+        $listas = $user->listasCompartidas()->with('tareas')->get();
+
+        return response()->json($listas);
     }
+
 
 
     public function getAjustes(Request $request)

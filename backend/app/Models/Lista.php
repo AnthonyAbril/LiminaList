@@ -24,4 +24,16 @@ class Lista extends Model
         //return $this->hasMany(Tarea::class, 'list_id');
         return $this->hasMany(Tarea::class, 'list_id')->where('user_id', auth()->id());
     }
+
+    public function colaboradores()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'permisos',
+            'lista_id',
+            'user_id'
+        )->withPivot('permiso', 'lista_user_id')->withTimestamps()
+        ->wherePivot('lista_user_id', $this->user_id);
+    }
+
 }

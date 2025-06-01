@@ -10,36 +10,68 @@ class ListaController extends Controller
 {
     public function index(Request $request)
     {
-        //return Auth::user()->listas()->with('tareas')->get(); //devuelve todas las listas
         $tipo = $request->query('tipo', 'individual');
-        
-        return Auth::user()
-        ->listas()
-        ->where('tipo', $tipo)
-        ->with('tareas')
-        ->get();  //devuelve solo las listas individuales
+        $user = Auth::user();
+
+        $propias = $user->listas()->where('tipo', $tipo)->with('tareas')->get();
+        $compartidas = $user->listasCompartidas()->where('tipo', $tipo)->with('tareas')->get();
+
+        return $propias->merge($compartidas);
     }
+
+    public function quitarColaborador($listaId, $userId)
+    {
+        $lista = Lista::where('id', $listaId)->where('user_id', Auth::id())->firstOrFail();
+
+        \DB::table('permisos')->where([
+            'lista_id' => $listaId,
+            'lista_user_id' => $lista->user_id,
+            'user_id' => $userId
+        ])->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
+
 
     public function show($id)
     {
+        $userId = Auth::id();
+
+        // Es el dueño
         $lista = Lista::where('id', $id)
-        ->where('user_id', Auth::id()) // 🔹 Permitir cualquier tipo de lista
-        ->with(['tareas' => function ($query) {
-            $query->where('user_id', Auth::id())->whereNull('padre')->with('subtareas');
-        }])->first();
-
-
+            ->where('user_id', $userId)
+            ->with(['tareas' => function ($query) use ($userId) {
+                $query->where('user_id', $userId)->whereNull('padre')->with('subtareas');
+            }])->first();
 
         if (!$lista) {
-            return response()->json(['message' => 'Lista no encontrada'], 404);
+            // ¿Es colaborador?
+            $permiso = \DB::table('permisos')
+                ->where('lista_id', $id)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($permiso) {
+                // Si es colaborador, carga la lista del dueño correspondiente
+                $lista = Lista::where('id', $id)
+                    ->where('user_id', $permiso->lista_user_id)
+                    ->with(['tareas' => function ($query) use ($userId) {
+                        // Si quieres, puedes mostrar todas las tareas, o solo las que puede ver el colaborador
+                        $query->whereNull('padre')->with('subtareas');
+                    }])->first();
+            }
         }
 
-        // 🔹 Recorre todas las tareas y subtareas para garantizar que `subtareas` exista como un array vacío
+        if (!$lista) {
+            return response()->json(['message' => 'Lista no encontrada o sin permisos'], 404);
+        }
+
+        // Garantiza subtareas como array vacío
         $lista->tareas->each(function ($tarea) {
             if (!isset($tarea->subtareas)) {
                 $tarea->subtareas = collect([]);
             }
-
             $tarea->subtareas->each(function ($subtarea) {
                 if (!isset($subtarea->subtareas)) {
                     $subtarea->subtareas = collect([]);
@@ -47,10 +79,9 @@ class ListaController extends Controller
             });
         });
 
-
-
         return response()->json($lista);
     }
+
 
     public function store(Request $request) {
         $validatedData = $request->validate([
@@ -101,5 +132,41 @@ class ListaController extends Controller
 
         return response()->json(['message' => 'Lista eliminada correctamente'], 200);
     }
+
+    public function compartir(Request $request, $id)
+    {
+        $request->validate([
+            'email'   => 'required|email|exists:users,email',
+            'permiso' => 'required|in:ver,editar,progreso,asignar'
+        ]);
+
+        $lista = Lista::where('id', $id)
+                    ->where('user_id', Auth::id())
+                    ->firstOrFail();
+
+        $userCompartir = User::where('email', $request->email)->firstOrFail();
+
+        // No te puedes compartir a ti mismo
+        if ($userCompartir->id === Auth::id()) {
+            return response()->json(['error' => 'No puedes compartir contigo mismo'], 400);
+        }
+
+        // Crear o actualizar permiso
+        \DB::table('permisos')->updateOrInsert(
+            [
+                'lista_id'      => $lista->id,
+                'lista_user_id' => $lista->user_id,
+                'user_id'       => $userCompartir->id
+            ],
+            [
+                'permiso'       => $request->permiso,
+                'updated_at'    => now(),
+                'created_at'    => now()
+            ]
+        );
+
+        return response()->json(['ok' => true, 'mensaje' => 'Lista compartida con ' . $userCompartir->name]);
+    }
+
 
 }

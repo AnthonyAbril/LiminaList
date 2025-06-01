@@ -24,6 +24,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/lists/{id}', [ListaController::class, 'destroy']);
     Route::post('/editar-progreso', [TareaController::class, 'editarProgreso']);
     
+    Route::post('/lists/{id}/compartir', [ListaController::class, 'compartir']);
+    Route::get('/listas-compartidas', [UserController::class, 'listasCompartidas']);
+    Route::delete('/lists/{id}/colaboradores/{userId}', [ListaController::class, 'quitarColaborador']);
+
     Route::get('/ajustes', [UserController::class, 'getAjustes']);
     Route::put('/ajustes', [UserController::class, 'guardarAjustes']);
     

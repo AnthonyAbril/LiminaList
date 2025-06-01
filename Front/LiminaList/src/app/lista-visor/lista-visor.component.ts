@@ -18,7 +18,14 @@ export class ListaVisorComponent implements OnInit {
 
   editando = false;
 
-  constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {}
+  constructor(private listasService: ListasService, private authService: AuthService, private router: Router) {
+    //pruebas
+    console.log("PRUEBAS");
+
+    this.listasService.getListasCompartidas().subscribe(res => {
+      console.log(res);
+    });
+  }
 
   modo: string | null = null;
 

@@ -53,4 +53,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'theme_colors' => 'array', // 👈 necesario
     ];
+
+    public function listasCompartidas()
+    {
+        return $this->belongsToMany(
+            Lista::class,
+            'permisos',
+            'user_id',
+            'lista_id'
+        )->withPivot('permiso', 'lista_user_id')->withTimestamps();
+    }
 }

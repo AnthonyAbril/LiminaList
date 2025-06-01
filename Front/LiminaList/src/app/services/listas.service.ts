@@ -41,12 +41,12 @@ export class ListasService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get(`${this.apiUrl}/${listaId}`, { headers }).pipe(
-      catchError(error => {
+     tap(res => {console.log(res)}) 
+      ,catchError(error => {
         console.error('❌ Error al obtener lista:', error);
         return throwError(() => error);
       })
     );
-
   }
 
 
@@ -243,4 +243,89 @@ export class ListasService {
   getHistorialRaiz(): Observable<ProgresoDia[]> {
     return this.http.get<ProgresoDia[]>(`http://localhost:8000/api/historial-progreso/`, this.authHeaders());
   }
+
+
+
+
+  getListasCompartidas(): Observable<any[]> {
+    const token = localStorage.getItem('token');
+    if (!token) return throwError(() => new Error('Usuario no autenticado'));
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<any[]>(`http://localhost:8000/api/listas-compartidas`, { headers }).pipe(
+      tap(res => console.log('🔄 Listas compartidas:', res)),
+      catchError(error => {
+        console.error('❌ Error al obtener listas compartidas:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getColaboradoresDeLista(listaId: string): Observable<any[]> {
+    const token = localStorage.getItem('token');
+    if (!token) return throwError(() => new Error('Usuario no autenticado'));
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    // Supone que en el objeto "lista" viene un campo "colaboradores"
+    return this.http.get<any>(`${this.apiUrl}/${listaId}`, { headers }).pipe(
+      map(lista => lista.colaboradores || []),
+      tap(colabs => console.log('🧑‍🤝‍🧑 Colaboradores de la lista:', colabs)),
+      catchError(error => {
+        console.error('❌ Error al obtener colaboradores:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getTareasListaCompartida(listaId: string): Observable<Tarea[]> {
+    const token = localStorage.getItem('token');
+    if (!token) return throwError(() => new Error('Usuario no autenticado'));
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<any>(`${this.apiUrl}/${listaId}`, { headers }).pipe(
+      map(lista => lista.tareas || []),
+      tap(tareas => console.log('📝 Tareas de lista compartida:', tareas)),
+      catchError(error => {
+        console.error('❌ Error al obtener tareas de lista compartida:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  editarPermisoColaborador(listaId: string, email: string, permiso: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) return throwError(() => new Error('Usuario no autenticado'));
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post(
+      `${this.apiUrl}/${listaId}/compartir`,
+      { email, permiso },
+      { headers }
+    ).pipe(
+      tap(res => console.log('✅ Permiso editado:', res)),
+      catchError(error => {
+        console.error('❌ Error al editar permiso:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  borrarColaboradorDeLista(listaId: string, userId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) return throwError(() => new Error('Usuario no autenticado'));
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.delete(
+      `${this.apiUrl}/${listaId}/colaboradores/${userId}`,
+      { headers }
+    ).pipe(
+      tap(res => console.log('🗑️ Colaborador borrado:', res)),
+      catchError(error => {
+        console.error('❌ Error al borrar colaborador:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
 }
