@@ -96,6 +96,7 @@ export class ListaVisorComponent implements OnInit {
     const email = colaborador.email;
     console.log("asdads");
     console.log(colaborador);
+
     if(this.listaSeleccionada && email && email != "")
     this.listasService.editarPermisoColaborador(
       this.listaSeleccionada.id,       // ejemplo: '00457231'
@@ -103,7 +104,10 @@ export class ListaVisorComponent implements OnInit {
       permiso                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
     ).subscribe({
       next: res => {
-        console.log('✔️ Permiso editado', res);
+        {
+          console.log('✔️ Permiso editado', res);
+          this.loadColaboradores();
+        }
       },
       error: err => console.error('❌ Error editando permiso', err)
     });
@@ -116,7 +120,10 @@ export class ListaVisorComponent implements OnInit {
     if(this.listaSeleccionada && email && email != "")
     this.listasService.eliminarPermisoColaborador(this.listaSeleccionada.id, email).subscribe({
       next: resp => {
-        console.log('✔️ Colaborador eliminado', resp);
+        {
+          console.log('✔️ Colaborador eliminado', resp);
+          this.loadColaboradores();
+        };
       },
       error: err => console.error('❌ Error eliminando colaborador', err)
     });
@@ -130,8 +137,7 @@ export class ListaVisorComponent implements OnInit {
         next: (resp: any) => {
           // Si el backend incluyó "colaboradores" en el JSON, lo cogemos; si no,
           // lo dejamos como [] para no romper nada.
-          //this.listaSeleccionada!.colaboradores = resp.colaboradores || [];
-          console.log("aaa",resp);
+          this.listaSeleccionada!.colaboradores = resp.colaboradores || [];
         },
         error: err => console.error('❌ Error cargando colaboradores:', err)
       });
