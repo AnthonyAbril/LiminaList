@@ -11,16 +11,24 @@ return new class extends Migration
         Schema::create('tareas_fechas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('tarea_id');
+            $table->unsignedBigInteger('user_id');      // <-- NUEVO: cada asignación pertenece a un usuario
             $table->date('fecha');
-            $table->time('hora',5)->nullable(); // ✅ Ahora la hora puede ser NULL
-
+            $table->time('hora', 5)->nullable();
             $table->integer('progreso')->nullable();
-            $table->unique(['tarea_id','fecha']);   //  ⬅️  justo antes del timestamps()
 
-            // 🔹 Relaciones
-            $table->foreign('tarea_id')->references('id')->on('tasks');
-            $table->timestamps(); // ✅ Esto agrega `created_at` y `updated_at`
+            // Cambiamos la clave única para que sea por usuario
+            $table->unique(['tarea_id', 'fecha', 'user_id']);
 
+            // Relaciones
+            $table->foreign('tarea_id')
+                  ->references('id')->on('tasks')
+                  ->cascadeOnDelete();
+
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->cascadeOnDelete();
+
+            $table->timestamps();
         });
     }
 

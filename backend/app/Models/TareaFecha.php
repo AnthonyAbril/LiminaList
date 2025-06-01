@@ -11,7 +11,7 @@ class TareaFecha extends Model
     use HasFactory;
 
     protected $table = 'tareas_fechas'; // 🔹 Especificar la tabla de la base de datos
-    protected $fillable = ['tarea_id', 'fecha', 'hora', 'progreso']; // 🔹 Campos permitidos para inserción
+    protected $fillable = ['tarea_id', 'user_id', 'fecha', 'hora', 'progreso']; // 🔹 Campos permitidos para inserción
 
     public function setHoraAttribute($value)
     {
@@ -34,5 +34,11 @@ class TareaFecha extends Model
         /* 👇  con esto la relación trae incluso las tareas soft-deleted */
         return $this->belongsTo(Tarea::class, 'tarea_id', 'id')
                     ->withTrashed();           // ← añade esta llamada
+    }
+
+        // Relación con el usuario que “asigna” la fecha
+    public function usuario()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
     }
 }

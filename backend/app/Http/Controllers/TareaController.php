@@ -108,6 +108,35 @@ class TareaController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    public function eventosPorFecha(Request $request)
+    {
+        $fecha  = $request->validate(['fecha' => 'required|date'])['fecha'];
+        $userId = Auth::id();
+        $hoy    = today()->toDateString();
+
+        // 1) sincroniza regresivamente solo las filas que *este usuario* tenga para hoy
+        if ($fecha === $hoy) {
+            TareaFecha::where('fecha', $hoy)
+                ->where('user_id', $userId)
+                ->get()
+                ->filter(fn($tf) => $tf->tarea->rutinario)
+                ->each(fn($tf) => $tf->tarea->update(['progreso' => $tf->progreso]));
+        }
+
+        // 2) traemos solo las filas de este usuario, sin volver a exigir que sea dueño de la tarea
+        $tareasFechas = TareaFecha::with([
+                'tarea' => fn($q) => $q->withTrashed()->with('subtareas')
+            ])
+            ->whereDate('fecha', $fecha)
+            ->where('user_id', $userId)
+            ->get()
+            ->sortBy(fn($tf) => [ $tf->tarea->padre ?? 0, $tf->tarea_id ])
+            ->values();
+
+        return response()->json($tareasFechas);
+    }
+
+
     public function eventosProximos(Request $request)
     {
         $request->validate([
@@ -120,51 +149,20 @@ class TareaController extends Controller
         $userId = Auth::id();
 
         $tareasFechas = TareaFecha::with([
-            'tarea' => function ($q) {
-                $q->withTrashed()        // 👈  añade esto
-                    ->with('subtareas');   //     y sigue cargando subtareas
+            'tarea' => function ($q) use ($userId) {
+                $q->withTrashed()
+                ->with('subtareas')
+                ->where('user_id', $userId);
             }
         ])
-        // Aseguramos que la tarea asociada pertenece al usuario autenticado
-        ->whereHas('tarea', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })
-        // Filtramos por rango de fecha y hora
+        ->where('user_id', $userId)
+        ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
         ->whereRaw("STR_TO_DATE(CONCAT(fecha, ' ', hora), '%Y-%m-%d %H:%i:%s') BETWEEN ? AND ?", [$desde, $hasta])
         ->get();
 
         return response()->json($tareasFechas);
     }
 
-    public function eventosPorFecha(Request $request)
-    {
-        $fecha = $request->validate(['fecha' => 'required|date'])['fecha'];
-        $hoy   = today()->toDateString();
-        $userId = Auth::id();
-
-        // 1) sincroniza regresivamente
-        if ($fecha === $hoy) {
-            TareaFecha::with('tarea')
-                ->where('fecha', $hoy)
-                ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
-                ->get()
-                ->filter(fn($tf) => $tf->tarea->rutinario)
-                ->each(fn($tf) => $tf->tarea->update(['progreso' => $tf->progreso]));
-        }
-
-        // 2) trae todo sin orden en SQL
-        $tareasFechas = TareaFecha::with(['tarea' => fn($q) => $q->withTrashed()->with('subtareas')])
-            ->whereDate('fecha', $fecha)
-            ->whereHas('tarea', fn($q) => $q->where('user_id', $userId))
-            ->get();
-
-        // 3) ordena en PHP por [padre, tarea_id]
-        $tareasFechas = $tareasFechas->filter(fn($tf) => $tf->tarea !== null)
-        ->sortBy(fn($tf) => [ $tf->tarea->padre ?? 0, $tf->tarea_id ])
-        ->values();
-
-        return response()->json($tareasFechas);
-    }
 
 
 
@@ -177,28 +175,47 @@ class TareaController extends Controller
             'tareasFechas.*.hora'     => 'nullable|date_format:H:i',
         ]);
 
+        $userId = Auth::id();
+
         foreach ($data['tareasFechas'] as $row) {
-            // 1️⃣ Solo raíz puede asignarse de forma masiva
-            $tareaRaiz = Tarea::raiz()->find($row['tarea_id']);
+            $tareaRaiz = Tarea::raiz()
+                ->with('lista')                 // para traer list_id y user_id del dueño
+                ->where('id', $row['tarea_id'])
+                ->first();
+
             if (! $tareaRaiz) {
-                return response()->json(['error' => 'Solo tareas raíz pueden asignarse'], 422);
+                return response()->json(['error' => 'La tarea no existe o no es raíz'], 422);
             }
 
-            // 2️⃣ Todos los nodos de esa raíz (raíz + subtareas recursivas)
+            // Determinar datos de la lista / dueño:
+            $listId     = $tareaRaiz->list_id;   // id de la lista
+            $duenoId    = $tareaRaiz->user_id;   // user_id del dueño
+            $esDueno    = ($duenoId === $userId);
+
+            // 1️⃣ Si no es dueño, revisar permiso “asignar” en la tabla permisos:
+            if (! $esDueno) {
+                $tieneAsignar = DB::table('permisos')
+                    ->where('lista_id', $listId)
+                    ->where('lista_user_id', $duenoId)
+                    ->where('user_id', $userId)
+                    ->where('permiso', 'asignar')
+                    ->exists();
+
+                if (! $tieneAsignar) {
+                    return response()->json(['error' => 'No tienes permiso para asignar esta tarea'], 403);
+                }
+            }
+
+            // 2️⃣ Ahora sí: obtenemos la jerarquía completa (raíz + subtareas)
             $todos = $tareaRaiz->descendientesRecursivos();
 
             // 3️⃣ Calcular progreso inicial de la raíz:
-            //     – Si la raíz es puntual → hereda su propio progreso
-            //     – Si es rutinaria → arranca en 0
             $progresoRaiz = $tareaRaiz->rutinario
                 ? 0
                 : $tareaRaiz->progreso;
 
-            // 4️⃣ Iterar sobre cada nodo (raíz + subtareas) y crear/actualizar asignación
+            // 4️⃣ Crear/actualizar each asignación *para el usuario autenticado*
             foreach ($todos as $t) {
-                // – Si el nodo actual es la misma raíz Y la raíz es puntual:
-                //     usa $progresoRaiz
-                // – En cualquier otro caso (subtareas o raíz rutinaria): arranca en 0
                 $esRaizYEsPuntual = ($t->id === $tareaRaiz->id) && ! $tareaRaiz->rutinario;
                 $progresoParaEsteNodo = $esRaizYEsPuntual
                     ? $progresoRaiz
@@ -207,6 +224,7 @@ class TareaController extends Controller
                 TareaFecha::updateOrCreate(
                     [
                         'tarea_id' => $t->id,
+                        'user_id'  => $userId,
                         'fecha'    => $row['fecha'],
                     ],
                     [
@@ -223,15 +241,19 @@ class TareaController extends Controller
 
 
 
+
     public function getAsignaciones($tareaId)
     {
-        $asignaciones = TareaFecha::where('tarea_id', $tareaId)->get(['fecha', 'hora']);
+        $userId = Auth::id();
+
+        $asignaciones = TareaFecha::where('tarea_id', $tareaId)
+            ->where('user_id', $userId)
+            ->get(['fecha', 'hora']);
         return response()->json($asignaciones);
     }
 
-        public function editarAsignaciones(Request $request)
+    public function editarAsignaciones(Request $request)
     {
-        /** 1. Validación básica */
         $data = $request->validate([
             'tarea_id'      => 'required|exists:tasks,id',
             'asignaciones'  => 'nullable|array',
@@ -239,69 +261,101 @@ class TareaController extends Controller
             'asignaciones.*.hora'  => 'nullable|date_format:H:i',
         ]);
 
-        /** 2. Comprobar que la tarea es raíz */
-        $raiz = Tarea::raiz()->with('subtareas.subtareas')->find($data['tarea_id']);
+        $userId = Auth::id();
+
+        // 1) Recuperar la tarea raíz (sin filtrar por user_id), para tener list_id y user_id (dueño)
+        $raiz = Tarea::raiz()
+            ->with('lista')
+            ->where('id', $data['tarea_id'])
+            ->first();
+
         if (! $raiz) {
-            return response()->json(['error' => 'Solo tareas de primer nivel pueden editarse'], 422);
+            return response()->json(['error' => 'La tarea no existe o no es de primer nivel'], 422);
         }
 
-        /** 3. Colección con la raíz + TODOS los descendientes */
-        $todos = $raiz->descendientesRecursivos(); // collection única
+        $listId  = $raiz->list_id;    // id de la lista
+        $duenoId = $raiz->user_id;    // user_id del dueño
+        $esDueno = ($duenoId === $userId);
 
-        /** 4. Si el array está vacío ⇒ eliminar TODAS las asignaciones de todos los nodos */
+        // 2) Si no es dueño, verificar permiso "editar" o "asignar" en la tabla permisos:
+        if (! $esDueno) {
+            $tienePermiso = DB::table('permisos')
+                ->where('lista_id', $listId)
+                ->where('lista_user_id', $duenoId)
+                ->where('user_id', $userId)
+                ->whereIn('permiso', ['editar', 'asignar'])
+                ->exists();
+
+            if (! $tienePermiso) {
+                return response()->json(['error' => 'No tienes permiso para editar asignaciones'], 403);
+            }
+        }
+
+        // 3) Obtener todos los descendientes (si la tarea es raíz de hecho)
+        $todos = $raiz->descendientesRecursivos();
+
+        // 4) Si el array 'asignaciones' llega vacío, borrar todas las filas
         if (empty($data['asignaciones'])) {
-            DB::transaction(function () use ($todos) {
-                $todos->each(fn ($t) => $t->fechas()->delete());
+            DB::transaction(function () use ($todos, $userId) {
+                foreach ($todos as $t) {
+                    TareaFecha::where('tarea_id', $t->id)
+                            ->where('user_id', $userId)
+                            ->delete();
+                }
             });
             return response()->json(['message' => 'Todas las asignaciones eliminadas'], 200);
         }
 
-        /** 5. Convertir a collection para búsquedas rápidas */
-        $nuevas = collect($data['asignaciones']); // cada elem: ['fecha'=>…, 'hora'=>…]
+        $nuevas = collect($data['asignaciones']);
 
-        /** 6. Operaciones atómicas */
-        DB::transaction(function () use ($todos, $nuevas, $raiz) {
-            // 6-a. Calcular progreso de la raíz puntual (si corresponde)
-            $progresoRaiz = $raiz->rutinario
-                ? 0
-                : $raiz->progreso;
+        DB::transaction(function () use ($todos, $nuevas, $raiz, $userId) {
+            // 4-a) Calcular progreso inicial de la raíz puntual
+            $progresoRaiz = $raiz->rutinario ? 0 : $raiz->progreso;
 
-            // 6-b. Limpiar fechas que ya no están en $nuevas
-            $todos->each(function ($t) use ($nuevas) {
-                $t->fechas // pluck fechas existentes de ese nodo
-                  ->pluck('fecha')
-                  ->each(function ($f) use ($t, $nuevas) {
-                      if (! $nuevas->contains('fecha', $f)) {
-                          $t->fechas()->where('fecha', $f)->delete();
-                      }
-                  });
-            });
+            // 4-b) Limpiar fechas que ya no vienen en $nuevas (solo para este user_id)
+            foreach ($todos as $t) {
+                $fechasExistentes = TareaFecha::where('tarea_id', $t->id)
+                                            ->where('user_id', $userId)
+                                            ->pluck('fecha');
+                foreach ($fechasExistentes as $f) {
+                    if (! $nuevas->contains('fecha', $f)) {
+                        TareaFecha::where('tarea_id', $t->id)
+                                ->where('fecha', $f)
+                                ->where('user_id', $userId)
+                                ->delete();
+                    }
+                }
+            }
 
-            // 6-c. Crear / actualizar todas las nuevas fechas para cada nodo
-            $nuevas->each(function ($row) use ($todos, $raiz, $progresoRaiz) {
+            // 4-c) Crear o actualizar cada asignación nueva para cada nodo
+            foreach ($nuevas as $row) {
                 foreach ($todos as $t) {
-                    // Si el nodo actual es la misma raíz Y la raíz es puntual → hereda su progreso
-                    // En cualquier otro caso, arranca en 0
                     $esRaizYEsPuntual = ($t->id === $raiz->id) && ! $raiz->rutinario;
                     $progresoParaEsteNodo = $esRaizYEsPuntual
                         ? $progresoRaiz
                         : 0;
 
                     TareaFecha::updateOrCreate(
-                        ['tarea_id' => $t->id, 'fecha' => $row['fecha']],
+                        [
+                            'tarea_id' => $t->id,
+                            'user_id'  => $userId,
+                            'fecha'    => $row['fecha'],
+                        ],
                         [
                             'hora'     => ($row['hora'] === null || $row['hora'] === '--:--' || $row['hora'] === '')
-                                ? null
-                                : $row['hora'],
+                                        ? null
+                                        : $row['hora'],
                             'progreso' => $progresoParaEsteNodo,
                         ]
                     );
                 }
-            });
+            }
         });
 
         return response()->json(['message' => 'Asignaciones actualizadas correctamente'], 200);
     }
+
+
 
     public function editarProgreso(Request $request)
     {
@@ -314,51 +368,70 @@ class TareaController extends Controller
 
         $tarea = Tarea::findOrFail($data['tarea_id']);
         $p     = $data['progreso'];
-        $fecha = $data['fecha'] ?? null;            // null ⇒ edición desde lista individual (hoy)
+        $fecha = $data['fecha'] ?? null;       // null => edición “de hoy”
         $hoy   = today()->toDateString();
+        $userId = Auth::id();
 
-        DB::transaction(function () use ($tarea, $p, $fecha, $hoy) {
+        DB::transaction(function () use ($tarea, $p, $fecha, $hoy, $userId) {
 
             // ———— 1) edición desde lista diaria ————
             if ($fecha) {
-                // 1.1) Actualiza SOLO esa fila de TareaFecha
+                // 1.1) Actualizar SOLO esa fila de *este usuario*
                 TareaFecha::updateOrCreate(
-                    ['tarea_id' => $tarea->id, 'fecha' => $fecha],
+                    [
+                        'tarea_id' => $tarea->id,
+                        'user_id'  => $userId,
+                        'fecha'    => $fecha
+                    ],
                     ['progreso' => $p]
                 );
 
+                // 1.2) Sincronizar, para que TODOS los usuarios que tengan
+                // la misma tarea+fecha vean el mismo progreso
+                TareaFecha::where('tarea_id', $tarea->id)
+                    ->where('fecha', $fecha)
+                    ->update(['progreso' => $p]);
+
                 if (! $tarea->rutinario) {
-                    // ——— puntual: sincroniza central + futuras ———
+                    // puntual: sincronizar “central” + FUTURAS filas (todas las user_id)
                     $tarea->update(['progreso' => $p]);
                     TareaFecha::where('tarea_id', $tarea->id)
                         ->where('fecha', '>=', $hoy)
                         ->update(['progreso' => $p]);
                 }
                 elseif ($fecha === $hoy) {
-                    // ——— rutinaria, pero SONDE hoy: solo sincroniza central ———
+                    // rutinaria, pero para hoy: solo sincroniza “central”
                     $tarea->update(['progreso' => $p]);
                 }
-
-                // en rutinaria FUTURA no tocamos nada más
+                // rutinaria FUTURA: no tocamos nada más
                 return;
             }
 
-            // ———— 2) edición desde lista individual (fecha = null ⇒ hoy) ————
+            // ———— 2) edición “por lista individual” (fecha = null => HOY) ————
             $tarea->update(['progreso' => $p]);
 
-            // si existe asignación para hoy, la actualizamos
+            // 2.1) Si ya tenía asignación para hoy, la actualizamos; si no, la creamos
             TareaFecha::updateOrCreate(
-                ['tarea_id' => $tarea->id, 'fecha' => $hoy],
+                [
+                    'tarea_id' => $tarea->id,
+                    'user_id'  => $userId,
+                    'fecha'    => $hoy
+                ],
                 ['progreso' => $p]
             );
 
+            // 2.2) Sincronizar progreso para que TODOS los usuarios vean el mismo valor
+            TareaFecha::where('tarea_id', $tarea->id)
+                ->where('fecha', $hoy)
+                ->update(['progreso' => $p]);
+
             if (! $tarea->rutinario) {
-                // puntual: además propagamos a futuras
+                // puntual: además propagamos a FUTURAS filas para todos los usuarios
                 TareaFecha::where('tarea_id', $tarea->id)
                     ->where('fecha', '>=', $hoy)
                     ->update(['progreso' => $p]);
             }
-            // rutina: nunca tocamos futuras
+            // rutinaria: nunca tocamos futuras
         });
 
         return response()->json(['ok' => true]);
