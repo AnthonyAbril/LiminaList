@@ -103,7 +103,7 @@
               <H2>Compartido con: </H2>
               <ul>
                 <li>
-                  <input type="text" id="email" [(ngModel)]="nuevoUsuarioCompartido.correo">
+                  <input type="text" id="email" [(ngModel)]="nuevoUsuarioCompartido.email">
                   <button (click)="nuevoUsuarioCompartido.permisos = 'ver'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'ver'">Ver</button>
                   <button (click)="nuevoUsuarioCompartido.permisos = 'editar'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'editar'">Editar</button>
                   <button (click)="nuevoUsuarioCompartido.permisos = 'progreso'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'progreso'">Usar</button>

@@ -83,52 +83,82 @@ class ListaController extends Controller
     {
         $userId = Auth::id();
 
-        // 1) Intentamos cargarla como dueño, con tareas y con colaboradores
+        // 1) Intentamos cargarla como dueño, con tareas
         $lista = Lista::where('id', $id)
             ->where('user_id', $userId)
             ->with([
-                'tareas'       => function($q) use ($userId) {
+                'tareas' => function($q) use ($userId) {
                     $q->where('user_id', $userId)
-                      ->whereNull('padre')
-                      ->with('subtareas');
-                },
-                'colaboradores'  // <--- agregamos la relación aquí
+                    ->whereNull('padre')
+                    ->with('subtareas');
+                }
             ])
             ->first();
 
-        if (!$lista) {
-            // 2) Si no eres dueño, quizá eres colaborador
+        if ($lista) {
+            // Somos el dueño: ahora buscamos manualmente todos los colaboradores de esa lista
+            $colabs = DB::table('permisos')
+                ->join('users', 'users.id', '=', 'permisos.user_id')
+                ->where('permisos.lista_id', $lista->id)
+                ->where('permisos.lista_user_id', $lista->user_id)
+                ->select([
+                    'users.id as id',
+                    'users.name as name',
+                    'users.email as email',
+                    'permisos.permiso as permiso'
+                ])
+                ->get();
+
+            // Adjuntamos ese array en la propiedad "colaboradores"
+            $lista->colaboradores = $colabs;
+        }
+        else {
+            // 2) Si no eres dueño, quizás eres colaborador
             $permiso = \DB::table('permisos')
                 ->where('lista_id', $id)
                 ->where('user_id', $userId)
                 ->first();
 
             if ($permiso) {
-                // Cárgala desde el dueño que corresponda, pero también con colaboradores
+                // Cárgala desde el dueño que corresponda
                 $lista = Lista::where('id', $id)
                     ->where('user_id', $permiso->lista_user_id)
                     ->with([
-                        'tareas'       => function($q) {
+                        'tareas' => function($q) {
                             $q->whereNull('padre')->with('subtareas');
-                        },
-                        'colaboradores'  // <--- añadimos la relación aquí también
+                        }
                     ])
                     ->first();
-                // (opcional) si quieres incluir el permiso que tienes sobre esta lista:
+
+                // Seleccionamos también sus colaboradores igual que antes
+                $colabs = DB::table('permisos')
+                    ->join('users', 'users.id', '=', 'permisos.user_id')
+                    ->where('permisos.lista_id', $lista->id)
+                    ->where('permisos.lista_user_id', $lista->user_id)
+                    ->select([
+                        'users.id as id',
+                        'users.name as name',
+                        'users.email as email',
+                        'permisos.permiso as permiso'
+                    ])
+                    ->get();
+
+                $lista->colaboradores = $colabs;
+                // (opcional) añadimos también el permiso que ese colaborador tiene sobre la lista
                 $lista->permiso_colaborador = $permiso->permiso;
             }
         }
 
-        if (!$lista) {
+        if (! $lista) {
             return response()->json(['message' => 'Lista no encontrada o sin permisos'], 404);
         }
 
-        // Aseguramos que, si no hubo subtareas, quede como array vacío
-        $lista->tareas->each(function ($tarea) {
+        // 3) Asegurarnos de que “tareas” y “subtareas” tienen arrays, no null
+        $lista->tareas->each(function($tarea) {
             if (! isset($tarea->subtareas)) {
                 $tarea->subtareas = collect([]);
             }
-            $tarea->subtareas->each(function ($sub) {
+            $tarea->subtareas->each(function($sub) {
                 if (! isset($sub->subtareas)) {
                     $sub->subtareas = collect([]);
                 }
@@ -137,6 +167,7 @@ class ListaController extends Controller
 
         return response()->json($lista);
     }
+
 
 
     public function store(Request $request) {
