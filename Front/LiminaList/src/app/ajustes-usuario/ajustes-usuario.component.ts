@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
+import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @Component({
   standalone: true,
   selector: 'app-ajustes-usuario',
   templateUrl: './ajustes-usuario.component.html',
   styleUrls: ['./ajustes-usuario.component.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule,NgxMaterialTimepickerModule]
 })
 export class AjustesUsuarioComponent implements OnInit {
   nombreUsuario: string = '...';
@@ -25,6 +26,44 @@ export class AjustesUsuarioComponent implements OnInit {
   coloresOscuro: Record<string, string> = this.getDarkDefaultColors();
 
   patronesDisponibles: any[] = [];
+
+  // 1) Añade ViewChilds para cada timepicker
+  @ViewChild('pickerInicio') pickerInicio!: NgxMaterialTimepickerComponent;
+  @ViewChild('pickerFin')    pickerFin!: NgxMaterialTimepickerComponent;
+
+  modoOscuroAutomatico: boolean = false;
+  horaInicioAuto: string = '21:00';
+  horaFinAuto: string    = '07:00';
+
+  private debounceAutoTimeout: any = null;
+  // 3) NUEVO - método que setea horaInicioAuto cuando el usuario selecciona una hora
+  onHoraInicioChange(newTime: string) {
+    this.horaInicioAuto = newTime;
+    // Reaplica la lógica de onAutoModeChange para guardar con debounce
+    this.onAutoModeChange();
+  }
+
+  // 4) NUEVO - método que setea horaFinAuto cuando el usuario selecciona una hora
+  onHoraFinChange(newTime: string) {
+    this.horaFinAuto = newTime;
+    // Reaplica la lógica de onAutoModeChange para guardar con debounce
+    this.onAutoModeChange();
+  }
+
+
+  myTheme = {
+    container: { 
+      bodyBackgroundColor: "var(--color-terciario)",
+      buttonColor: "var(--color-texto)",
+    },
+    dial: { dialBackgroundColor: "var(--color-primario)" },
+    clockFace: {
+      clockFaceInnerTimeInactiveColor: "var(--color-texto)",
+      clockFaceBackgroundColor: "var(--color-terciario)",
+      clockHandColor: "var(--color-primario)",
+      clockFaceTimeInactiveColor: "var(--color-texto)"
+    }
+  };
 
   get coloresActivos(): Record<string, string> {
     return this.modoOscuro ? this.coloresOscuro : this.coloresClaro;
@@ -82,12 +121,6 @@ export class AjustesUsuarioComponent implements OnInit {
       this.guardarColoresEnServidor();
     }
   }
-
-  modoOscuroAutomatico: boolean = false;
-  horaInicioAuto: string = '21:00';
-  horaFinAuto: string = '07:00';
-
-  private debounceAutoTimeout: any = null;
 
   onAutoModeToggle(): void {
     this.evaluarModoAutomatico();

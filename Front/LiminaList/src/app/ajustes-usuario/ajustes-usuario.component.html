@@ -33,15 +33,47 @@
           Activar modo oscuro automáticamente
       </label>
       <div *ngIf="modoOscuroAutomatico" style="margin-left: 1em;">
-          <label>
-          Desde:
-          <input type="time" [(ngModel)]="horaInicioAuto" (change)="onAutoModeChange()" />
-          </label>
-          <label>
-          Hasta:
-          <input type="time" [(ngModel)]="horaFinAuto" (change)="onAutoModeChange()" />
-          </label>
-      </div>
+      <label>
+        Desde:
+        <!-- Input readonly que abre el timepicker -->
+        <input
+          readonly
+          class="inputHora"
+          [value]="horaInicioAuto"
+          (click)="pickerInicio.open()"
+          placeholder="Selecciona hora inicio"
+        />
+        <!-- Timepicker para 'horaInicioAuto' -->
+        <ngx-material-timepicker
+          #pickerInicio
+          [format]="24"
+          [theme]="myTheme"
+          appendTo="body"
+          panelClass="mi-timepicker-al-frente"
+          (timeSet)="onHoraInicioChange($event)"
+        ></ngx-material-timepicker>
+      </label>
+      <label>
+        Hasta:
+        <!-- Input readonly que abre el timepicker -->
+        <input
+          readonly
+          class="inputHora"
+          [value]="horaFinAuto"
+          (click)="pickerFin.open()"
+          placeholder="Selecciona hora fin"
+        />
+        <!-- Timepicker para 'horaFinAuto' -->
+        <ngx-material-timepicker
+          #pickerFin
+          [format]="24"
+          [theme]="myTheme"
+          appendTo="body"
+          panelClass="mi-timepicker-al-frente"
+          (timeSet)="onHoraFinChange($event)"
+        ></ngx-material-timepicker>
+      </label>
+    </div>
   </section>
 
 
