@@ -62,7 +62,7 @@ export class ListaVisorComponent implements OnInit {
   listaVisible = "Propias";
   nuevoUsuarioCompartido = {
     email: "",
-    permisos: "ver",
+    permisos: "asignar",
   }
 
   leftCollapsed = false;
@@ -119,7 +119,7 @@ export class ListaVisorComponent implements OnInit {
     this.listasService.editarPermisoColaborador(
       this.listaSeleccionada.id,       // ejemplo: '00457231'
       email,               // email del colaborador
-      permiso                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+      permiso                   // nuevo permiso ( 'editar', 'asignar')
     ).subscribe({
       next: res => {
         {

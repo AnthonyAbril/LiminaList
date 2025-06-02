@@ -6,7 +6,7 @@
       <div class="listas-header">
         <img src="assets/icons/dedo.png" [routerLink]="'/home'" alt="Icono de Pluma" class="boton-atras" />
         <h2>Listas</h2>
-        <button [style]="'font-size:1.5em'" (click)="listaVisible=(listaVisible=='Compartidas')?'Propias':'Compartidas'">
+        <button [style]="'font-size:1.5em'" (click)="listaVisible = (listaVisible=='Compartidas') ? 'Propias' : 'Compartidas'">
           <ng-container *ngIf="listaVisible=='Compartidas'">Compartidas</ng-container>
           <ng-container *ngIf="listaVisible=='Propias'">Propias</ng-container>
         </button>
@@ -26,7 +26,6 @@
           [(ngModel)]="filtro"
         />
       </div>
-
 
       <ul *ngIf="listaVisible=='Propias'" class="listas">
         <li *ngFor="let lista of listasPropiasFiltradas" class="lista-item">
@@ -108,8 +107,9 @@
               <button (click)="abrirBorrarModal(listaSeleccionada)">Eliminar</button>
             </div>
 
-            <div class="lista-compartir">
-              <H2>Compartido con: </H2>
+            <!-- Sólo se muestra si estamos en “Propias” -->
+            <div class="lista-compartir" *ngIf="listaVisible === 'Propias'">
+              <h2>Compartido con: </h2>
               <ul>
                 <li>
                   <input type="text" id="email" [(ngModel)]="nuevoUsuarioCompartido.email">

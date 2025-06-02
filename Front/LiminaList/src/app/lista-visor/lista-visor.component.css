@@ -321,7 +321,7 @@ img{
   margin: 0;
 } 
 
-.listas{
+.listas, .compartidas{
   padding-left: 0;
   list-style: none;
 }
