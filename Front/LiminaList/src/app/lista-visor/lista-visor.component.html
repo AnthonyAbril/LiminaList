@@ -20,11 +20,16 @@
       </div>
 
       <div class="filtros">
-        <input type="text">
+        <input
+          type="text"
+          placeholder="Filtrar por nombre..."
+          [(ngModel)]="filtro"
+        />
       </div>
 
+
       <ul *ngIf="listaVisible=='Propias'" class="listas">
-        <li *ngFor="let lista of listas" class="lista-item">
+        <li *ngFor="let lista of listasPropiasFiltradas" class="lista-item">
           <div class="lista-nombre" (click)="abrirLista(lista.id)">
             <h3>{{ lista.name }}</h3>
           </div>
@@ -50,7 +55,7 @@
       </ul>
 
       <ul *ngIf="listaVisible=='Compartidas'" class="compartidas">
-        <li *ngFor="let lista of compartidas" class="lista-item">
+        <li *ngFor="let lista of listasCompartidasFiltradas" class="lista-item">
           <div class="lista-nombre" (click)="abrirLista(lista.id)">
             <h3>{{ lista.name }}</h3>
           </div>

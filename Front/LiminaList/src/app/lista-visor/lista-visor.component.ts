@@ -91,6 +91,25 @@ export class ListaVisorComponent implements OnInit {
     console.log(email);
   }
 
+  // Devuelve las listas propias cuyo nombre contenga el texto de “filtro”
+  get listasPropiasFiltradas(): any[] {
+    const texto = this.filtro.trim().toLowerCase();
+    if (!texto) return this.listas;
+    return this.listas.filter(lista =>
+      lista.name.toLowerCase().includes(texto)
+    );
+  }
+
+  // Devuelve las listas compartidas cuyo nombre contenga el texto de “filtro”
+  get listasCompartidasFiltradas(): any[] {
+    const texto = this.filtro.trim().toLowerCase();
+    if (!texto) return this.compartidas;
+    return this.compartidas.filter(lista =>
+      lista.name.toLowerCase().includes(texto)
+    );
+  }
+
+
   modificarColaborador(colaborador:any,permiso:string){
     const email = colaborador.email;
     console.log("asdads");
