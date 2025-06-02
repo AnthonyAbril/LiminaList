@@ -19,6 +19,10 @@
         </button>
       </div>
 
+      <div class="filtros">
+        <input type="text">
+      </div>
+
       <ul *ngIf="listaVisible=='Propias'" class="listas">
         <li *ngFor="let lista of listas" class="lista-item">
           <div class="lista-nombre" (click)="abrirLista(lista.id)">

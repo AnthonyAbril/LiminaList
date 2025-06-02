@@ -71,6 +71,16 @@ img{
   background-color: var(--color-secundario);
 }
 
+.filtros > input{
+  width: 100%;
+  border: none;
+  border-radius: 20px;
+  padding: 1vh;
+  background-color: var(--color-texto);
+  color: var(--color-primario);
+  font-size: large
+}
+
 .sidebar {
   width: 250px;
   background: var(--color-secundario);

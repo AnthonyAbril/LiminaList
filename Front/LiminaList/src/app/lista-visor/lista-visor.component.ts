@@ -78,7 +78,7 @@ export class ListaVisorComponent implements OnInit {
     this.listasService.editarPermisoColaborador(
       this.listaSeleccionada.id,       // ejemplo: '00457231'
       email,               // email del colaborador
-      permiso                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+      permiso                   // nuevo permiso ('editar', 'progreso')
     ).subscribe({
       next: res => {
         console.log('✔️ Permiso editado', res);
@@ -86,10 +86,9 @@ export class ListaVisorComponent implements OnInit {
       },
       error: err => console.error('❌ Error editando permiso', err)
     });
-
+    this.nuevoUsuarioCompartido.email = "";
     console.log(this.listaSeleccionadaId);
     console.log(email);
-    
   }
 
   modificarColaborador(colaborador:any,permiso:string){
