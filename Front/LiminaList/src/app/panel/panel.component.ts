@@ -20,7 +20,7 @@ export class PanelComponent {
   tareas: any[] = [];
   title: string = "";
   resumen: string = 'reloj';
-
+  esDiaria = false;
   constructor(
     private route: ActivatedRoute,
     private listasService: ListasService,
@@ -172,6 +172,7 @@ export class PanelComponent {
         this.listasService.getTareasPorFecha(listaId.slice(1)).subscribe({
           next: rows => {
             this.tareas = this.buildTree(rows, true);
+            this.esDiaria = true;
           },
           error: err => console.error('Error cargando tareas de la fecha:', err)
         });

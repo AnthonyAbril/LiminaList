@@ -21,7 +21,7 @@ export class ListaComponent {
   @Input() editar = false; // 🔹 Recibe la variable desde PanelComponent
   estadoActual = 0;
   tipoTarea:boolean = false;  //por defecto puntual
-  
+  @Input() esDiaria:boolean = false;
   @Input() tareas: Tarea[] = [];
   @Output() progresoActualizado = new EventEmitter<{ id: number; progreso: number }>();
   @ViewChild('picker') picker!: NgxMaterialTimepickerComponent;

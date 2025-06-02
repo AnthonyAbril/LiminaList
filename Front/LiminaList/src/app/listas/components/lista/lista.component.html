@@ -2,7 +2,7 @@
 <ul>
   <li class="boton-agregar">
     <button [class.elegida]="!this.tipoTarea" (click)="this.tipoTarea = false">Tareas Puntuales</button>
-    <button *ngIf="editar" (click)="agregarTarea()">
+    <button *ngIf="editar && !esDiaria" (click)="agregarTarea()">
       <a>+</a>
     </button>
     <button [class.elegida]="this.tipoTarea" (click)="this.tipoTarea = true">Tareas Rutinarias</button>
