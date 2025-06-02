@@ -4,39 +4,42 @@
 
 <!-- Overlay + mini-container JUNTOS -->
 <div class="contenedor">
-    <div *ngIf="mostrarMiniSidebar && esMovil || !esMovil" class="mini-sidebar-overlay" (click)="mostrarMiniSidebar = false">
-  <div class="mini-container" (click)="$event.stopPropagation()">
-    <app-reloj *ngIf="resumen === 'reloj'"></app-reloj>
+  <div *ngIf="(mostrarMiniSidebar && esMovil) || !esMovil" 
+       class="mini-sidebar-overlay" 
+       (click)="mostrarMiniSidebar = false">
+    <div class="mini-container" (click)="$event.stopPropagation()">
+      <app-reloj *ngIf="resumen === 'reloj'"></app-reloj>
 
-    <div *ngIf="resumen === 'calendar'" class="calendar-mini">
-      <div class="header-resum">
-        <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
-          <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
-        </select>
-        <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
-          <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
-        </select>
-      </div>
+      <div *ngIf="resumen === 'calendar'" class="calendar-mini">
+        <div class="header-resum">
+          <select [(ngModel)]="mesSeleccionado" (change)="cambiarMes()">
+            <option *ngFor="let mes of meses; let i = index" [ngValue]="i">{{ mes }}</option>
+          </select>
+          <select [(ngModel)]="anioSeleccionado" (change)="cambiarMes()">
+            <option *ngFor="let anio of [2023, 2024, 2025, 2026]" [value]="anio">{{ anio }}</option>
+          </select>
+        </div>
 
-      <div class="fechas">
-        <ng-container *ngFor="let fecha of fechas">
-          <button *ngIf="fecha; else emptyCell" 
-                  (click)="abrirListaDelDia(fecha)"
-                  [class.hoy]="esHoy(fecha)">
-            {{ fecha.getUTCDate() }}
-          </button>
-          <ng-template #emptyCell>
-            <div class="empty-cell"></div>
-          </ng-template>
-        </ng-container>
-      </div>
+        <div class="fechas">
+          <ng-container *ngFor="let fecha of fechas">
+            <button *ngIf="fecha; else emptyCell" 
+                    (click)="abrirListaDelDia(fecha)"
+                    [class.hoy]="esHoy(fecha)">
+              {{ fecha.getUTCDate() }}
+            </button>
+            <ng-template #emptyCell>
+              <div class="empty-cell"></div>
+            </ng-template>
+          </ng-container>
+        </div>
 
-      <div class="dias-semana footer-resum">
-        <span *ngFor="let dia of dias">{{ dia }}</span>
+        <div class="dias-semana footer-resum">
+          <span *ngFor="let dia of dias">{{ dia }}</span>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
   <div class="lista-container">
     <div class="scroll-interno">
       <app-lista [tareas]="tareas" [editar]="editar"></app-lista>
@@ -51,5 +54,11 @@
   <img [routerLink]="'/home'" src="assets/icons/house.svg" alt="Inicio" class="icono">
   <img (click)="abrirResumen('reloj')" src="assets/icons/clock.svg" alt="Reloj" class="icono">
   <img (click)="abrirResumen('calendar')" src="assets/icons/calendar.svg" alt="Calendario" class="icono" style="padding-bottom: 5px">
-  <img (click)="toggleEdicion()" src="assets/icons/square-pen-solid.svg" *ngIf="!esPasada" alt="Editar" class="icono">
+
+  <!-- ← Solo muestro el lápiz si tengo permiso editar Y no es pasada -->
+  <img (click)="toggleEdicion()" 
+       src="assets/icons/square-pen-solid.svg" 
+       *ngIf="editar && !esPasada" 
+       alt="Editar" 
+       class="icono">
 </div>
