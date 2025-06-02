@@ -15,6 +15,11 @@
     width: 30vw;
 }
 
+.lista-lateral h2{
+    display: flex;
+    align-items: center;
+}
+
 .main { 
     width: 70vw;
 

@@ -51,5 +51,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.themeService.detenerAutoDarkMode();
+
+        localStorage.removeItem('token');     // token en localStorage
+    localStorage.removeItem('colores'); // ✅
+    localStorage.removeItem('ajustes');
+    
+    // ✅ limpiar estilos aplicados del usuario anterior
+    ['primario', 'secundario', 'terciario', 'texto'].forEach(key => {
+      document.documentElement.style.removeProperty(`--color-${key}`);
+    });
   }
 }
