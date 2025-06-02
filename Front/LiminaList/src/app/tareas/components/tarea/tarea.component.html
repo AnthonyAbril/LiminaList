@@ -31,6 +31,7 @@
       
       
       <div class="acciones-tarea">
+        <button class="boton-agregar" *ngIf="editar" (click)="eliminar.emit()">×</button>
         <button 
           class="boton-agregar" 
           *ngIf="editar"
