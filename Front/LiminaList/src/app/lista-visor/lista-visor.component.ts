@@ -34,7 +34,7 @@ export class ListaVisorComponent implements OnInit {
     this.listasService.editarPermisoColaborador(
       '45686391',       // ejemplo: '00457231'
       'jony@jony',               // email del colaborador
-      'editar'                   // nuevo permiso ('ver', 'editar', 'progreso', 'asignar')
+      'editar'                   // nuevo permiso ('editar', 'progreso')
     ).subscribe({
       next: res => console.log('✔️ Permiso editado', res),
       error: err => console.error('❌ Error editando permiso', err)

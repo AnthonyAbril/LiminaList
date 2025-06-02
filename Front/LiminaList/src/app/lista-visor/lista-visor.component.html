@@ -104,14 +104,12 @@
               <ul>
                 <li>
                   <input type="text" id="email" [(ngModel)]="nuevoUsuarioCompartido.email">
-                  <button (click)="nuevoUsuarioCompartido.permisos = 'ver'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'ver'">Ver</button>
                   <button (click)="nuevoUsuarioCompartido.permisos = 'asignar'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'asignar'">Usar</button>
                   <button (click)="nuevoUsuarioCompartido.permisos = 'editar'" [class.seleccionado]="nuevoUsuarioCompartido.permisos == 'editar'">Editar</button>
                   <button (click)="agregarColaborador()">Añadir</button>
                 </li>
                 <li *ngFor="let colaborador of listaSeleccionada.colaboradores">
                   <p>{{colaborador.email}}</p>
-                  <button (click)="modificarColaborador(colaborador,'ver')" [class.seleccionado]="colaborador.permiso == 'ver'">Ver</button>
                   <button (click)="modificarColaborador(colaborador,'asignar')" [class.seleccionado]="colaborador.permiso == 'asignar'">Usar</button>
                   <button (click)="modificarColaborador(colaborador,'editar')" [class.seleccionado]="colaborador.permiso == 'editar'">Editar</button>
                   <button (click)="eliminarColaborador(colaborador.email)" >Borrar</button>

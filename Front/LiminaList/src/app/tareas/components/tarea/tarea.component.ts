@@ -117,7 +117,6 @@ export class TareaComponent implements OnInit, OnDestroy {
   }
 
 
-
   private enviarProgreso(prog: number, fecha: string | null) {
     this.progreso$.next({ prog, fecha });
   }
@@ -324,8 +323,14 @@ export class TareaComponent implements OnInit, OnDestroy {
 
 
   get porcentajeProgreso(): string {
-    return this.subtareas.length === 0 ? '' : 
-      `${this.subtareas.filter(sub => sub.terminado).length}/${this.subtareas.length}`;
+      if (this.subtareas.length === 0) {
+        return '';
+      }
+      // “Hecha” corresponde al último índice de `estados`
+      const indiceHecha = this.estados.length - 1;
+
+      const hechas = this.subtareas.filter(sub => sub.progreso === indiceHecha).length;
+      return `${hechas}/${this.subtareas.length}`;
   }
 
   get claseEstado(): string {
