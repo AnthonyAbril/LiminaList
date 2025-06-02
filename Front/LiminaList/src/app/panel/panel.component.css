@@ -312,3 +312,6 @@ select, option{
   }
 
 }
+.icono {
+  color: #f3216b; /* el “fill” del path usará este color */
+}
