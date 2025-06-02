@@ -56,36 +56,35 @@ ngx-material-timepicker {
 .custom-class .timepicker-button:hover {
   background-color: #ff9800 !important;
 }
+
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.ngx-material-timepicker-overlay,
-.cdk-overlay-container .ngx-material-timepicker-overlay {
-  z-index: 10050 !important;
+
+/* 1) Asegúrate de que el <ngx-material-timepicker> "empuje" su overlay hacia el <body> */
+ngx-material-timepicker {
+  /* (puedes conservar las variables de color que ya tenías) */
+  --timepicker-background-color: #ffffff;
+  --timepicker-text-color: #000000;
+  --timepicker-accent-color: var(--color-terciario) !important;
 }
 
+/* 2) Quita cualquier z-index de .overlay-padre y .cdk-overlay-container */
 
-/* Bajamos el overlay de tu modal padre a z-index 1000 */
-.overlay-padre,
-.container {
-  z-index: 1000 !important;
-}
-
-/* Forzamos el panel del timepicker por encima de TODO */
+/* 3) Forza al panel del timepicker (cdk-overlay-pane.mi-timepicker-al-frente) a un z-index muy alto */
 .cdk-overlay-container .cdk-overlay-pane.mi-timepicker-al-frente {
-  z-index: 1100 !important;
+  z-index: 11000 !important;
 }
 
-/* Y luego el contenido interno, por si acaso */
+/* 4) Y, para asegurarte, también sube el contenido interno */
 .cdk-overlay-container
   .cdk-overlay-pane.mi-timepicker-al-frente
   .ngx-material-timepicker-content {
-  z-index: 1101 !important;
+  z-index: 500 !important;
 }
 
-.cdk-overlay-container{
-  z-index: 0;
-}
+
 
 :root {
   --color-primario: #FF9E16;

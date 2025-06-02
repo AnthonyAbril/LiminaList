@@ -2,8 +2,8 @@
     <div class="lista-lateral">
         <h2>Eventos Próximos</h2>
         <ul>
-            <li *ngFor="let tarea of tareas">
-                <p>{{tarea.fecha}}</p>
+            <li *ngFor="let tarea of tareas; let i = index">
+                <p *ngIf="i === 0 || tarea.fecha !== tareas[i-1].fecha">{{ tarea.fecha }}</p>
                 <div>
                     <a>{{tarea.hora}}</a>
                     <app-tarea

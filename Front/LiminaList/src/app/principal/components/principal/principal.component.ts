@@ -45,6 +45,23 @@ export class PrincipalComponent implements OnInit {
         // 🔹 Transformar datos para incluir fecha y hora en cada tarea (sin duplicacion de subtareas)
         this.tareas = this.buildTree(response);
         
+        // 1) Construyo el árbol
+        const sinOrdenar = this.buildTree(response);
+
+        // 2) Aplico el orden: primero por 'fecha' ascendente, luego por 'hora' ascendente
+        this.tareas = sinOrdenar.sort((a, b) => {
+          // a.fecha y b.fecha vienen como strings "YYYY-MM-DD"
+          if (a.fecha! < b.fecha!) return -1;
+          if (a.fecha! > b.fecha!) return 1;
+
+          // Si la misma fecha, ordeno por hora; null/undefined los pongo al final
+          const horaA = a.hora || '';
+          const horaB = b.hora || '';
+          if (horaA < horaB) return -1;
+          if (horaA > horaB) return 1;
+          return 0;
+        });
+
         console.log('📌 Datos procesados:', this.tareas);
       },
       error: err => console.error('Error cargando eventos próximos:', err)
