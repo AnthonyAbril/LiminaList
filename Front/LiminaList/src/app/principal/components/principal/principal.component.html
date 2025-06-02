@@ -82,10 +82,7 @@
             <div class="main-resum">
 
                 <ul>
-                    <li *ngFor="let lista of listas">
-                        <div class="main-resum-lupa"  (click)="seleccionarLista(lista.id)">
-                            <img src="assets/icons/lupa.svg" alt="">
-                        </div>
+                    <li *ngFor="let lista of listas" (click)="seleccionarLista(lista.id)">
                         <div>{{lista.name}}</div>
                     </li>
                 </ul>

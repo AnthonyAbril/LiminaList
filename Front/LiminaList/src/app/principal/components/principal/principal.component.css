@@ -23,6 +23,13 @@
 
 .titulo-header{
     cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.titulo-header:hover{
+    background-color: var(--color-terciario);
+    border-radius: 20px;
+    padding: 10px;
 }
 
 .header {
@@ -142,6 +149,24 @@
     width: 100%;
 
     height: 4vh;
+
+    border-radius: 20px;
+    transition: transform 0.3s ease; /* Transición suave */
+}
+
+
+.main-resum > ul > li > div:hover {
+    background-color: var(--color-texto);
+    color: var(--color-primario);
+    
+    display: inline;
+    padding: 5%;
+    width: 100%;
+
+    transform: translate(-3px, -3px);
+    height: 4vh;
+
+    cursor: pointer;
 
     border-radius: 20px;
 }
