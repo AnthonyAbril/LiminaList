@@ -216,72 +216,6 @@ img{
   top: 5px;
 }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-
-  .sidebar {
-    position: fixed;
-    z-index: 1000;
-    width: 250px;
-  }
-  
-  .left-sidebar {
-    left: -250px;
-  }
-  
-  .right-sidebar {
-    right: 0;
-  }
-
-  .main-content {
-    margin: 0 !important;
-    width: 100%;
-  }
-  
-  .toggle-btn {
-    position: fixed;
-  }
-}
-
-@media (max-width: 580px){
-  .right-sidebar {
-    max-width: 100% !important;
-    flex: none !important;
-  }
-
-
-  .right-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-
-    background-color: var(--color-secundario); /* si es necesario */
-    overflow-y: auto;
-  }
-
-  .main-content {
-    flex-direction: column;
-  }
-
-  
-  .sidebar-info{
-    height: 88vh;
-  }
-
-  .nombreTarea{
-    height: 10vh;
-  }
-
-  .cerrar-btn{
-    height: 2vh;
-  }
-}
-
-
-
 .listas-container {
   flex: 1; /* Ocupará el 50% restante */
   max-width: 50%; /* Ajuste para el gap */
@@ -305,6 +239,7 @@ img{
   align-items: center;
   height: 60px;
   padding: 1%;
+  overflow: hidden;
 }
 
 .listas-header > h2 {
@@ -445,12 +380,61 @@ textarea {
   animation: fadeIn 0.3s ease;
 }
 
+
+
 .cerrar-btn{
+  height: 0;
   display: none;
 }
 
-/* Sidebar dentro del overlay */
-@media (max-width: 580px) {
+
+@media (max-width: 768px){
+  .right-sidebar {
+    max-width: 100% !important;
+    flex: none !important;
+  }
+
+  .listas-container{
+    max-width: none; /* Ajuste para el gap */
+    width: 100%;
+  }
+
+  .cerrar-btn {
+    height: 10vh;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--color-texto);
+    cursor: pointer;
+    display: block;
+  }
+
+
+  .right-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+
+    background-color: var(--color-secundario); /* si es necesario */
+    overflow-y: auto;
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+
+  
+  .sidebar-info{
+    height: 80vh;
+  }
+
+  .nombreTarea{
+    height: 10vh;
+  }
+
   .right-sidebar {
     position: relative;
     width: 100vw;
@@ -461,14 +445,14 @@ textarea {
     animation: slideIn 0.3s ease;
   }
 
-  .cerrar-btn {
-    display: block;
-  }
-
   .listas-container {
-    width: 90vw !important;
+    width: 100vw !important;
     max-width: 100% !important;
     padding: 0;
+  }
+
+  .listas-header h2{
+    display: none;
   }
 
   
@@ -501,12 +485,3 @@ textarea {
   from { transform: translateY(100px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
-
-.cerrar-btn {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--color-texto);
-  cursor: pointer;
-}
-

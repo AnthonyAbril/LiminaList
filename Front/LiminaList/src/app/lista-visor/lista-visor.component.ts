@@ -253,7 +253,7 @@ export class ListaVisorComponent implements OnInit {
   }
 
   cerrarSidebarSiEsMovil(event: MouseEvent) {
-    if (window.innerWidth <= 580) {
+    if (window.innerWidth <= 768) {
       this.modo = null;
       this.listaSeleccionada = null;
     }

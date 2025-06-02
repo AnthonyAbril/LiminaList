@@ -250,7 +250,7 @@ select, option{
     border-right: 10px solid var(--color-primario);
     border-top: 10px solid var(--color-primario);
     border-left: 10px solid var(--color-primario);
-    z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+    z-index: 100; /* Asegúrate de que esté por encima de otros elementos */
 
     width: 80vw;
   }
