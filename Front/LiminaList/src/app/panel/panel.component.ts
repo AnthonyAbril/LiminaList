@@ -13,11 +13,12 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './panel.component.css'
 })
 export class PanelComponent {
-  editar = false; // 🔹 Estado global del modo edición
+  editar = false;       // → Modo edición ON/OFF que dispara el usuario
+  puedeEditar = false;  // → Determinado por permisos + fecha
   individual = false;
   listaSeleccionada: any;
   tareas: any[] = [];
-  title:string = "";
+  title: string = "";
   resumen: string = 'reloj';
 
   constructor(
@@ -35,7 +36,7 @@ export class PanelComponent {
       console.log('Lista guardada:', response);
     });
   }
-  
+
   /** Convierte el array de tareas_fechas en una jerarquía única
    *  y recalcula el progreso de cada nodo               */
   buildTree(tfArray: any[], esDiaria: boolean = false): any[] {
@@ -112,7 +113,9 @@ export class PanelComponent {
     const hoy = new Date();
     const fechaHoy = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate()));
     this.esPasada = fechaLista < fechaHoy;
-    this.editar = !this.esPasada;
+    // Nota: aquí *solo* decidimos si la fecha ya pasó o no.
+    // Dejamos que la lógica de permisos (dueño/colaborador) se aplique
+    // más abajo, tras cargar la lista individual.
   }
 
   abrirListaDelDia(fecha: Date | null): void {
@@ -162,6 +165,10 @@ export class PanelComponent {
         // ─────── lista diaria ───────
         this.title = `${listaId.slice(1,5)}-${listaId.slice(5,7)}-${listaId.slice(7,9)}`;
         this.verificarFechaPasada(listaId);
+        // → para las listas diarias, basta con que no sea fecha pasada
+        //   para mostrar el lápiz (no hay “dueño”/“colaborador” en este caso).
+        this.puedeEditar = !this.esPasada;
+
         this.listasService.getTareasPorFecha(listaId.slice(1)).subscribe({
           next: rows => {
             this.tareas = this.buildTree(rows, true);
@@ -175,20 +182,23 @@ export class PanelComponent {
           this.listaSeleccionada = res;
           this.title = res.name;
 
-          // ──  Aquí: calculamos si el usuario puede editar ──
+          // primero: la lista NO es diaria, así que verificamos permisos:
           const userId = this.authService.getUserId();
           if (res.user_id === userId) {
-            // Soy dueño
-            this.editar = true;
+            // Soy dueño → permiso total de edición (siempre y cuando no sea pasada,
+            // pero en una lista individual “pasada” no aplica igual que en calendario).
+            this.puedeEditar = true;
           } else {
             // Busco mi entrada en res.colaboradores
             const colaborador = (res.colaboradores || []).find((c: any) => {
-              // dependiendo de cómo venga tu JSON, puede ser c.id o c.user_id
+              // dependiendo de cómo venga tu JSON, c puede ser { user_id, permiso }
               return Number(c.user_id) === userId || Number(c.id) === userId;
             });
-            this.editar = (colaborador?.permiso === 'editar');
+            this.puedeEditar = (colaborador?.permiso === 'editar');
           }
-          // ────────────────────────────────────────────────
+
+          // → Si llegara a haber alguna lógica “fecha pasada” para listas individuales,
+          //   impondrías aquí también:   this.puedeEditar = this.puedeEditar && !this.esPasada;
 
           // Solo tareas raíz (las subtareas se muestran dentro de <app-lista>)
           this.tareas = res.tareas
@@ -206,6 +216,6 @@ export class PanelComponent {
 
   toggleEdicion(): void {
     this.editar = !this.editar;
-    console.log(this.editar);
+    console.log('Modo edición:', this.editar);
   }
 }

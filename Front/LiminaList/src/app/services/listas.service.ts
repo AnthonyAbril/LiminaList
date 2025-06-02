@@ -114,25 +114,6 @@ export class ListasService {
     );
   }
 
-  asignarTareaFechas(tareasFechas: any[]): Observable<any> {
-    const token = localStorage.getItem('token');  
-
-    if (!token) {
-      console.error('❌ No hay token de autenticación.');
-      return throwError(() => new Error('Usuario no autenticado'));
-    }
-
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    return this.http.post(`http://localhost:8000/api/asignar-tarea-fechas`, { tareasFechas }, { headers }).pipe(
-      tap(response => console.log('📌 Respuesta del backend:', response)),
-      catchError(error => {
-        console.error('❌ Error al asignar tareas:', error);
-        return throwError(() => error);
-      }),
-    );
-  }
-
   crearLista(lista: Lista): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.post(this.apiUrl, lista, { headers });

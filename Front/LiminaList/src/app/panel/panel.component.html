@@ -55,10 +55,10 @@
   <img (click)="abrirResumen('reloj')" src="assets/icons/clock.svg" alt="Reloj" class="icono">
   <img (click)="abrirResumen('calendar')" src="assets/icons/calendar.svg" alt="Calendario" class="icono" style="padding-bottom: 5px">
 
-  <!-- ← Solo muestro el lápiz si tengo permiso editar Y no es pasada -->
-  <img (click)="toggleEdicion()" 
-       src="assets/icons/square-pen-solid.svg" 
-       *ngIf="editar && !esPasada" 
+  <!-- ← Solo muestro el lápiz si tengo permiso editar (puedeEditar) -->
+  <img (click)="toggleEdicion()"
+       src="assets/icons/square-pen-solid.svg"
+       *ngIf="puedeEditar"
        alt="Editar" 
        class="icono">
 </div>
