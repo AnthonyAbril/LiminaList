@@ -92,3 +92,9 @@ ngx-material-timepicker {
   --color-terciario: #ffca81;
   --color-texto: #ffffff;
 }
+
+
+
+.cdk-overlay-container{
+  z-index: 500;
+}

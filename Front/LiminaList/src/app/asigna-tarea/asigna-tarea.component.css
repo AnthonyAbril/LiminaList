@@ -226,17 +226,6 @@ select, option{
     border: none;
 }
 
-/* styles.scss */
-
-.overlay-padre,
-.container {
-  z-index: 1000 !important;
-}
-
-.mi-timepicker-al-frente .ngx-material-timepicker-content {
-  /* Sube el timepicker justo por encima */
-  z-index: 10050 !important;
-}
 
 @media (max-width:600px){
   .formulario{
