@@ -64,10 +64,10 @@ class UserController extends Controller
                     'texto' => '#ffffff'
                 ],
                 'oscuro' => [
-                    'primario' => '#402201',
-                    'secundario' => '#70410b',
-                    'terciario' => '#b26a14',
-                    'texto' => '#f0d9c2'
+                    'primario' => '#1e3345',
+                    'secundario' => '#1d5a77',
+                    'terciario' => '#3e95be',
+                    'texto' => '#aed5e0'
                 ]
             ],
             [
@@ -103,23 +103,6 @@ class UserController extends Controller
                     'terciario'  => '#1D3C60',
                     'texto'      => '#F5F5F5'
                 ],
-            ],
-            [
-                'id' => 'azul-pastel',
-                'nombre' => 'Azul Pastel',
-                'fijo' => true,
-                'claro' => [
-                    'primario' => '#b3e5fc',
-                    'secundario' => '#81d4fa',
-                    'terciario' => '#4fc3f7',
-                    'texto' => '#eefaff'
-                ],
-                'oscuro' => [
-                    'primario' => '#1e3345',
-                    'secundario' => '#1d5a77',
-                    'terciario' => '#3e95be',
-                    'texto' => '#aed5e0'
-                ]
             ],
             [
                 'id' => 'verde-menta',

@@ -51,7 +51,7 @@
     width: 70%;
     max-width: 80%;
     min-width: 40%;
-    resize: horizontal;
+    /*resize: horizontal;*/
     background-color: var(--color-secundario);
 
     /* Hacks para render */
@@ -291,6 +291,10 @@ select, option{
 
   .boton-agregar > button {
     font-size: small;
+  }
+
+  .calendar-mini{
+    height: 70vh;
   }
 
 }

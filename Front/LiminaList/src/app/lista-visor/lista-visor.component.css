@@ -72,7 +72,7 @@ img{
 }
 
 .filtros > input{
-  width: 100%;
+  width: 90%;
   border: none;
   border-radius: 20px;
   padding: 1vh;
@@ -188,7 +188,7 @@ img{
   border: none;
   background-color:var(--color-primario);
   padding: 10px;
-  width: 30%;
+  width: auto;
   font-size: larger;
   font-weight: bold;
   border-radius: 10px;
@@ -250,6 +250,7 @@ img{
   height: 60px;
   padding: 1%;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .listas-header > h2 {
@@ -399,9 +400,28 @@ textarea {
 
 
 @media (max-width: 768px){
+  .container-fluid{
+    width: 90%;
+    padding: 5%;
+  }
+
+  .lista-compartir li{
+    flex-wrap: wrap;
+  }
+
+  .lista-compartir input, .lista-compartir p{
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .lista-compartir button{
+    margin-bottom: 15px;
+  }
+
   .right-sidebar {
     max-width: 100% !important;
     flex: none !important;
+    border-radius: 20px;
   }
 
   .listas-container{
@@ -450,7 +470,6 @@ textarea {
     width: 100vw;
     height: 100vh;
     background-color: var(--color-secundario);
-    box-shadow: 0 0 10px black;
     overflow-y: auto;
     animation: slideIn 0.3s ease;
   }
